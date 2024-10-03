@@ -72,8 +72,11 @@ CMakeLists.txt.user*
 *.dll
 *.exe
 
-.qtcreator
-
 # IDEs
 .vscode
 .idea
+
+# Personal files
+.qtcreator
+ui/untitled/untitled.pyproject
+ui/untitled/untitled.pyproject.user
