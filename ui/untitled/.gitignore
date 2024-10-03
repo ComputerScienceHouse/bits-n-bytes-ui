@@ -73,3 +73,7 @@ CMakeLists.txt.user*
 *.exe
 
 .qtcreator
+
+# IDEs
+.vscode
+.idea
