@@ -9,6 +9,6 @@ set(LV_CONF_PATH
         ${CMAKE_CURRENT_SOURCE_DIR}/lv_conf.h
         CACHE STRING "" FORCE)
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/lvgl)
+add_subdirectory(${PROJECT_SOURCE_DIR}/lvgl EXCLUDE_FROM_ALL)
 
 target_link_libraries(ui PRIVATE lvgl)
