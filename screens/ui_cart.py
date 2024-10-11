@@ -15,19 +15,51 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QMainWindow, QPushButton, QSizePolicy,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QFrame, QGroupBox, QLabel,
+    QListWidget, QListWidgetItem, QMainWindow, QPushButton,
+    QSizePolicy, QWidget)
 
 class Ui_Cart(object):
     def setupUi(self, Cart):
         if not Cart.objectName():
             Cart.setObjectName(u"Cart")
-        Cart.resize(800, 600)
+        Cart.resize(1024, 600)
         self.centralwidget = QWidget(Cart)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.pushButton = QPushButton(self.centralwidget)
-        self.pushButton.setObjectName(u"pushButton")
-        self.pushButton.setGeometry(QRect(320, 0, 131, 32))
+        self.itemList = QListWidget(self.centralwidget)
+        self.itemList.setObjectName(u"itemList")
+        self.itemList.setGeometry(QRect(10, 130, 621, 451))
+        self.subtotalLabel = QLabel(self.centralwidget)
+        self.subtotalLabel.setObjectName(u"subtotalLabel")
+        self.subtotalLabel.setGeometry(QRect(350, 70, 141, 61))
+        self.navButton = QPushButton(self.centralwidget)
+        self.navButton.setObjectName(u"navButton")
+        self.navButton.setGeometry(QRect(330, 0, 261, 51))
+        self.groupBox = QGroupBox(self.centralwidget)
+        self.groupBox.setObjectName(u"groupBox")
+        self.groupBox.setGeometry(QRect(650, 10, 361, 441))
+        self.nutritionLabel = QLabel(self.groupBox)
+        self.nutritionLabel.setObjectName(u"nutritionLabel")
+        self.nutritionLabel.setGeometry(QRect(10, 10, 101, 31))
+        self.ingredientsLabel = QLabel(self.groupBox)
+        self.ingredientsLabel.setObjectName(u"ingredientsLabel")
+        self.ingredientsLabel.setGeometry(QRect(10, 210, 131, 51))
+        self.nutritionLine = QFrame(self.groupBox)
+        self.nutritionLine.setObjectName(u"nutritionLine")
+        self.nutritionLine.setGeometry(QRect(10, 30, 341, 16))
+        self.nutritionLine.setFrameShape(QFrame.Shape.HLine)
+        self.nutritionLine.setFrameShadow(QFrame.Shadow.Sunken)
+        self.ingredientsLine = QFrame(self.groupBox)
+        self.ingredientsLine.setObjectName(u"ingredientsLine")
+        self.ingredientsLine.setGeometry(QRect(10, 240, 341, 16))
+        self.ingredientsLine.setFrameShape(QFrame.Shape.HLine)
+        self.ingredientsLine.setFrameShadow(QFrame.Shadow.Sunken)
+        self.cartLabel = QLabel(self.centralwidget)
+        self.cartLabel.setObjectName(u"cartLabel")
+        self.cartLabel.setGeometry(QRect(20, 10, 51, 31))
+        self.cancelButton = QPushButton(self.centralwidget)
+        self.cancelButton.setObjectName(u"cancelButton")
+        self.cancelButton.setGeometry(QRect(650, 460, 361, 131))
         Cart.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Cart)
@@ -37,6 +69,12 @@ class Ui_Cart(object):
 
     def retranslateUi(self, Cart):
         Cart.setWindowTitle(QCoreApplication.translate("Cart", u"MainWindow", None))
-        self.pushButton.setText(QCoreApplication.translate("Cart", u"Go to Cart Screen", None))
+        self.subtotalLabel.setText(QCoreApplication.translate("Cart", u"<html><head/><body><p><span style=\" font-size:36pt;\">Subtotal:</span></p></body></html>", None))
+        self.navButton.setText(QCoreApplication.translate("Cart", u"Go to Welcome Screen", None))
+        self.groupBox.setTitle("")
+        self.nutritionLabel.setText(QCoreApplication.translate("Cart", u"<html><head/><body><p><span style=\" font-size:24pt;\">Nutrition:</span></p></body></html>", None))
+        self.ingredientsLabel.setText(QCoreApplication.translate("Cart", u"<html><head/><body><p><span style=\" font-size:24pt;\">Ingredients:</span></p></body></html>", None))
+        self.cartLabel.setText(QCoreApplication.translate("Cart", u"<html><head/><body><p><span style=\" font-size:24pt;\">Cart</span></p></body></html>", None))
+        self.cancelButton.setText(QCoreApplication.translate("Cart", u"Cancel Transaction", None))
     # retranslateUi
 
