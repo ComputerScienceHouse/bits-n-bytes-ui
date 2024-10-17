@@ -29,19 +29,19 @@ class Ui_Reciept(object):
         self.pushButton = QPushButton(self.centralwidget)
         self.pushButton.setObjectName(u"pushButton")
         self.pushButton.setGeometry(QRect(710, 180, 251, 61))
-        self.pushButton.setStyleSheet(u"QPushButton{border: 2px solid grey; border-radius: 5px; padding: 5px}\n"
+        self.pushButton.setStyleSheet(u"QPushButton{border: 2px solid grey; border-radius: 10px; padding: 5px}\n"
 "")
         self.pushButton_2 = QPushButton(self.centralwidget)
         self.pushButton_2.setObjectName(u"pushButton_2")
         self.pushButton_2.setGeometry(QRect(710, 250, 251, 61))
-        self.pushButton_2.setStyleSheet(u"QPushButton{border: 2px solid grey; border-radius: 5px; padding: 5px}")
+        self.pushButton_2.setStyleSheet(u"QPushButton{border: 2px solid grey; border-radius: 10px; padding: 5px}")
         self.itemList = QListWidget(self.centralwidget)
         self.itemList.setObjectName(u"itemList")
         self.itemList.setGeometry(QRect(10, 10, 621, 571))
         self.pushButton_3 = QPushButton(self.centralwidget)
         self.pushButton_3.setObjectName(u"pushButton_3")
         self.pushButton_3.setGeometry(QRect(710, 320, 251, 61))
-        self.pushButton_3.setStyleSheet(u"QPushButton{border: 2px solid grey; border-radius: 5px; padding: 5px}")
+        self.pushButton_3.setStyleSheet(u"QPushButton{border: 2px solid grey; border-radius: 10px; padding: 5px}")
         self.nutritionLabel = QLabel(self.centralwidget)
         self.nutritionLabel.setObjectName(u"nutritionLabel")
         self.nutritionLabel.setGeometry(QRect(820, 0, 141, 31))
@@ -92,7 +92,7 @@ class Ui_Reciept(object):
         self.subtotalLabel_2.setProperty(u"class", QCoreApplication.translate("Reciept", u"heading", None))
         self.subtotalLabel_3.setText(QCoreApplication.translate("Reciept", u"<html><head/><body><p><span style=\" font-size:24pt;\">Total:</span></p></body></html>", None))
         self.subtotalLabel_3.setProperty(u"class", QCoreApplication.translate("Reciept", u"heading", None))
-        self.subtotalLabel_4.setText(QCoreApplication.translate("Reciept", u"<html><head/><body><p><span style=\" font-size:18pt;\">Would You Like A Reciept?</span></p></body></html>", None))
+        self.subtotalLabel_4.setText(QCoreApplication.translate("Reciept", u"<html><head/><body><p align=\"center\"><span style=\" font-size:18pt;\">Would You Like A Reciept?</span></p></body></html>", None))
         self.subtotalLabel_4.setProperty(u"class", QCoreApplication.translate("Reciept", u"heading", None))
         pass
     # retranslateUi

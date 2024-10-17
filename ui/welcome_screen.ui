@@ -23,6 +23,9 @@
       <height>81</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 5px; padding: 5px}</string>
+    </property>
     <property name="text">
      <string>Go To Cart Screen</string>
     </property>
@@ -56,6 +59,9 @@
       <width>531</width>
       <height>121</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 50px; padding: 5px}</string>
     </property>
     <property name="text">
      <string>Tap Card to Start</string>

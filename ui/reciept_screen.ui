@@ -21,7 +21,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 5px; padding: 5px}
+     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 10px; padding: 5px}
 </string>
     </property>
     <property name="text">
@@ -38,7 +38,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 5px; padding: 5px}</string>
+     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 10px; padding: 5px}</string>
     </property>
     <property name="text">
      <string>Email</string>
@@ -64,7 +64,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 5px; padding: 5px}</string>
+     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 10px; padding: 5px}</string>
     </property>
     <property name="text">
      <string>No Reciept</string>
@@ -183,7 +183,7 @@
      <string notr="true"/>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Would You Like A Reciept?&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Would You Like A Reciept?&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
