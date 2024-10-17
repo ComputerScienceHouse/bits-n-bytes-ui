@@ -8,7 +8,9 @@ from screens.cart_screen import CartScreen
 from screens.welcome_screen import WelcomeScreen
 from screens.reciept_screen import RecieptScreen
 import resources_rc
+import database
 import os
+import config
 
 # Important:
 # You need to run the following command to generate the ui_form.py file

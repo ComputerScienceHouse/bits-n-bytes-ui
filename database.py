@@ -9,6 +9,7 @@
 ###############################################################################
 import os
 import requests
+from models import Item, User
 from typing import List
 
 API_ENDPOINT = os.getenv("BNB_API_ENDPOINT", '')
@@ -45,7 +46,6 @@ MOCK_USERS = {
 USE_MOCK_DATA = os.getenv("USE_MOCK_DATA", 'false').lower() == 'true'
 
 REQUEST_HEADERS = {"Authorization": AUTHORIZATION_KEY}
-
 
 def is_reachable() -> bool:
     """
