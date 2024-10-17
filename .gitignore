@@ -114,3 +114,6 @@ build-*
 debug/
 release/
 ui_*.h
+
+# Custom
+config.py
