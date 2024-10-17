@@ -28,18 +28,21 @@ class Ui_Welcome(object):
         self.navButton = QPushButton(self.centralwidget)
         self.navButton.setObjectName(u"navButton")
         self.navButton.setGeometry(QRect(370, 0, 271, 81))
+        self.navButton.setStyleSheet(u"QPushButton{border: 2px solid grey; border-radius: 5px; padding: 5px}")
         self.bitsnbyteslogo = QLabel(self.centralwidget)
         self.bitsnbyteslogo.setObjectName(u"bitsnbyteslogo")
-        self.bitsnbyteslogo.setGeometry(QRect(360, 160, 281, 231))
+        self.bitsnbyteslogo.setGeometry(QRect(80, 0, 831, 601))
         self.bitsnbyteslogo.setStyleSheet(u"QLabel {\n"
 "    border: 2px solid black;\n"
 "    border-radius: 5px;  /* Optional for rounded corners */\n"
 "    padding: 5px;        /* Optional for spacing */\n"
 "	qproperty-alignment: 'AlignCenter';\n"
 "}")
+        self.bitsnbyteslogo.setPixmap(QPixmap(u"../resources/images/BnBLogo.png"))
         self.tapButton = QPushButton(self.centralwidget)
         self.tapButton.setObjectName(u"tapButton")
         self.tapButton.setGeometry(QRect(230, 430, 531, 121))
+        self.tapButton.setStyleSheet(u"QPushButton{border: 2px solid grey; border-radius: 50px; padding: 5px}")
         self.infoButton = QLabel(self.centralwidget)
         self.infoButton.setObjectName(u"infoButton")
         self.infoButton.setGeometry(QRect(860, 10, 151, 141))
@@ -62,7 +65,7 @@ class Ui_Welcome(object):
     def retranslateUi(self, Welcome):
         Welcome.setWindowTitle(QCoreApplication.translate("Welcome", u"MainWindow", None))
         self.navButton.setText(QCoreApplication.translate("Welcome", u"Go To Cart Screen", None))
-        self.bitsnbyteslogo.setText(QCoreApplication.translate("Welcome", u"Image will go here", None))
+        self.bitsnbyteslogo.setText("")
         self.tapButton.setText(QCoreApplication.translate("Welcome", u"Tap Card to Start", None))
         self.infoButton.setText(QCoreApplication.translate("Welcome", u"Image Button (Info Icon)", None))
         self.label.setText(QCoreApplication.translate("Welcome", u"<html><head/><body><p><span style=\" font-size:24pt;\">Welcome</span></p></body></html>", None))
