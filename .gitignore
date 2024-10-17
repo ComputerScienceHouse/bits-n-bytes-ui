@@ -103,7 +103,6 @@ __pycache__/
 *.exe
 *.app
 *.framework
-*.qrc
 *.qmlc
 *.qmltypes
 *.qm
