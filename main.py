@@ -100,7 +100,7 @@ if __name__ == "__main__":
         print("Fonts loaded successfully.")
 
     # Define the current theme and QSS path
-    current_theme = "light"  # Set to 'dark' if you want to use the dark theme
+    current_theme = "dark"  # Set to 'dark' if you want to use the dark theme
     qss_path = ":/resources/style"  # Path to the QSS template
 
     # Apply the stylesheet using the method
