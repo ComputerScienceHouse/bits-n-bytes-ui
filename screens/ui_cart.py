@@ -65,6 +65,9 @@ class Ui_Cart(object):
         self.cancelButton = QPushButton(self.centralwidget)
         self.cancelButton.setObjectName(u"cancelButton")
         self.cancelButton.setGeometry(QRect(650, 460, 361, 131))
+        self.navRecieptButton = QPushButton(self.centralwidget)
+        self.navRecieptButton.setObjectName(u"navRecieptButton")
+        self.navRecieptButton.setGeometry(QRect(140, 60, 141, 51))
         Cart.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Cart)
@@ -85,5 +88,6 @@ class Ui_Cart(object):
         self.cartLabel.setText(QCoreApplication.translate("Cart", u"<html><head/><body><p><span style=\" font-size:18pt;\">Cart</span></p></body></html>", None))
         self.cartLabel.setProperty(u"class", QCoreApplication.translate("Cart", u"heading", None))
         self.cancelButton.setText(QCoreApplication.translate("Cart", u"Cancel Transaction", None))
+        self.navRecieptButton.setText(QCoreApplication.translate("Cart", u"Go To Reciept", None))
     # retranslateUi
 

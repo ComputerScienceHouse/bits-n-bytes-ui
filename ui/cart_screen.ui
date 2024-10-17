@@ -164,6 +164,19 @@
      <string>Cancel Transaction</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="navRecieptButton">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>60</y>
+      <width>141</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Go To Reciept</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

@@ -6,6 +6,7 @@ from PySide6.QtGui import QFontDatabase, QFont
 from PySide6.QtCore import QFile, QTextStream
 from screens.cart_screen import CartScreen
 from screens.welcome_screen import WelcomeScreen
+from screens.reciept_screen import RecieptScreen
 import resources_rc
 import os
 
@@ -43,13 +44,16 @@ class MainWindow(QMainWindow):
         # Create Cart add Welcome screen
         self.welcome_screen = WelcomeScreen()
         self.cart_screen = CartScreen()
+        self.reciept_screen = RecieptScreen()
 
         self.stack.addWidget(self.welcome_screen)    # Index 0
         self.stack.addWidget(self.cart_screen)       # Index 1
+        self.stack.addWidget(self.reciept_screen)    # Index 2
 
         # Connect buttons to navigate between screens
         self.welcome_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(1))
         self.cart_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(0))
+        self.cart_screen.ui.navRecieptButton.clicked.connect(lambda: self.stack.setCurrentIndex(2))
     
 def apply_stylesheet(app, qss_path, theme_name):
     """Apply a stylesheet with the specified theme to the application."""
