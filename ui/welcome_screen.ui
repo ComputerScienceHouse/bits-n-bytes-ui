@@ -40,18 +40,12 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QLabel {
-    border: 2px solid black;
-    border-radius: 5px;  /* Optional for rounded corners */
-    padding: 5px;        /* Optional for spacing */
+     <string notr="true">QLabel {    
 	qproperty-alignment: 'AlignCenter';
 }</string>
     </property>
     <property name="text">
      <string/>
-    </property>
-    <property name="pixmap">
-     <pixmap>../resources/images/BnBLogo.png</pixmap>
     </property>
    </widget>
    <widget class="QPushButton" name="tapButton">

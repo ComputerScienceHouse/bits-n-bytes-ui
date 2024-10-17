@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QGroupBox, QLabel,
-    QListWidget, QListWidgetItem, QMainWindow, QPushButton,
-    QSizePolicy, QWidget)
+from PySide6.QtWidgets import (QApplication, QFrame, QGroupBox, QHeaderView,
+    QLabel, QMainWindow, QPushButton, QSizePolicy,
+    QTableWidget, QTableWidgetItem, QWidget)
 
 class Ui_Cart(object):
     def setupUi(self, Cart):
@@ -26,7 +26,7 @@ class Ui_Cart(object):
         Cart.resize(1024, 600)
         self.centralwidget = QWidget(Cart)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.itemList = QListWidget(self.centralwidget)
+        self.itemList = QTableWidget(self.centralwidget)
         self.itemList.setObjectName(u"itemList")
         self.itemList.setGeometry(QRect(10, 130, 621, 451))
         self.subtotalLabel = QLabel(self.centralwidget)

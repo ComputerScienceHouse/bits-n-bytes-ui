@@ -1,5 +1,8 @@
 from PySide6.QtWidgets import QMainWindow
-from .ui_welcome import Ui_Welcome  # Import the generated UI class
+from PySide6.QtGui import QPixmap
+from PySide6.QtCore import Qt
+from .ui_welcome import Ui_Welcome  
+import resources_rc  
 
 class WelcomeScreen(QMainWindow):
     def __init__(self, parent=None):
@@ -7,8 +10,9 @@ class WelcomeScreen(QMainWindow):
         self.ui = Ui_Welcome()
         self.ui.setupUi(self)
 
-        # Example button logic for Welcome screen
-        # self.ui.pushButton.clicked.connect(self.on_start)
+        pixmap = QPixmap(u":/resources/logo")
+        pixmap = pixmap.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.ui.bitsnbyteslogo.setPixmap(pixmap)
 
     def on_start(self):
         # Add functionality when the button is clicked

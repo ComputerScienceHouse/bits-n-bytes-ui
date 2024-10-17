@@ -31,11 +31,8 @@ class Ui_Welcome(object):
         self.navButton.setStyleSheet(u"QPushButton{border: 2px solid grey; border-radius: 5px; padding: 5px}")
         self.bitsnbyteslogo = QLabel(self.centralwidget)
         self.bitsnbyteslogo.setObjectName(u"bitsnbyteslogo")
-        self.bitsnbyteslogo.setGeometry(QRect(80, 0, 831, 601))
-        self.bitsnbyteslogo.setStyleSheet(u"QLabel {\n"
-"    border: 2px solid black;\n"
-"    border-radius: 5px;  /* Optional for rounded corners */\n"
-"    padding: 5px;        /* Optional for spacing */\n"
+        self.bitsnbyteslogo.setGeometry(QRect(360, 160, 281, 231))
+        self.bitsnbyteslogo.setStyleSheet(u"QLabel {    \n"
 "	qproperty-alignment: 'AlignCenter';\n"
 "}")
         self.bitsnbyteslogo.setPixmap(QPixmap(u"../resources/images/BnBLogo.png"))
