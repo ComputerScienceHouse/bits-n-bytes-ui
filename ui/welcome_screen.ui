@@ -13,30 +13,17 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="navButton">
-    <property name="geometry">
-     <rect>
-      <x>370</x>
-      <y>0</y>
-      <width>271</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 5px; padding: 5px}</string>
-    </property>
-    <property name="text">
-     <string>Go To Cart Screen</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="bitsnbyteslogo">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>0</y>
-      <width>831</width>
-      <height>601</height>
+      <x>350</x>
+      <y>110</y>
+      <width>311</width>
+      <height>271</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -52,37 +39,16 @@
     <property name="geometry">
      <rect>
       <x>230</x>
-      <y>430</y>
+      <y>440</y>
       <width>531</width>
-      <height>121</height>
+      <height>91</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 50px; padding: 5px}</string>
+     <string notr="true">QPushButton{border-radius: 25px; padding: 5px; font-family: Roboto; font-size: 30px; background-color: #6C0164; color: white; text-align: center; qproperty-iconSpacing: 50px;}</string>
     </property>
     <property name="text">
      <string>Tap Card to Start</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="infoButton">
-    <property name="geometry">
-     <rect>
-      <x>860</x>
-      <y>10</y>
-      <width>151</width>
-      <height>141</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLabel {
-    border: 2px solid black;
-    border-radius: 5px;  /* Optional for rounded corners */
-    padding: 5px;        /* Optional for spacing */
-    qproperty-alignment: 'AlignCenter';
-}</string>
-    </property>
-    <property name="text">
-     <string>Image Button (Info Icon)</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -94,8 +60,27 @@
       <height>51</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel { font-family: IBM Plex Mono; color: white;}</string>
+    </property>
     <property name="text">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:24pt;&quot;&gt;Welcome&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="infoButton">
+    <property name="geometry">
+     <rect>
+      <x>950</x>
+      <y>10</y>
+      <width>61</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{border-radius: 5px; padding: 5px}</string>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>
