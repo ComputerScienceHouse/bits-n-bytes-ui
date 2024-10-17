@@ -160,6 +160,10 @@
       <height>131</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{border: 2px solid grey}
+</string>
+    </property>
     <property name="text">
      <string>Cancel Transaction</string>
     </property>

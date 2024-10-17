@@ -20,6 +20,10 @@
       <height>61</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 5px; padding: 5px}
+</string>
+    </property>
     <property name="text">
      <string>Text</string>
     </property>
@@ -32,6 +36,9 @@
       <width>251</width>
       <height>61</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 5px; padding: 5px}</string>
     </property>
     <property name="text">
      <string>Email</string>
@@ -55,6 +62,9 @@
       <width>251</width>
       <height>61</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 5px; padding: 5px}</string>
     </property>
     <property name="text">
      <string>No Reciept</string>

@@ -65,6 +65,8 @@ class Ui_Cart(object):
         self.cancelButton = QPushButton(self.centralwidget)
         self.cancelButton.setObjectName(u"cancelButton")
         self.cancelButton.setGeometry(QRect(650, 460, 361, 131))
+        self.cancelButton.setStyleSheet(u"QPushButton{border: 2px solid grey}\n"
+"")
         self.navRecieptButton = QPushButton(self.centralwidget)
         self.navRecieptButton.setObjectName(u"navRecieptButton")
         self.navRecieptButton.setGeometry(QRect(140, 60, 141, 51))

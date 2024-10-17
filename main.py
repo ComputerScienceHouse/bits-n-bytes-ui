@@ -81,7 +81,7 @@ def apply_stylesheet(app, qss_path, theme_name):
         qss = qss.replace("{background}", theme_colors["background"])
 
         # Apply the generated QSS to the application
-        app.setStyleSheet(qss)
+        # app.setStyleSheet(qss)
         print("Stylesheet loaded successfully.")
     else:
         print(f"Failed to open stylesheet from {qss_path}")
@@ -100,11 +100,11 @@ if __name__ == "__main__":
         print("Fonts loaded successfully.")
 
     # Define the current theme and QSS path
-    current_theme = "dark"  # Set to 'dark' if you want to use the dark theme
-    qss_path = ":/resources/style"  # Path to the QSS template
+    # current_theme = "dark"  # Set to 'dark' if you want to use the dark theme
+    # qss_path = ":/resources/style"  # Path to the QSS template
 
-    # Apply the stylesheet using the method
-    apply_stylesheet(app, qss_path, current_theme)
+    # # Apply the stylesheet using the method
+    # apply_stylesheet(app, qss_path, current_theme)
 
     # Show the main window
     widget.show()
