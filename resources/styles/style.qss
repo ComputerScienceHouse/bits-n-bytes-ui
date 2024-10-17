@@ -32,8 +32,6 @@ QGroupBox#nutritionBox {
     background-color: rgba(255, 0, 0, 0.2);  /* Temporary color to verify targeting */
 }
 
-
-
 QGroupBox#nutritionBox {
     border: 1px solid #6C0164;
     border-radius: 5px;
