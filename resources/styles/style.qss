@@ -1,0 +1,63 @@
+QWidget {
+    background-color: {background};
+    font-family: Roboto;
+    color: {text};
+    font-size: 14px;
+}
+
+QPushButton {
+    background-color: {background};
+    color: {text};
+    border-radius: 8px;
+    padding: 5px;
+}
+
+QPushButton:hover {
+    background-color: {primary};
+}
+
+QLabel[class=heading]{
+    font-family: IBM Plex Mono;
+    color: {primary};
+    background: transparent;
+}
+
+QLabel[class=text]{
+    font-family: Roboto;
+    color: {text};
+    background: transparent;
+}
+
+QGroupBox#nutritionBox {
+    background-color: rgba(255, 0, 0, 0.2);  /* Temporary color to verify targeting */
+}
+
+
+
+QGroupBox#nutritionBox {
+    border: 1px solid #6C0164;
+    border-radius: 5px;
+    margin-top: 20px;  /* Creates some spacing for the title */
+}
+
+QGroupBox#nutritionBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding: 5px;
+    background-color: transparent;
+    color: #6C0164;
+    font-weight: bold;
+}
+
+QGroupBox#nutritionBox > QWidget {
+    background-color: rgba(108, 1, 100, 0.2);  /* Applies a semi-transparent background */
+}
+
+QFrame#nutritionLine {
+    background-color: rgba(0, 255, 0, 0.5);  /* Temporary color to verify targeting */
+    border: none;
+}
+
+
+
+
