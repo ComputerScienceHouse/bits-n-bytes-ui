@@ -22,7 +22,7 @@ class Ui_Reciept(object):
     def setupUi(self, Reciept):
         if not Reciept.objectName():
             Reciept.setObjectName(u"Reciept")
-        Reciept.resize(845, 566)
+        Reciept.resize(1024, 600)
         self.centralwidget = QWidget(Reciept)
         self.centralwidget.setObjectName(u"centralwidget")
         self.listView = QListView(self.centralwidget)
