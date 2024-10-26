@@ -27,12 +27,13 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QLabel {    
-	qproperty-alignment: 'AlignCenter';
-}</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="type" stdset="0">
+     <string>logo</string>
     </property>
    </widget>
    <widget class="QPushButton" name="tapButton">
@@ -45,10 +46,13 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton{border-radius: 25px; padding: 5px; font-family: Roboto; font-size: 30px; background-color: #6C0164; color: white; text-align: center; qproperty-iconSpacing: 50px;}</string>
+     <string notr="true">font-size: 30px;</string>
     </property>
     <property name="text">
      <string>Tap Card to Start</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>primary</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -61,7 +65,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QLabel { font-family: IBM Plex Mono; color: white;}</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:24pt;&quot;&gt;Welcome&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -77,10 +81,13 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton{border-radius: 5px; padding: 5px}</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="type" stdset="0">
+     <string>info</string>
     </property>
    </widget>
   </widget>

@@ -6,7 +6,8 @@
         <file alias="logoHoriz">images/BnBLogoHoriz.png</file>
         <file alias="logoVert">images/BnBLogoVert.png</file>
         <file alias="munchin">images/Munchin.png</file>
-        <file alias="style">styles/style.qss</file>
+        <file alias="dark_style">styles/dark_style.qss</file>
+        <file alias="light_style">styles/light_style.qss</file>
         <file alias="Roboto">fonts/Roboto-Regular.ttf</file>
         <file alias="IBMPlexMono">fonts/IBMPlexMono-Bold.ttf</file>
     </qresource>

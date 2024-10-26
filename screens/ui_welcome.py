@@ -29,21 +29,19 @@ class Ui_Welcome(object):
         self.bitsnbyteslogo = QLabel(self.centralwidget)
         self.bitsnbyteslogo.setObjectName(u"bitsnbyteslogo")
         self.bitsnbyteslogo.setGeometry(QRect(350, 110, 311, 271))
-        self.bitsnbyteslogo.setStyleSheet(u"QLabel {    \n"
-"	qproperty-alignment: 'AlignCenter';\n"
-"}")
+        self.bitsnbyteslogo.setStyleSheet(u"")
         self.tapButton = QPushButton(self.centralwidget)
         self.tapButton.setObjectName(u"tapButton")
         self.tapButton.setGeometry(QRect(230, 440, 531, 91))
-        self.tapButton.setStyleSheet(u"QPushButton{border-radius: 25px; padding: 5px; font-family: Roboto; font-size: 30px; background-color: #6C0164; color: white; text-align: center; qproperty-iconSpacing: 50px;}")
+        self.tapButton.setStyleSheet(u"font-size: 30px;")
         self.label = QLabel(self.centralwidget)
         self.label.setObjectName(u"label")
         self.label.setGeometry(QRect(20, 10, 101, 51))
-        self.label.setStyleSheet(u"QLabel { font-family: IBM Plex Mono; color: white;}")
+        self.label.setStyleSheet(u"")
         self.infoButton = QPushButton(self.centralwidget)
         self.infoButton.setObjectName(u"infoButton")
         self.infoButton.setGeometry(QRect(950, 10, 61, 61))
-        self.infoButton.setStyleSheet(u"QPushButton{border-radius: 5px; padding: 5px}")
+        self.infoButton.setStyleSheet(u"")
         Welcome.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Welcome)
@@ -54,8 +52,11 @@ class Ui_Welcome(object):
     def retranslateUi(self, Welcome):
         Welcome.setWindowTitle(QCoreApplication.translate("Welcome", u"MainWindow", None))
         self.bitsnbyteslogo.setText("")
+        self.bitsnbyteslogo.setProperty(u"type", QCoreApplication.translate("Welcome", u"logo", None))
         self.tapButton.setText(QCoreApplication.translate("Welcome", u"Tap Card to Start", None))
+        self.tapButton.setProperty(u"type", QCoreApplication.translate("Welcome", u"primary", None))
         self.label.setText(QCoreApplication.translate("Welcome", u"<html><head/><body><p><span style=\" font-size:24pt;\">Welcome</span></p></body></html>", None))
         self.infoButton.setText("")
+        self.infoButton.setProperty(u"type", QCoreApplication.translate("Welcome", u"info", None))
     # retranslateUi
 

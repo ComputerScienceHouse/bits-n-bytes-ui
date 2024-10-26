@@ -58,37 +58,42 @@ class MainWindow(QMainWindow):
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.stack.setCurrentIndex(1))
         self.cart_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(0))
         self.cart_screen.ui.navRecieptButton.clicked.connect(lambda: self.stack.setCurrentIndex(2))
-    
-def apply_stylesheet(app, qss_path, theme_name):
-    """Apply a stylesheet with the specified theme to the application."""
-    theme_colors = themes.get(theme_name)
-    if not theme_colors:
-        print(f"Theme '{theme_name}' not found.")
-        return
 
-    # Load the QSS template file
-    file = QFile(qss_path)
-    if not file.exists():
-        print(f"File not found: {qss_path}")
-        return
+def load_stylesheet(theme):
+    with open(f"resources/styles/{theme}_style.qss", "r") as file:
+        stylesheet = file.read()
+        app.setStyleSheet(stylesheet)
 
-    if file.open(QFile.ReadOnly | QFile.Text):
-        stream = QTextStream(file)
-        qss_template = stream.readAll()
-        file.close()
+# def apply_stylesheet(app, qss_path, theme_name):
+#     """Apply a stylesheet with the specified theme to the application."""
+#     theme_colors = themes.get(theme_name)
+#     if not theme_colors:
+#         print(f"Theme '{theme_name}' not found.")
+#         return
 
-        # Manually replace each placeholder with the corresponding theme color
-        qss = qss_template
-        qss = qss.replace("{primary}", theme_colors["primary"])
-        qss = qss.replace("{secondary}", theme_colors["secondary"])
-        qss = qss.replace("{text}", theme_colors["text"])
-        qss = qss.replace("{background}", theme_colors["background"])
+#     # Load the QSS template file
+#     file = QFile(qss_path)
+#     if not file.exists():
+#         print(f"File not found: {qss_path}")
+#         return
 
-        # Apply the generated QSS to the application
-        # app.setStyleSheet(qss)
-        print("Stylesheet loaded successfully.")
-    else:
-        print(f"Failed to open stylesheet from {qss_path}")
+#     if file.open(QFile.ReadOnly | QFile.Text):
+#         stream = QTextStream(file)
+#         qss_template = stream.readAll()
+#         file.close()
+
+#         # Manually replace each placeholder with the corresponding theme color
+#         qss = qss_template
+#         qss = qss.replace("{primary}", theme_colors["primary"])
+#         qss = qss.replace("{secondary}", theme_colors["secondary"])
+#         qss = qss.replace("{text}", theme_colors["text"])
+#         qss = qss.replace("{background}", theme_colors["background"])
+
+#         # Apply the generated QSS to the application
+#         # app.setStyleSheet(qss)
+#         print("Stylesheet loaded successfully.")
+#     else:
+#         print(f"Failed to open stylesheet from {qss_path}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -96,6 +101,7 @@ if __name__ == "__main__":
     # Load fonts (assuming fonts are defined in resources.qrc)
     roboto_font_id = QFontDatabase.addApplicationFont(":/resources/Roboto")
     ibm_plex_mono_font_id = QFontDatabase.addApplicationFont(":/resources/IBMPlexMono")
+    load_stylesheet("dark")
 
     if roboto_font_id == -1 or ibm_plex_mono_font_id == -1:
         print("Failed to load one or more fonts from resources.")

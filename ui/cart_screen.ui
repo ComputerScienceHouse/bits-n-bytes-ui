@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTableWidget" name="itemList">
+   <widget class="QListView" name="itemList">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -23,12 +23,15 @@
       <height>451</height>
      </rect>
     </property>
+    <property name="uniformItemSizes">
+     <bool>false</bool>
+    </property>
    </widget>
    <widget class="QLabel" name="subtotalLabel">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>60</y>
+      <x>490</x>
+      <y>80</y>
       <width>141</width>
       <height>61</height>
      </rect>
@@ -37,10 +40,10 @@
      <string notr="true"/>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:24pt;&quot;&gt;Subtotal:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Subtotal:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
     </property>
     <property name="class" stdset="0">
      <string>heading</string>
@@ -49,9 +52,9 @@
    <widget class="QPushButton" name="navButton">
     <property name="geometry">
      <rect>
-      <x>330</x>
+      <x>440</x>
       <y>0</y>
-      <width>261</width>
+      <width>151</width>
       <height>51</height>
      </rect>
     </property>
@@ -69,7 +72,7 @@
       <x>650</x>
       <y>10</y>
       <width>361</width>
-      <height>441</height>
+      <height>571</height>
      </rect>
     </property>
     <property name="title">
@@ -80,7 +83,7 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>101</width>
+       <width>341</width>
        <height>31</height>
       </rect>
      </property>
@@ -90,7 +93,7 @@
       </font>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:24pt;&quot;&gt;Nutrition:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Nutrition:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="class" stdset="0">
       <string>text</string>
@@ -101,12 +104,12 @@
       <rect>
        <x>10</x>
        <y>210</y>
-       <width>131</width>
+       <width>341</width>
        <height>51</height>
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:24pt;&quot;&gt;Ingredients:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Ingredients:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="class" stdset="0">
       <string>text</string>
@@ -138,6 +141,25 @@
       <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
+    <widget class="QPushButton" name="cancelButton">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>480</y>
+       <width>331</width>
+       <height>81</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>Cancel Transaction</string>
+     </property>
+     <property name="type" stdset="0">
+      <string>secondary</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QLabel" name="cartLabel">
     <property name="geometry">
@@ -155,32 +177,12 @@
      <string>heading</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="cancelButton">
-    <property name="geometry">
-     <rect>
-      <x>650</x>
-      <y>460</y>
-      <width>361</width>
-      <height>131</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 10px; padding: 5px; font-family: Roboto;}
-</string>
-    </property>
-    <property name="text">
-     <string>Cancel Transaction</string>
-    </property>
-    <property name="class" stdset="0">
-     <string>heading</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="navRecieptButton">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>60</y>
-      <width>141</width>
+      <x>280</x>
+      <y>0</y>
+      <width>151</width>
       <height>51</height>
      </rect>
     </property>
@@ -190,6 +192,23 @@
     </property>
     <property name="text">
      <string>Go To Reciept</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="addButton">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>60</y>
+      <width>101</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 10px; padding: 5px; font-family: Roboto;}
+</string>
+    </property>
+    <property name="text">
+     <string>Add Item</string>
     </property>
    </widget>
   </widget>
