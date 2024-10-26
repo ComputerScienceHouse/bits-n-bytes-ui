@@ -82,6 +82,7 @@ class CartScreen(QMainWindow):
         self.update_subtotal()
 
     def on_add_to_cart(self): 
+        # TODO: once ESP32 stuff is implemented bascially refer to the index of said item here
         id = 3
         item = MOCK_ITEMS.get(id)
         if item:

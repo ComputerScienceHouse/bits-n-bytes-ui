@@ -51,16 +51,27 @@ QGroupBox {
 }
 
 QListView {
-    background-color: transparent;
-    border: 1px solid #ccc;
-}
-QListView::item {
-    background-color: rgba(108, 1, 100, 0.2);
+    background-color: transparent;  /* Background color of the list */
+    border: none;
     padding: 10px;
-    border-bottom: 1px solid #ddd;
-    color: white
 }
+
+QListView::item {
+    background-color: #6C0164;  /* Light purple background for items */
+    border: 1px solid #d4b1d7;  /* Light border */
+    border-radius: 18px;        /* Rounded corners */
+    padding: 10px;              /* Padding inside each item */
+    margin: 5px;                /* Space between items */
+    height: 40px;               /* Item height */
+    color: white;                /* Text color */
+}
+
 QListView::item:selected {
-    background-color: rgba(108, 1, 100, 0.5);; 
-    color: gray; 
+    background-color: #4c0147;  /* Different color when selected */
+    color: gray;
+}
+
+/* Styling for different parts of the item content */
+QListView::item:hover {
+    background-color: #5b0155;  /* Slightly darker on hover */
 }
