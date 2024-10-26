@@ -3,7 +3,7 @@ import sys
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QStackedWidget
 from PySide6.QtGui import QFontDatabase, QFont
-from PySide6.QtCore import QFile, QTextStream
+from PySide6.QtCore import QFile, QTextStream, Qt
 from screens.cart_screen import CartScreen
 from screens.welcome_screen import WelcomeScreen
 from screens.reciept_screen import RecieptScreen
@@ -36,6 +36,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setFixedSize(1024, 600);
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.initUI()
 
     def initUI(self):
@@ -92,7 +93,6 @@ def apply_stylesheet(app, qss_path, theme_name):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     widget = MainWindow()  # Replace this with your main window
-
     # Load fonts (assuming fonts are defined in resources.qrc)
     roboto_font_id = QFontDatabase.addApplicationFont(":/resources/Roboto")
     ibm_plex_mono_font_id = QFontDatabase.addApplicationFont(":/resources/IBMPlexMono")
