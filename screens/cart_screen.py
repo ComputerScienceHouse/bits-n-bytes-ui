@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex
+from screens.reciept_screen import RecieptScreen
 from .ui_cart import Ui_Cart  # Import the generated UI class
 from models import Cart
 from database import MOCK_ITEMS
@@ -69,8 +70,10 @@ class CartScreen(QMainWindow):
     def __init__(self, parent=None):
         super(CartScreen, self).__init__(parent)
         self.ui = Ui_Cart()
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.ui.setupUi(self)
         self.cart = Cart()
+
 
         # Initialize an index for the next item and set the first item
         self.model = ItemListModel(self.cart)
@@ -78,6 +81,7 @@ class CartScreen(QMainWindow):
 
         # Connect the button click to the method
         self.ui.addButton.clicked.connect(self.on_add_to_cart)
+        self.ui.navRecieptButton.clicked.connect(self.show_receipt)
         # intialize subtotal
         self.update_subtotal()
 
@@ -97,3 +101,8 @@ class CartScreen(QMainWindow):
         # Update the subtotal label
         subtotal = self.cart.get_subtotal()
         self.ui.subtotalLabel.setText(f"Subtotal: ${subtotal:.2f}")
+
+    def show_receipt(self):
+        # Create an instance of the receipt screen and pass the cart
+        self.receipt_screen = RecieptScreen(self.cart)
+        self.receipt_screen.show()

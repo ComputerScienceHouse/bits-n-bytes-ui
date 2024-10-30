@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
         # Create Cart add Welcome screen
         self.welcome_screen = WelcomeScreen()
         self.cart_screen = CartScreen()
-        self.reciept_screen = RecieptScreen()
+        self.reciept_screen = RecieptScreen(self.cart_screen.cart)
 
         self.stack.addWidget(self.welcome_screen)    # Index 0
         self.stack.addWidget(self.cart_screen)       # Index 1

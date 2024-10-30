@@ -5,8 +5,9 @@ from .ui_welcome import Ui_Welcome
 import resources_rc  
 
 class WelcomeScreen(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None):    
         super(WelcomeScreen, self).__init__(parent)
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.ui = Ui_Welcome()
         self.ui.setupUi(self)
 
