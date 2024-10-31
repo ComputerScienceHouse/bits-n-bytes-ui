@@ -1,0 +1,3 @@
+[submodule "qtvirtualkeyboard"]
+	path = qtvirtualkeyboard
+	url = https://code.qt.io/qt/qtvirtualkeyboard.git
