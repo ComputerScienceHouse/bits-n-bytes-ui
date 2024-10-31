@@ -2,7 +2,7 @@
 import sys
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QStackedWidget
-from PySide6.QtGui import QFontDatabase, QFont
+from PySide6.QtGui import QFontDatabase, QFont, QColor
 from PySide6.QtCore import QFile, QTextStream, Qt
 from screens.cart_screen import CartScreen
 from screens.welcome_screen import WelcomeScreen
@@ -44,6 +44,10 @@ class MainWindow(QMainWindow):
         self.stack = QStackedWidget()
         self.setCentralWidget(self.stack)
 
+        palette = self.palette()
+        palette.setColor(self.backgroundRole(), QColor("#323232"))
+        self.setPalette(palette)
+
         # Create Cart add Welcome screen
         self.welcome_screen = WelcomeScreen()
         self.cart_screen = CartScreen()
@@ -52,7 +56,6 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.welcome_screen)    # Index 0
         self.stack.addWidget(self.cart_screen)       # Index 1
         self.stack.addWidget(self.reciept_screen)    # Index 2
-
 
         # Connect buttons to navigate between screens
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.stack.setCurrentIndex(1))
@@ -63,37 +66,6 @@ def load_stylesheet(theme):
     with open(f"resources/styles/{theme}_style.qss", "r") as file:
         stylesheet = file.read()
         app.setStyleSheet(stylesheet)
-
-# def apply_stylesheet(app, qss_path, theme_name):
-#     """Apply a stylesheet with the specified theme to the application."""
-#     theme_colors = themes.get(theme_name)
-#     if not theme_colors:
-#         print(f"Theme '{theme_name}' not found.")
-#         return
-
-#     # Load the QSS template file
-#     file = QFile(qss_path)
-#     if not file.exists():
-#         print(f"File not found: {qss_path}")
-#         return
-
-#     if file.open(QFile.ReadOnly | QFile.Text):
-#         stream = QTextStream(file)
-#         qss_template = stream.readAll()
-#         file.close()
-
-#         # Manually replace each placeholder with the corresponding theme color
-#         qss = qss_template
-#         qss = qss.replace("{primary}", theme_colors["primary"])
-#         qss = qss.replace("{secondary}", theme_colors["secondary"])
-#         qss = qss.replace("{text}", theme_colors["text"])
-#         qss = qss.replace("{background}", theme_colors["background"])
-
-#         # Apply the generated QSS to the application
-#         # app.setStyleSheet(qss)
-#         print("Stylesheet loaded successfully.")
-#     else:
-#         print(f"Failed to open stylesheet from {qss_path}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
