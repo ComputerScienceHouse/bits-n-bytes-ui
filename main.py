@@ -40,10 +40,27 @@ class MainWindow(QMainWindow):
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart)
         self.cart_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(0))
         self.cart_screen.ui.navRecieptButton.clicked.connect(lambda: self.stack.setCurrentIndex(2))
+        self.stack.currentChanged.connect(self.on_screen_change_cb)
+
 
     def go_to_cart(self):
         mqtt.open_doors()
         widget.stack.setCurrentIndex(1)
+
+
+    def on_screen_change_cb(self, index):
+        """
+        Callback function for when the screen changes
+
+        Params:
+        index: The index of the screen switched to
+        """
+        if index == 0:
+            # Switched to the welcome screen
+            print("Switched to welcome screen")
+            card_uid = nfc.scanCardUid()
+            self.go_to_cart()
+
 
 def load_stylesheet(theme):
     with open(f"resources/styles/{theme}_style.qss", "r") as file:
