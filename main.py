@@ -2,12 +2,13 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QStackedWidget
 from PySide6.QtGui import QFontDatabase, QColor
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from screens.cart_screen import CartScreen
 from screens.welcome_screen import WelcomeScreen
 from screens.reciept_screen import RecieptScreen
 import mqtt
 import resources_rc  # Ensure your resources are compiled and available
+import nfc
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -37,11 +38,13 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.reciept_screen)    # Index 2
 
         # Connect buttons for navigation (for debugging/development)
-        self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart)
+        self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart())
         self.cart_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(0))
         self.cart_screen.ui.navRecieptButton.clicked.connect(lambda: self.stack.setCurrentIndex(2))
         self.stack.currentChanged.connect(self.on_screen_change_cb)
-
+        # Navigate to the welcome screen, triggering the NFC callback
+        self.stack.setCurrentIndex(1)
+        self.stack.setCurrentIndex(0)
 
     def go_to_cart(self):
         mqtt.open_doors()
@@ -58,8 +61,13 @@ class MainWindow(QMainWindow):
         if index == 0:
             # Switched to the welcome screen
             print("Switched to welcome screen")
-            card_uid = nfc.scanCardUid()
-            self.go_to_cart()
+            QTimer.singleShot(100, self.get_nfc_data)
+    
+
+    def get_nfc_data(self):
+        nfc.scanCardUID()
+        self.go_to_cart()
+
 
 
 def load_stylesheet(theme):
