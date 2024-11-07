@@ -1,66 +1,66 @@
 # This Python file uses the following encoding: utf-8
 import sys
-
 from PySide6.QtWidgets import QApplication, QMainWindow, QStackedWidget
-from PySide6.QtGui import QFontDatabase, QFont, QColor
-from PySide6.QtCore import QFile, QTextStream, Qt
+from PySide6.QtGui import QFontDatabase, QColor
+from PySide6.QtCore import Qt
 from screens.cart_screen import CartScreen
 from screens.welcome_screen import WelcomeScreen
 from screens.reciept_screen import RecieptScreen
-import resources_rc
-import database
-import os
-import config
+from paho.mqtt.client import Client
+import resources_rc  # Ensure your resources are compiled and available
 
-# Important:
-# You need to run the following command to generate the ui_form.py file
-#     pyside6-uic form.ui -o ui_form.py, or
-#     pyside2-uic form.ui -o ui_form.py
-
-themes = {
-    "light": {
-        "primary": "#6C0164",
-        "secondary": "#F76902",
-        "text": "#000000",
-        "background": "#ffffff"
-    },
-    "dark": {
-        "primary": "#2b2b2b",
-        "secondary": "#2ecc71",
-        "text": "#ffffff",
-        "background": "#1e1e1e" 
-    }
-}
+# MQTT settings
+broker = "test.mosquitto.org"  # Update with broker URI as needed
+port = 1883
+open_doors_topic = "aux/control/doors"
+open_doors_msg = "open"
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.setFixedSize(1024, 600);
+        self.setFixedSize(1024, 600)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.initUI()
+
+        # Set up MQTT client and callbacks
+        self.mqtt_client = Client()
+        self.mqtt_client.on_message = self.on_message  # Instance method as callback
+        self.mqtt_client.connect(broker, port)
+        self.mqtt_client.subscribe(open_doors_topic)
+        self.mqtt_client.loop_start()  # Start the loop in the background
 
     def initUI(self):
         # Create a QStackedWidget to manage different screens
         self.stack = QStackedWidget()
         self.setCentralWidget(self.stack)
 
+        # Set window background color
         palette = self.palette()
         palette.setColor(self.backgroundRole(), QColor("#323232"))
         self.setPalette(palette)
 
-        # Create Cart add Welcome screen
+        # Instantiate the screens
         self.welcome_screen = WelcomeScreen()
         self.cart_screen = CartScreen()
         self.reciept_screen = RecieptScreen(self.cart_screen.cart)
 
+        # Add screens to the stack with respective indices
         self.stack.addWidget(self.welcome_screen)    # Index 0
         self.stack.addWidget(self.cart_screen)       # Index 1
         self.stack.addWidget(self.reciept_screen)    # Index 2
 
-        # Connect buttons to navigate between screens
+        # Connect buttons for navigation (for debugging/development)
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.stack.setCurrentIndex(1))
         self.cart_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(0))
         self.cart_screen.ui.navRecieptButton.clicked.connect(lambda: self.stack.setCurrentIndex(2))
+
+    def on_message(self, message):
+        payload = message.payload.decode()
+        print(f"Received message: {payload} on topic: {message.topic}")
+
+        # Check if the message indicates door status and switch to the cart screen
+        if message.topic == open_doors_topic and payload == open_doors_msg:
+            self.stack.setCurrentIndex(1)  # Switch to the cart screen (index 1)
 
 def load_stylesheet(theme):
     with open(f"resources/styles/{theme}_style.qss", "r") as file:
@@ -69,25 +69,13 @@ def load_stylesheet(theme):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    widget = MainWindow()  # Replace this with your main window
-    # Load fonts (assuming fonts are defined in resources.qrc)
-    roboto_font_id = QFontDatabase.addApplicationFont(":/resources/Roboto")
-    ibm_plex_mono_font_id = QFontDatabase.addApplicationFont(":/resources/IBMPlexMono")
+    widget = MainWindow()
+
+    # Load fonts (assuming fonts are in resources.qrc)
+    QFontDatabase.addApplicationFont(":/resources/Roboto")
+    QFontDatabase.addApplicationFont(":/resources/IBMPlexMono")
     load_stylesheet("dark")
-
-    if roboto_font_id == -1 or ibm_plex_mono_font_id == -1:
-        print("Failed to load one or more fonts from resources.")
-    else:
-        print("Fonts loaded successfully.")
-
-    # Define the current theme and QSS path
-    # current_theme = "dark"  # Set to 'dark' if you want to use the dark theme
-    # qss_path = ":/resources/style"  # Path to the QSS template
-
-    # # Apply the stylesheet using the method
-    # apply_stylesheet(app, qss_path, current_theme)
 
     # Show the main window
     widget.show()
-
     sys.exit(app.exec())

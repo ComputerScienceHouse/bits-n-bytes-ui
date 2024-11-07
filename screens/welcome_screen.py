@@ -23,8 +23,7 @@ class WelcomeScreen(QMainWindow):
 
         self.ui.tapButton.setIcon(QIcon(u":/resources/tap"))
         self.ui.tapButton.setIconSize(QSize(64, 64))
-
-
+    
 
     def on_start(self):
         # Add functionality when the button is clicked
