@@ -6,6 +6,7 @@ from PySide6.QtCore import Qt, QTimer
 from screens.cart_screen import CartScreen
 from screens.welcome_screen import WelcomeScreen
 from screens.reciept_screen import RecieptScreen
+from screens.admin_screen import AdminScreen
 import mqtt
 import resources_rc  # Ensure your resources are compiled and available
 import nfc
@@ -31,11 +32,13 @@ class MainWindow(QMainWindow):
         self.welcome_screen = WelcomeScreen()
         self.cart_screen = CartScreen()
         self.reciept_screen = RecieptScreen(self.cart_screen.cart)
+        self.admin_screen = AdminScreen()
 
         # Add screens to the stack with respective indices
         self.stack.addWidget(self.welcome_screen)    # Index 0
         self.stack.addWidget(self.cart_screen)       # Index 1
         self.stack.addWidget(self.reciept_screen)    # Index 2
+        self.stack.addWidget(self.admin_screen)
 
         # Connect buttons for navigation (for debugging/development)
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart())
@@ -45,6 +48,7 @@ class MainWindow(QMainWindow):
         # Navigate to the welcome screen, triggering the NFC callback
         self.stack.setCurrentIndex(1)
         self.stack.setCurrentIndex(0)
+
 
     def go_to_cart(self):
         mqtt.open_doors()
@@ -65,7 +69,7 @@ class MainWindow(QMainWindow):
     
 
     def get_nfc_data(self):
-        nfc.scanCardUID()
+        uid = nfc.scanCardUID()
         self.go_to_cart()
 
 
