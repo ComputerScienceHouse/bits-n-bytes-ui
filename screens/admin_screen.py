@@ -13,7 +13,7 @@ class AdminScreen(QMainWindow):
         self.ui = Ui_Admin()
         self.ui.setupUi(self)
 
-        self.ui.openDoorButton.connect(lambda: mqtt.open_doors())
+        self.ui.openDoorButton.clicked.connect(lambda: mqtt.open_doors())
         # TODO add hatch button functionality
         #self.ui.openHatchButton
 

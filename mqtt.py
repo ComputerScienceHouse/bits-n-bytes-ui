@@ -11,7 +11,7 @@
 import paho.mqtt.client as mqtt
 
 # TODO update broker URI with local broker
-broker = "test.mosquitto.org"
+broker = "192.168.8.2"
 port = 1883
 open_doors_topic = "aux/control/doors"
 open_doors_msg = "open"

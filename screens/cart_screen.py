@@ -60,20 +60,14 @@ class ItemListModel(QAbstractListModel):
                 top_left = self.index(position, 0)
                 self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole])
 
-    # def flags(self, index):
-    #     if not index.isValid():
-    #         return Qt.NoItemFlags
-    #     return Qt.ItemIsEnabled | Qt.ItemIsSelectable
-
-
 class CartScreen(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, user, parent=None):
         super(CartScreen, self).__init__(parent)
         self.ui = Ui_Cart()
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.ui.setupUi(self)
         self.cart = Cart()
-
+        self.user = user
 
         # Initialize an index for the next item and set the first item
         self.model = ItemListModel(self.cart)
@@ -82,6 +76,7 @@ class CartScreen(QMainWindow):
         # Connect the button click to the method
         self.ui.addButton.clicked.connect(self.on_add_to_cart)
         self.ui.navRecieptButton.clicked.connect(self.show_receipt)
+        self.ui.cartLabel.setText(f"Welcome, {self.user}")
         # intialize subtotal
         self.update_subtotal()
 

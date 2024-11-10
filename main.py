@@ -27,10 +27,10 @@ class MainWindow(QMainWindow):
         palette = self.palette()
         palette.setColor(self.backgroundRole(), QColor("#323232"))
         self.setPalette(palette)
-
+        self.user = None;
         # Instantiate the screens
         self.welcome_screen = WelcomeScreen()
-        self.cart_screen = CartScreen()
+        self.cart_screen = CartScreen(self.user)
         self.reciept_screen = RecieptScreen(self.cart_screen.cart)
         self.admin_screen = AdminScreen()
 

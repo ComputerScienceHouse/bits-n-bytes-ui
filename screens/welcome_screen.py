@@ -2,9 +2,10 @@ from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import QPixmap, QIcon
 from PySide6.QtCore import Qt, QSize
 from .ui_welcome import Ui_Welcome  
+from screens.admin_screen import AdminScreen
 import resources_rc
 
-ADMIN_TAP_DEAD_ZONE = 10
+ADMIN_TAP_DEAD_ZONE = 100
 ADMIN_TARGET_SEQUENCE = [2, 1, 3, 4]
 
 class WelcomeScreen(QMainWindow):
@@ -26,7 +27,6 @@ class WelcomeScreen(QMainWindow):
         scaled_pixmap = pixmap.scaled(button_size.width(), button_size.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.ui.infoButton.setIcon(QIcon(scaled_pixmap))
         self.ui.infoButton.setIconSize(button_size)
-
         self.ui.tapButton.setIcon(QIcon(u":/resources/tap"))
         self.ui.tapButton.setIconSize(QSize(64, 64))
 
@@ -67,6 +67,7 @@ class WelcomeScreen(QMainWindow):
 
         """
         click_x, click_y = (event.position().x(), event.position().y())
+        print(f"{click_x}, {click_y}")
         sequence_completed = False
         # Check if any of the corners were clicked
         if click_x < ADMIN_TAP_DEAD_ZONE:
@@ -74,13 +75,13 @@ class WelcomeScreen(QMainWindow):
                 # Top left
                 location_id = 1
                 if self.is_sequence_completed(location_id):
-                    # TODO go to admin screen
+                    self.show_admin()
                     pass
             elif click_y > self.size().height() - ADMIN_TAP_DEAD_ZONE:
                 # Bottom left
                 location_id = 3
                 if self.is_sequence_completed(location_id):
-                    # TODO go to admin screen
+                    self.show_admin()
                     pass
             else:
                 # None, clear the sequence
@@ -90,13 +91,13 @@ class WelcomeScreen(QMainWindow):
                 # Top right
                 location_id = 2
                 if self.is_sequence_completed(location_id):
-                    # TODO go to admin screen
+                    self.show_admin()
                     pass
             elif click_y > self.size().height() - ADMIN_TAP_DEAD_ZONE:
                 # Bottom right
                 location_id = 4
                 if self.is_sequence_completed(location_id):
-                    # TODO go to admin screen
+                    self.show_admin()
                     pass
             else:
                 # None, clear the sequence
@@ -110,3 +111,8 @@ class WelcomeScreen(QMainWindow):
     def on_start(self):
         # Add functionality when the button is clicked
         print("Welcome button clicked!")
+
+    def show_admin(self):
+        # Create an instance of the receipt screen and pass the cart
+        self.admin_screen = AdminScreen()
+        self.admin_screen.show()
