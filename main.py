@@ -11,6 +11,11 @@ import resources_rc  # Ensure your resources are compiled and available
 import nfc
 import database
 
+try:
+    import config
+except ModuleNotFoundError:
+    print("No config.py found, code might not work properly")
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
