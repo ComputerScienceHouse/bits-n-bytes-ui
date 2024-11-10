@@ -9,6 +9,7 @@ from screens.reciept_screen import RecieptScreen
 import mqtt
 import resources_rc  # Ensure your resources are compiled and available
 import nfc
+import database
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -29,7 +30,7 @@ class MainWindow(QMainWindow):
 
         # Instantiate the screens
         self.welcome_screen = WelcomeScreen()
-        self.cart_screen = CartScreen()
+        self.cart_screen = CartScreen(self.user)
         self.reciept_screen = RecieptScreen(self.cart_screen.cart)
 
         # Add screens to the stack with respective indices
@@ -65,10 +66,11 @@ class MainWindow(QMainWindow):
     
 
     def get_nfc_data(self):
-        nfc.scanCardUID()
-        self.go_to_cart()
-
-
+        self.user = None
+        while self.user is None:
+            uid = nfc.scanCardUID()
+            self.user = database.get_user(user_token=uid)
+        self.go_to_cart()        
 
 def load_stylesheet(theme):
     with open(f"resources/styles/{theme}_style.qss", "r") as file:
