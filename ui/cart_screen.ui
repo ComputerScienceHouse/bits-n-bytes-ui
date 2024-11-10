@@ -161,7 +161,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QLabel" name="cartLabel">
+   <widget class="QLabel" name="nameLabel">
     <property name="geometry">
      <rect>
       <x>20</x>
