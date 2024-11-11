@@ -51,9 +51,12 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.admin_screen)
 
         # Connect buttons for navigation (for debugging/development)
+
+        self.cart_screen.show_receipt_signal.connect(self.go_to_receipt)
+
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart())
         self.cart_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(0))
-        self.cart_screen.ui.navRecieptButton.clicked.connect(lambda: self.stack.setCurrentIndex(2))
+        # self.cart_screen.show_receipt_signal.connect(lambda: self.stack.setCurrentIndex(2))
         self.stack.currentChanged.connect(self.on_screen_change_cb)
         # Navigate to the welcome screen, triggering the NFC callback
         self.stack.setCurrentIndex(1)
@@ -63,7 +66,6 @@ class MainWindow(QMainWindow):
     def go_to_cart(self):
         mqtt.open_doors()
         widget.stack.setCurrentIndex(1)
-
 
     def on_screen_change_cb(self, index):
         """
@@ -79,9 +81,11 @@ class MainWindow(QMainWindow):
     
 
     def get_nfc_data(self):
+        user = None
         with ThreadPoolExecutor() as executor:
-            future = executor.submit(nfc.scanCardUID)
-            uid = future.result
+            while user is None:
+                future = executor.submit(nfc.scanCardUID)
+                user = database.get_user(user_token=future.result)
         self.go_to_cart()
 
 

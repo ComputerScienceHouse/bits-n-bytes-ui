@@ -99,5 +99,4 @@ class CartScreen(QMainWindow):
 
     def show_receipt(self):
         # Create an instance of the receipt screen and pass the cart
-        self.receipt_screen = RecieptScreen(self.cart)
-        self.receipt_screen.show()
+        self.show_receipt_signal.emit()
