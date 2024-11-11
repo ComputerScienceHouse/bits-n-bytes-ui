@@ -6,9 +6,11 @@ from PySide6.QtCore import Qt, QTimer
 from screens.cart_screen import CartScreen
 from screens.welcome_screen import WelcomeScreen
 from screens.reciept_screen import RecieptScreen
+from screens.admin_screen import AdminScreen
 import mqtt
 import resources_rc  # Ensure your resources are compiled and available
 import nfc
+from concurrent.futures import ThreadPoolExecutor
 import database
 
 try:
@@ -32,17 +34,21 @@ class MainWindow(QMainWindow):
         palette = self.palette()
         palette.setColor(self.backgroundRole(), QColor("#323232"))
         self.setPalette(palette)
+        self.user = None;
 
         self.user = None;
         # Instantiate the screens
         self.welcome_screen = WelcomeScreen()
         self.cart_screen = CartScreen(self.user)
+        self.cart_screen = CartScreen(self.user)
         self.reciept_screen = RecieptScreen(self.cart_screen.cart)
+        self.admin_screen = AdminScreen()
 
         # Add screens to the stack with respective indices
         self.stack.addWidget(self.welcome_screen)    # Index 0
         self.stack.addWidget(self.cart_screen)       # Index 1
         self.stack.addWidget(self.reciept_screen)    # Index 2
+        self.stack.addWidget(self.admin_screen)
 
         # Connect buttons for navigation (for debugging/development)
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart())
@@ -52,6 +58,7 @@ class MainWindow(QMainWindow):
         # Navigate to the welcome screen, triggering the NFC callback
         self.stack.setCurrentIndex(1)
         self.stack.setCurrentIndex(0)
+
 
     def go_to_cart(self):
         mqtt.open_doors()
@@ -72,11 +79,12 @@ class MainWindow(QMainWindow):
     
 
     def get_nfc_data(self):
-        self.user = None
-        while self.user is None:
-            uid = nfc.scanCardUID()
-            self.user = database.get_user(user_token=uid)
-        self.go_to_cart()        
+        with ThreadPoolExecutor() as executor:
+            future = executor.submit(nfc.scanCardUID)
+            uid = future.result
+        self.go_to_cart()
+
+
 
 def load_stylesheet(theme):
     with open(f"resources/styles/{theme}_style.qss", "r") as file:
