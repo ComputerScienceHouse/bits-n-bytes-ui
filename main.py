@@ -52,15 +52,11 @@ class MainWindow(QMainWindow):
 
         # Connect buttons for navigation (for debugging/development)
 
-        self.nfc_thread = nfc.NFCListenerThread()
-        self.nfc_thread.token_detected.connect(self.process_nfc_token)
-        self.nfc_thread.start()
-
         self.cart_screen.show_receipt_signal.connect(lambda: self.stack.setCurrentIndex(2))
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart())
         self.cart_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(0))
         # self.cart_screen.show_receipt_signal.connect(lambda: self.stack.setCurrentIndex(2))
-        # self.stack.currentChanged.connect(self.on_screen_change_cb)
+        self.stack.currentChanged.connect(self.on_screen_change_cb)
         # Navigate to the welcome screen, triggering the NFC callback
         self.stack.setCurrentIndex(1)
         self.stack.setCurrentIndex(0)
@@ -70,17 +66,18 @@ class MainWindow(QMainWindow):
         mqtt.open_doors()
         widget.stack.setCurrentIndex(1)
 
-    # def on_screen_change_cb(self, index):
-    #     """
-    #     Callback function for when the screen changes
+    def on_screen_change_cb(self, index):
+        """
+        Callback function for when the screen changes
 
-    #     Params:
-    #     index: The index of the screen switched to
-    #     """
-    #     if index == 0:
-    #         # Switched to the welcome screen
-    #         print("Switched to welcome screen")
-    #         QTimer.singleShot(100, self.get_nfc_data)
+        Params:
+        index: The index of the screen switched to
+        """
+        if index == 0:
+            # Switched to the welcome screen
+            self.nfc_thread = nfc.NFCListenerThread()
+            self.nfc_thread.token_detected.connect(self.process_nfc_token)
+            self.nfc_thread.start()
     
 
     def process_nfc_token(self, token):
@@ -89,7 +86,7 @@ class MainWindow(QMainWindow):
             user = database.get_user(user_token=token)
             if user:
                 print(f"User {user} found for token {token}")
-                self.go_to_cart()  # Switch to cart if user is found
+                self.go_to_cart() # Switch to cart if user is found
             else:
                 print("User not found for scanned token.")
 

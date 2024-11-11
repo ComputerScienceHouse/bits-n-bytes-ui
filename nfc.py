@@ -3,7 +3,7 @@ import smartcard.util
 from smartcard.CardRequest import CardRequest
 from smartcard.CardType import AnyCardType
 from PySide6.QtCore import QThread, Signal
-import nfc  # Assuming nfc is a module you have for NFC scanning
+import nfc
 
 def scanCardUID():
 	readers = smartcard.System.readers()
@@ -53,14 +53,27 @@ def scanCardUID():
 	print("captured UID: " + stringUID)
 	return stringUID
 
-class NFCListenerThread(QThread):
-    token_detected = Signal(str)  # Signal to emit the NFC token
 
-    def run(self):
-        while True:
-            token = nfc.scanCardUID()  # Scan for an NFC token
-            if token:
-                self.token_detected.emit(token)  # Emit the token if detected
+class NFCListenerThread(QThread):
+	token_detected = Signal(str) # Signal to emit the NFC token
+	
+	def __init__(self):
+		super().__init__()
+		self.running = True  # Flag to control the thread loop
+
+	def run(self):
+		print("Inside run method")
+		while True:
+			token = nfc.scanCardUID()  # Scan for an NFC token
+			if token != "" and token is not None:
+				self.token_detected.emit(token)  # Emit the token if detected
+				print("Emitted token")
+				self.exit()
+
+	def stop(self):
+		self.running = False  # Set the flag to stop the loop
+		self.quit()  # Stop the thread
+		print("Stopped NFC thread")
 
 if __name__ == "__main__":
 	scanCardUID()
