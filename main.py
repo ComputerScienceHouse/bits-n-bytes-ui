@@ -10,6 +10,8 @@ from screens.admin_screen import AdminScreen
 import mqtt
 import resources_rc  # Ensure your resources are compiled and available
 import nfc
+from concurrent.futures import ThreadPoolExecutor
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -69,7 +71,9 @@ class MainWindow(QMainWindow):
     
 
     def get_nfc_data(self):
-        uid = nfc.scanCardUID()
+        with ThreadPoolExecutor() as executor:
+            future = executor.submit(nfc.scanCardUID)
+            uid = future.result
         self.go_to_cart()
 
 
