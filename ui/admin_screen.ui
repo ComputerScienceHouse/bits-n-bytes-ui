@@ -36,7 +36,7 @@
    <widget class="QPushButton" name="openDoorButton">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>230</x>
       <y>100</y>
       <width>211</width>
       <height>71</height>
@@ -49,14 +49,40 @@
    <widget class="QPushButton" name="openHatchButton">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>180</y>
+      <x>610</x>
+      <y>100</y>
       <width>211</width>
       <height>71</height>
      </rect>
     </property>
     <property name="text">
      <string>Open Hatch</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="exitAppButton">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>250</y>
+      <width>211</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Exit App</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="exitButton">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>250</y>
+      <width>211</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Exit Admin</string>
     </property>
    </widget>
   </widget>

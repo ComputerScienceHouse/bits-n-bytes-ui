@@ -1,16 +1,17 @@
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import QPixmap, QIcon
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, Signal
 from .ui_welcome import Ui_Welcome  
 from screens.admin_screen import AdminScreen
 import resources_rc
 
-ADMIN_TAP_DEAD_ZONE = 100
+ADMIN_TAP_DEAD_ZONE = 200
 ADMIN_TARGET_SEQUENCE = [2, 1, 3, 4]
 
 class WelcomeScreen(QMainWindow):
 
     admin_sequence_pressed = []
+    show_admin_signal = Signal()
 
     def __init__(self, parent=None):
         super(WelcomeScreen, self).__init__(parent)
@@ -30,6 +31,8 @@ class WelcomeScreen(QMainWindow):
         self.ui.tapButton.setIcon(QIcon(u":/resources/tap"))
         self.ui.tapButton.setIconSize(QSize(64, 64))
 
+    def on_show_admin(self):
+        self.show_admin_signal.emit()
 
     def is_sequence_completed(self, tap_location_num: int) -> bool:
         """
@@ -75,13 +78,13 @@ class WelcomeScreen(QMainWindow):
                 # Top left
                 location_id = 1
                 if self.is_sequence_completed(location_id):
-                    self.show_admin()
+                    self.on_show_admin()
                     pass
             elif click_y > self.size().height() - ADMIN_TAP_DEAD_ZONE:
                 # Bottom left
                 location_id = 3
                 if self.is_sequence_completed(location_id):
-                    self.show_admin()
+                    self.on_show_admin()
                     pass
             else:
                 # None, clear the sequence
@@ -91,13 +94,13 @@ class WelcomeScreen(QMainWindow):
                 # Top right
                 location_id = 2
                 if self.is_sequence_completed(location_id):
-                    self.show_admin()
+                    self.on_show_admin()
                     pass
             elif click_y > self.size().height() - ADMIN_TAP_DEAD_ZONE:
                 # Bottom right
                 location_id = 4
                 if self.is_sequence_completed(location_id):
-                    self.show_admin()
+                    self.on_show_admin()
                     pass
             else:
                 # None, clear the sequence

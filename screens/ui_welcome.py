@@ -36,7 +36,7 @@ class Ui_Welcome(object):
         self.tapButton.setStyleSheet(u"font-size: 30px;")
         self.label = QLabel(self.centralwidget)
         self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(20, 10, 101, 51))
+        self.label.setGeometry(QRect(20, 10, 201, 51))
         self.label.setStyleSheet(u"")
         self.infoButton = QPushButton(self.centralwidget)
         self.infoButton.setObjectName(u"infoButton")

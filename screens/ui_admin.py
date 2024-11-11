@@ -32,10 +32,16 @@ class Ui_Admin(object):
         self.label.setStyleSheet(u"")
         self.openDoorButton = QPushButton(self.centralwidget)
         self.openDoorButton.setObjectName(u"openDoorButton")
-        self.openDoorButton.setGeometry(QRect(20, 100, 211, 71))
+        self.openDoorButton.setGeometry(QRect(230, 100, 211, 71))
         self.openHatchButton = QPushButton(self.centralwidget)
         self.openHatchButton.setObjectName(u"openHatchButton")
-        self.openHatchButton.setGeometry(QRect(20, 180, 211, 71))
+        self.openHatchButton.setGeometry(QRect(610, 100, 211, 71))
+        self.exitAppButton = QPushButton(self.centralwidget)
+        self.exitAppButton.setObjectName(u"exitAppButton")
+        self.exitAppButton.setGeometry(QRect(610, 250, 211, 71))
+        self.exitButton = QPushButton(self.centralwidget)
+        self.exitButton.setObjectName(u"exitButton")
+        self.exitButton.setGeometry(QRect(230, 250, 211, 71))
         Admin.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Admin)
@@ -48,5 +54,7 @@ class Ui_Admin(object):
         self.label.setText(QCoreApplication.translate("Admin", u"<html><head/><body><p><span style=\" font-size:24pt;\">Admin</span></p></body></html>", None))
         self.openDoorButton.setText(QCoreApplication.translate("Admin", u"Open Doors", None))
         self.openHatchButton.setText(QCoreApplication.translate("Admin", u"Open Hatch", None))
+        self.exitAppButton.setText(QCoreApplication.translate("Admin", u"Exit App", None))
+        self.exitButton.setText(QCoreApplication.translate("Admin", u"Exit Admin", None))
     # retranslateUi
 
