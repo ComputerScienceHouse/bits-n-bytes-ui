@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
         # Create a QStackedWidget to manage different screens
         self.stack = QStackedWidget()
         self.setCentralWidget(self.stack)
-
+        self.showFullScreen()
         # Set window background color
         palette = self.palette()
         palette.setColor(self.backgroundRole(), QColor("#323232"))
@@ -82,11 +82,16 @@ class MainWindow(QMainWindow):
     def get_nfc_data(self):
         user = None
         with ThreadPoolExecutor() as executor:
-            while user is None:
-                future = executor.submit(nfc.scanCardUID)
-                user = database.get_user(user_token=future.result)
-        self.go_to_cart()
-
+            future = executor.submit(nfc.scanCardUID)
+            token = future.result()
+            if token:
+                user = database.get_user(user_token=token)
+                if user:
+                    self.go_to_cart()
+                else:
+                    print("User not found for scanned token.")
+            else:
+                print("No NFC token detected.")
 
 
 def load_stylesheet(theme):
