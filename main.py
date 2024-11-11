@@ -53,7 +53,6 @@ class MainWindow(QMainWindow):
         # Connect buttons for navigation (for debugging/development)
 
         self.cart_screen.show_receipt_signal.connect(lambda: self.stack.setCurrentIndex(2))
-
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart())
         self.cart_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(0))
         # self.cart_screen.show_receipt_signal.connect(lambda: self.stack.setCurrentIndex(2))
