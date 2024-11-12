@@ -40,7 +40,6 @@ class MainWindow(QMainWindow):
         # Instantiate the screens
         self.welcome_screen = WelcomeScreen()
         self.cart_screen = CartScreen(self.user)
-        self.cart_screen = CartScreen(self.user)
         self.reciept_screen = RecieptScreen(self.cart_screen.cart)
         self.admin_screen = AdminScreen()
 

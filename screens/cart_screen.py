@@ -38,6 +38,7 @@ class ItemListModel(QAbstractListModel):
             position = len(self.cart.items)
             self.beginInsertRows(QModelIndex(), position, position)
             self.cart.add(item)
+            print(self.cart.items)
             self.endInsertRows()
         else:
             # Just update the existing item's quantity
@@ -88,6 +89,7 @@ class CartScreen(QMainWindow):
         item = MOCK_ITEMS.get(id)
         if item:
             self.model.addItem(item)
+
             self.update_subtotal()
 
     def on_remove_from_cart(self, item):

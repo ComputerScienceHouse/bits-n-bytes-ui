@@ -8,31 +8,44 @@ QFrame[frameShape="5"]  /* V-Line */
     max-height: 0.1em;  
 }
 
-QLabel { 
-    font-family: IBM Plex Mono; 
+QLabel {
     color: white;
+    font-family: IBM Plex Mono;
+}
+
+QLabel[type="big"]{ 
+    font-size: 16pt; 
+}
+
+QLabel[type="normal"]{
+    font-size: 14pt;
 }
 
 QLabel[type="logo"] {    
 	qproperty-alignment: 'AlignCenter';
 }
 
+QPushButton{
+    padding: 5px; 
+    font-family: Roboto;
+    color: white;
+    background-color: transparent;
+    text-align: center;
+}
+
 QPushButton[type="primary"] {
     border-radius: 18px; 
-    padding: 5px; 
-    font-family: Roboto; 
     background-color: #6C0164; 
-    color: white; 
-    text-align: center;
 }
 
 QPushButton[type="secondary"] {
     border-radius: 18px; 
-    padding: 5px; 
-    font-family: Roboto; 
     background-color: #F76902; 
-    color: white; 
-    text-align: center;
+}
+
+QPushButton[type="normal"]{
+    border: 2px solid grey; 
+    border-radius: 10px; 
 }
 
 QPushButton[type="secondary"]::hover{
@@ -57,6 +70,7 @@ QListView {
 }
 
 QListView::item {
+    font-family: Roboto;
     background-color: #6C0164;  /* Light purple background for items */
     border: 1px solid #d4b1d7;  /* Light border */
     border-radius: 18px;        /* Rounded corners */

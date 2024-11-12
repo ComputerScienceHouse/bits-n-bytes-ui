@@ -24,4 +24,4 @@ class RecieptScreen(QMainWindow):
             self.ui.itemList.addItem(f"{item.name} (x{quantity}) - ${item.price * quantity:.2f}")
 
         subtotal = self.cart.get_subtotal()
-        self.ui.subtotalText.setText(f"${subtotal:.2f}")
+        self.ui.subtotalLabel.setText(f"Subtotal: ${subtotal:.2f}")

@@ -59,11 +59,13 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 10px; padding: 5px; font-family: Roboto;}
-</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string>Go to Welcome Screen</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
     </property>
    </widget>
    <widget class="QGroupBox" name="nutritionBox">
@@ -187,11 +189,13 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 10px; padding: 5px; font-family: Roboto;}
-</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string>Go To Reciept</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
     </property>
    </widget>
    <widget class="QPushButton" name="addButton">
@@ -204,11 +208,13 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 10px; padding: 5px; font-family: Roboto;}
-</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string>Add Item</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
     </property>
    </widget>
   </widget>

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'admin_screen.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.7.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -53,8 +53,12 @@ class Ui_Admin(object):
         Admin.setWindowTitle(QCoreApplication.translate("Admin", u"MainWindow", None))
         self.label.setText(QCoreApplication.translate("Admin", u"<html><head/><body><p><span style=\" font-size:24pt;\">Admin</span></p></body></html>", None))
         self.openDoorButton.setText(QCoreApplication.translate("Admin", u"Open Doors", None))
+        self.openDoorButton.setProperty(u"type", QCoreApplication.translate("Admin", u"normal", None))
         self.openHatchButton.setText(QCoreApplication.translate("Admin", u"Open Hatch", None))
+        self.openHatchButton.setProperty(u"type", QCoreApplication.translate("Admin", u"normal", None))
         self.exitAppButton.setText(QCoreApplication.translate("Admin", u"Exit App", None))
+        self.exitAppButton.setProperty(u"type", QCoreApplication.translate("Admin", u"normal", None))
         self.exitButton.setText(QCoreApplication.translate("Admin", u"Exit Admin", None))
+        self.exitButton.setProperty(u"type", QCoreApplication.translate("Admin", u"normal", None))
     # retranslateUi
 

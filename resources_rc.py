@@ -1,6 +1,6 @@
 # Resource object code (Python 3)
 # Created by: object code
-# Created by: The Resource Compiler for Qt version 6.8.0
+# Created by: The Resource Compiler for Qt version 6.7.3
 # WARNING! All changes made in this file will be lost!
 
 from PySide6 import QtCore
@@ -26091,7 +26091,7 @@ $1\xbfx;\xd1\xbf\xbd\xb6\xf8\xb1+\x00\x00\x00\x00\
 \x00\x00\x00\x00\x00\x00\x00\x00\x00\xc6\xf0\xff\x03\xb0xI\
 H+\x9f\x15\xbb\x00\x00\x00\x00IEND\xaeB`\
 \x82\
-\x00\x00\x06\xaf\
+\x00\x00\x06\xd2\
 Q\
 Frame[frameShape\
 =\x224\x22], /* H-Line\
@@ -26145,61 +26145,64 @@ QPushButton[type\
 =\x22info\x22]{\x0a    bo\
 rder-radius: 5px\
 ; \x0a    padding: \
-5px;\x0a}\x0a\x0aQGroupBo\
-x {\x0a    backgrou\
-nd-color: #6C016\
-4;\x0a    border-ra\
-dius: 18px\x0a}\x0a\x0aQL\
-istView {\x0a    ba\
-ckground-color: \
-transparent;  /*\
- Background colo\
-r of the list */\
-\x0a    border: non\
-e;\x0a    padding: \
-10px;\x0a}\x0a\x0aQListVi\
-ew::item {\x0a    b\
-ackground-color:\
- #6C0164;  /* Li\
-ght purple backg\
-round for items \
-*/\x0a    border: 1\
-px solid #d4b1d7\
-;  /* Light bord\
-er */\x0a    border\
--radius: 18px;  \
-      /* Rounded\
- corners */\x0a    \
-padding: 10px;  \
-            /* P\
-adding inside ea\
-ch item */\x0a    m\
-argin: 5px;     \
-           /* Sp\
-ace between item\
-s */\x0a    height:\
- 40px;          \
-     /* Item hei\
-ght */\x0a    color\
-: white;        \
-        /* Text \
-color */\x0a}\x0a\x0aQLis\
-tView::item:sele\
-cted {\x0a    backg\
-round-color: #4c\
-0147;  /* Differ\
-ent color when s\
-elected */\x0a    c\
-olor: gray;\x0a}\x0a\x0a/\
-* Styling for di\
-fferent parts of\
- the item conten\
-t */\x0aQListView::\
-item:hover {\x0a   \
+5px;\x0a}\x0a\x0aQPushBut\
+ton {\x0a    color:\
+ white;\x0a}\x0a\x0aQGrou\
+pBox {\x0a    backg\
+round-color: #6C\
+0164;\x0a    border\
+-radius: 18px\x0a}\x0a\
+\x0aQListView {\x0a   \
  background-colo\
-r: #5b0155;  /* \
-Slightly darker \
-on hover */\x0a}\x0a\
+r: transparent; \
+ /* Background c\
+olor of the list\
+ */\x0a    border: \
+none;\x0a    paddin\
+g: 10px;\x0a}\x0a\x0aQLis\
+tView::item {\x0a  \
+  background-col\
+or: #6C0164;  /*\
+ Light purple ba\
+ckground for ite\
+ms */\x0a    border\
+: 1px solid #d4b\
+1d7;  /* Light b\
+order */\x0a    bor\
+der-radius: 18px\
+;        /* Roun\
+ded corners */\x0a \
+   padding: 10px\
+;              /\
+* Padding inside\
+ each item */\x0a  \
+  margin: 5px;  \
+              /*\
+ Space between i\
+tems */\x0a    heig\
+ht: 40px;       \
+        /* Item \
+height */\x0a    co\
+lor: white;     \
+           /* Te\
+xt color */\x0a}\x0a\x0aQ\
+ListView::item:s\
+elected {\x0a    ba\
+ckground-color: \
+#4c0147;  /* Dif\
+ferent color whe\
+n selected */\x0a  \
+  color: gray;\x0a}\
+\x0a\x0a/* Styling for\
+ different parts\
+ of the item con\
+tent */\x0aQListVie\
+w::item:hover {\x0a\
+    background-c\
+olor: #5b0155;  \
+/* Slightly dark\
+er on hover */\x0a}\
+\x0a\
 \x00\x00\x0d7\
 \x89\
 PNG\x0d\x0a\x1a\x0a\x00\x00\x00\x0dIHDR\x00\
@@ -26468,14 +26471,14 @@ qt_resource_struct = b"\
 \x00\x00\x00\x00\x00\x00\x00\x00\
 \x00\x00\x00\x00\x00\x02\x00\x00\x00\x0a\x00\x00\x00\x02\
 \x00\x00\x00\x00\x00\x00\x00\x00\
-\x00\x00\x00\xda\x00\x00\x00\x00\x00\x01\x00\x06c\xde\
+\x00\x00\x00\xda\x00\x00\x00\x00\x00\x01\x00\x06d\x01\
 \x00\x00\x01\x92\x9b\x8cQ\xad\
 \x00\x00\x004\x00\x00\x00\x00\x00\x01\x00\x00\x00\x04\
 \x00\x00\x01\x92\x9b\x9f\x93\x14\
 \x00\x00\x00\x9c\x00\x00\x00\x00\x00\x01\x00\x05\xd3\x0b\
 \x00\x00\x01\x92\x98\xba\x17\x96\
 \x00\x00\x00\xc0\x00\x00\x00\x00\x00\x01\x00\x06]+\
-\x00\x00\x01\x93\x04m\x82\x8e\
+\x00\x00\x01\x93\x1d\xe0\x92\x8d\
 \x00\x00\x00B\x00\x00\x00\x00\x00\x01\x00\x00\x04\xa9\
 \x00\x00\x01\x92\x96g<\x14\
 \x00\x00\x00\x88\x00\x00\x00\x00\x00\x01\x00\x05\xa3\x8e\
