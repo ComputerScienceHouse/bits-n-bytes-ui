@@ -11,7 +11,7 @@
    </rect>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QListWidget" name="itemList">
+   <widget class="QListView" name="itemList">
     <property name="geometry">
      <rect>
       <x>10</x>

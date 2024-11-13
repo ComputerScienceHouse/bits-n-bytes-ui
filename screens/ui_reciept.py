@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'reciept_screen.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.7.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -16,8 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QLabel, QLineEdit,
-    QListWidget, QListWidgetItem, QMainWindow, QPushButton,
-    QSizePolicy, QStackedWidget, QWidget)
+    QListView, QMainWindow, QPushButton, QSizePolicy,
+    QStackedWidget, QWidget)
 
 class Ui_Reciept(object):
     def setupUi(self, Reciept):
@@ -26,7 +26,7 @@ class Ui_Reciept(object):
         Reciept.resize(1024, 600)
         self.centralwidget = QWidget(Reciept)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.itemList = QListWidget(self.centralwidget)
+        self.itemList = QListView(self.centralwidget)
         self.itemList.setObjectName(u"itemList")
         self.itemList.setGeometry(QRect(10, 10, 621, 571))
         self.stackedWidget = QStackedWidget(self.centralwidget)

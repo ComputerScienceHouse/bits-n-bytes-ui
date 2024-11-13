@@ -34,9 +34,9 @@ class MainWindow(QMainWindow):
         palette = self.palette()
         palette.setColor(self.backgroundRole(), QColor("#323232"))
         self.setPalette(palette)
-        self.user = None;
-
-        self.user = None;
+        self.user = None
+        self.nfc_thread = None
+        self.is_nfc_active = False
         # Instantiate the screens
         self.welcome_screen = WelcomeScreen()
         self.cart_screen = CartScreen(self.user)
@@ -50,13 +50,11 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.admin_screen)      # Index 3
 
         # Connect buttons for navigation (for debugging/development)
-
         self.cart_screen.show_receipt_signal.connect(lambda: self.stack.setCurrentIndex(2))
         self.welcome_screen.show_admin_signal.connect(lambda: self.stack.setCurrentIndex(3))
         self.admin_screen.show_welcome_signal.connect(lambda: self.stack.setCurrentIndex(0))
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart())
         self.cart_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(0))
-        # self.cart_screen.show_receipt_signal.connect(lambda: self.stack.setCurrentIndex(2))
         self.stack.currentChanged.connect(self.on_screen_change_cb)
         # Navigate to the welcome screen, triggering the NFC callback
         self.stack.setCurrentIndex(1)
@@ -74,23 +72,43 @@ class MainWindow(QMainWindow):
         Params:
         index: The index of the screen switched to
         """
-        if index == 0:
+        print(index)
+        if index == 0 and not self.is_nfc_active:
             # Switched to the welcome screen
-            self.nfc_thread = nfc.NFCListenerThread()
-            self.nfc_thread.token_detected.connect(self.process_nfc_token)
-            self.nfc_thread.start()
+            self.start_nfc_scan()
     
+    def start_nfc_scan(self):
+        """Start NFC scanning if it's not active"""
+        self.is_nfc_active = True
+        print("Starting NFC scan...")
+        self.nfc_thread = nfc.NFCListenerThread()
+        self.nfc_thread.token_detected.connect(self.process_nfc_token)
+        self.nfc_thread.start()
 
     def process_nfc_token(self, token):
-        # This function is called when a token is detected by the NFC listener thread
-        if self.stack.currentIndex() == 0:
+        """Process the NFC token after it's detected"""
+        if self.stack.currentIndex() == 0:  # Only process if on the welcome screen
             user = database.get_user(user_token=token)
             if user:
                 print(f"User {user} found for token {token}")
-                self.go_to_cart() # Switch to cart if user is found
+                self.cart_screen.set_user(user.name)
+                self.go_to_cart()  # Switch to the cart screen
             else:
                 print("User not found for scanned token.")
 
+            self.stop_nfc_scan()
+            # Stop NFC thread after processing the token
+    
+    def stop_nfc_scan(self):    
+        """Stop the NFC scan and clean up the thread."""
+        if self.nfc_thread:
+            print("Stopping NFC thread...")
+            self.nfc_thread.stop()  # Stop the scanning loop
+            self.nfc_thread.deleteLater()  # Delete the thread safely
+            self.nfc_thread = None  # Clear the thread reference
+            self.is_nfc_active = False  # Reset the NFC active flag
+        else:
+            print("No NFC thread to stop.")
 
 def load_stylesheet(theme):
     with open(f"resources/styles/{theme}_style.qss", "r") as file:
