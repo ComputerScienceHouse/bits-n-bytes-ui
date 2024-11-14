@@ -23,6 +23,19 @@ class Item:
                 f'{self.units}units,{self.avg_weight}{WEIGHT_UNIT},'
                 f'{self.std_weight}{WEIGHT_UNIT},{self.thumbnail_url},'
                 f'{self.vision_class}]')
+
+
+    def __eq__(self, other):
+        if isinstance(other, Item):
+            return self.item_id == other.item_id
+        else:
+            return False
+
+
+    def __hash__(self):
+        return hash(self.item_id)
+
+
     
 class User:
     def __init__(self, uid, name, token, balance, payment_type, email, phone):
