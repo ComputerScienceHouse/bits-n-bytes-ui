@@ -55,6 +55,7 @@ class MainWindow(QMainWindow):
         self.admin_screen.show_welcome_signal.connect(lambda: self.stack.setCurrentIndex(0))
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart())
         self.cart_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(0))
+        self.reciept_screen.go_home.connect(lambda: self.stack.setCurrentIndex(0))
         self.stack.currentChanged.connect(self.on_screen_change_cb)
         # Navigate to the welcome screen, triggering the NFC callback
         self.stack.setCurrentIndex(1)

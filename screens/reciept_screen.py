@@ -1,9 +1,13 @@
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import QMainWindow, QPushButton
+
+from screens.welcome_screen import WelcomeScreen
 from .ui_reciept import Ui_Reciept
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer, QRect, Signal
 from models import Cart, ItemListModel
 
 class RecieptScreen(QMainWindow):
+    go_home = Signal()
+    
     def __init__(self, cart, parent=None):
         super(RecieptScreen, self).__init__(parent)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
@@ -13,6 +17,16 @@ class RecieptScreen(QMainWindow):
 
         self.model = ItemListModel(cart)
         self.ui.itemList.setModel(self.model)
+
+        self.timer_button = QPushButton()
+        self.timer_button.setObjectName(u"timer_button")
+        self.timer_button.setGeometry(QRect(210, 0, 171, 31))
+        self.timer = QTimer()
+        self.timer.setInterval(1000)  # 10000ms = 10 seconds
+        self.timer.timeout.connect(self.update_countdown)
+        self.countdown_duration = 10
+        self.remaining_time = self.countdown_duration
+        self.start_timer()
 
         self.ui.textButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
         self.ui.emailButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))
@@ -30,3 +44,20 @@ class RecieptScreen(QMainWindow):
         subtotal = self.cart.get_subtotal()
         print(f"Subtotal: {subtotal}")  # Debugging
         self.ui.subtotalLabel.setText(f"Subtotal: ${subtotal:.2f}")
+        
+       
+    def start_timer(self):
+        self.remaining_time = self.countdown_duration
+        self.timer_button.setText(f"Timeout in {self.remaining_time}s")
+        self.timer.start()
+        
+    def update_countdown(self):
+        self.remaining_time -= 1
+        self.timer_button.setText(f"Timeout in {self.remaining_time}s")
+
+        if self.remaining_time <= 0:
+            self.timer.stop()
+            self.go_home()
+            
+    def go_home(self):
+        self.go_home.emit()
