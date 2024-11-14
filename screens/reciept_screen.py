@@ -34,6 +34,8 @@ class RecieptScreen(QMainWindow):
         self.ui.textButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
         self.ui.emailButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))
 
+        self.timer.timeout.connect(self.update_countdown)
+
         self.display_cart_items()
 
     def display_cart_items(self):
@@ -72,4 +74,3 @@ class RecieptScreen(QMainWindow):
     def run_timer(self):
         if self.timer_connected:
             self.start_timer()
-        self.timer.timeout.connect(self.update_countdown)
