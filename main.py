@@ -50,7 +50,7 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.admin_screen)      # Index 3
 
         # Connect buttons for navigation (for debugging/development)
-        self.cart_screen.show_receipt_signal.connect(lambda: self.stack.setCurrentIndex(2), RecieptScreen.run_timer())
+        self.cart_screen.show_receipt_signal.connect(lambda: self.stack.setCurrentIndex(2), RecieptScreen.run_timer(self))
         self.welcome_screen.show_admin_signal.connect(lambda: self.stack.setCurrentIndex(3))
         self.admin_screen.show_welcome_signal.connect(lambda: self.stack.setCurrentIndex(0))
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart())
