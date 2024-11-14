@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Tare</class>
+ <widget class="QMainWindow" name="Tare">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="oneA">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>10</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>1A</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="oneB">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>10</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>1B</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="oneC">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>10</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>1C</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="oneD">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>10</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>1D</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="twoA">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>10</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>2A</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="twoB">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>10</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>2B</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="twoC">
+    <property name="geometry">
+     <rect>
+      <x>770</x>
+      <y>10</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>2C</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="twoD">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>10</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>2D</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="threeA">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>320</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>3A</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="threeB">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>320</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>3B</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="threeC">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>320</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>3C</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="threeD">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>320</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>3D</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="fourA">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>320</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>4A</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="fourB">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>320</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>4B</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="fourC">
+    <property name="geometry">
+     <rect>
+      <x>770</x>
+      <y>320</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>4C</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="fourD">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>320</y>
+      <width>111</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>4D</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="oneAValue">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>190</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="oneBValue">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>190</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="oneCValue">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>190</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="oneDValue">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>190</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="twoAValue">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>190</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="twoBValue">
+    <property name="geometry">
+     <rect>
+      <x>660</x>
+      <y>190</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="twoCValue">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>190</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="twoDValue">
+    <property name="geometry">
+     <rect>
+      <x>900</x>
+      <y>190</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="threeAValue">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>500</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="threeBValue">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>500</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="threeCValue">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>500</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="threeDValue">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>500</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="fourAValue">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>500</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="fourBValue">
+    <property name="geometry">
+     <rect>
+      <x>660</x>
+      <y>500</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="fourCValue">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>500</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="fourDValue">
+    <property name="geometry">
+     <rect>
+      <x>900</x>
+      <y>500</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

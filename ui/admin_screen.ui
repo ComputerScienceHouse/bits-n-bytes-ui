@@ -97,6 +97,22 @@
      <string>normal</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="tareButton">
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>380</y>
+      <width>211</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Tare</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>
