@@ -60,11 +60,12 @@ class RecieptScreen(QMainWindow):
 
         if self.remaining_time <= 0:
             self.timer.stop()
-            self.remaining_time = 15 # this resets the timer
             self.go_home()
             
     def go_home(self):
+        self.timer.stop()
         self.go_home_signal.emit()
         
     def run_timer(self):
+        self.start_timer()
         self.timer.timeout.connect(self.update_countdown)
