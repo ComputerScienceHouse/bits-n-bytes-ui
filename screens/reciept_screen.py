@@ -65,10 +65,11 @@ class RecieptScreen(QMainWindow):
     def go_home(self):
         self.timer.stop()
         self.go_home_signal.emit()
+    
+    def timer_connected(self) -> bool:
+        return self.timer.isActive()
         
     def run_timer(self):
-        self.start_timer()
-        # Connect only if not already connected
-        if not self.timer_connected:
-            self.timer.timeout.connect(self.update_countdown)
-            self.timer_connected = True
+        if self.timer_connected:
+            self.start_timer()
+        self.timer.timeout.connect(self.update_countdown)
