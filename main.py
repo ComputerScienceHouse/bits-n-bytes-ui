@@ -50,16 +50,21 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.admin_screen)      # Index 3
 
         # Connect buttons for navigation (for debugging/development)
-        self.cart_screen.show_receipt_signal.connect(lambda: self.stack.setCurrentIndex(2))
+        self.cart_screen.show_receipt_signal.connect(lambda: self.show_receipt_screen())
         self.welcome_screen.show_admin_signal.connect(lambda: self.stack.setCurrentIndex(3))
         self.admin_screen.show_welcome_signal.connect(lambda: self.stack.setCurrentIndex(0))
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart())
         self.cart_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(0))
+        
+        self.reciept_screen.go_home_signal.connect(lambda: self.stack.setCurrentIndex(0))
         self.stack.currentChanged.connect(self.on_screen_change_cb)
         # Navigate to the welcome screen, triggering the NFC callback
         self.stack.setCurrentIndex(1)
         self.stack.setCurrentIndex(0)
 
+    def show_receipt_screen(self):
+        self.stack.setCurrentIndex(2)
+        self.reciept_screen.run_timer()
 
     def go_to_cart(self):
         mqtt.open_doors()
