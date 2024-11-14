@@ -2,75 +2,20 @@ from PySide6.QtWidgets import QMainWindow
 from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex, Signal
 from screens.reciept_screen import RecieptScreen
 from .ui_cart import Ui_Cart  # Import the generated UI class
-from models import Cart
+from models import Cart, ItemListModel
 from database import MOCK_ITEMS
 import array
-
-class ItemListModel(QAbstractListModel):
-    def __init__(self, cart: Cart, parent=None):
-        super().__init__(parent)
-        self.cart = cart
-
-    def rowCount(self, parent=QModelIndex()):
-        return len(self.cart.items)
-
-    def data(self, index, role=Qt.DisplayRole):
-        if not index.isValid() or not (0 <= index.row() < len(self.cart.items)):
-            return None  # Return None for invalid index
-
-        item_list = list(self.cart.items.keys())
-        if not item_list:
-            return None  # No items in the cart, return None
-
-        item = item_list[index.row()]
-        quantity = self.cart.items[item]
-
-        if role == Qt.DisplayRole:
-            return f"{item.name} (x{quantity})"
-        elif role == Qt.ToolTipRole:
-            return f"Price: ${item.price:.2f} each"  # Access price directly from the Item object
-
-        return None
-
-    def addItem(self, item):
-        if item not in self.cart.items:
-            # Insert a new row if the item is not already in the cart
-            position = len(self.cart.items)
-            self.beginInsertRows(QModelIndex(), position, position)
-            self.cart.add(item)
-            print(self.cart.items)
-            self.endInsertRows()
-        else:
-            # Just update the existing item's quantity
-            position = list(self.cart.items.keys()).index(item)
-            self.cart.add(item)
-            top_left = self.index(position, 0)
-            self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole])
-
-    def removeItem(self, item):
-        if item in self.cart.items:
-            position = list(self.cart.items.keys()).index(item)
-            self.cart.remove(item)
-            if self.cart.items[item] <= 0:
-                # Remove the row if quantity reaches 0
-                self.beginRemoveRows(QModelIndex(), position, position)
-                del self.cart.items[item]
-                self.endRemoveRows()
-            else:
-                # Just update the quantity
-                top_left = self.index(position, 0)
-                self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole])
 
 class CartScreen(QMainWindow):
     show_receipt_signal = Signal()
 
-    def __init__(self, user, parent=None):
+    def __init__(self, parent=None):
         super(CartScreen, self).__init__(parent)
         self.ui = Ui_Cart()
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.ui.setupUi(self)
         self.cart = Cart()
-        self.user = user
+        self.user = None 
 
         # Initialize an index for the next item and set the first item
         self.model = ItemListModel(self.cart)
@@ -79,7 +24,6 @@ class CartScreen(QMainWindow):
         # Connect the button click to the method
         self.ui.addButton.clicked.connect(self.on_add_to_cart)
         self.ui.navRecieptButton.clicked.connect(self.on_show_receipt)  # Connect to a new method
-        self.ui.nameLabel.setText(f"Welcome, {self.user}")
         # intialize subtotal
         self.update_subtotal()
 
@@ -89,7 +33,6 @@ class CartScreen(QMainWindow):
         item = MOCK_ITEMS.get(id)
         if item:
             self.model.addItem(item)
-
             self.update_subtotal()
 
     def on_remove_from_cart(self, item):
@@ -104,3 +47,10 @@ class CartScreen(QMainWindow):
     def on_show_receipt(self):
         # Create an instance of the receipt screen and pass the cart
         self.show_receipt_signal.emit()
+        self.reciept_screen = RecieptScreen(self.cart) 
+
+    def set_user(self, user):
+        self.user = user
+        print(user)
+        if self.user:
+            self.ui.nameLabel.setText(f"Welcome, {self.user}")

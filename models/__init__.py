@@ -1,4 +1,5 @@
 from typing import List, Any
+from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex
 
 WEIGHT_UNIT = "g"
 CERTAINTY_CONSTANT = 3  # number of update iterations before an item is classified as "added" or "removed"
@@ -116,3 +117,63 @@ class Cart:
             subtotal += item.price * quantity
 
         return subtotal
+
+
+class ItemListModel(QAbstractListModel):
+    def __init__(self, cart: Cart, parent=None):
+        super().__init__(parent)
+        self.cart = cart
+
+    def rowCount(self, parent=QModelIndex()):
+        return len(self.cart.items)
+
+    def data(self, index, role=Qt.DisplayRole):
+        if not index.isValid() or not (0 <= index.row() < len(self.cart.items)):
+            return None  # Return None for invalid index
+
+        item_list = list(self.cart.items.keys())
+        if not item_list:
+            return None  # No items in the cart, return None
+
+        item = item_list[index.row()]
+        quantity = self.cart.items[item]
+
+        if role == Qt.DisplayRole:
+            return f"{item.name} (x{quantity})"
+        elif role == Qt.ToolTipRole:
+            return f"Price: ${item.price:.2f} each"  # Access price directly from the Item object
+
+        return None
+
+    def addItem(self, item):
+        if item not in self.cart.items:
+            # Insert a new row if the item is not already in the cart
+            position = len(self.cart.items)
+            self.beginInsertRows(QModelIndex(), position, position)
+            self.cart.add(item)
+            self.endInsertRows()
+        else:
+            # Just update the existing item's quantity
+            position = list(self.cart.items.keys()).index(item)
+            self.cart.add(item)
+            top_left = self.index(position, 0)
+            self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole])
+
+    def removeItem(self, item):
+        if item in self.cart.items:
+            position = list(self.cart.items.keys()).index(item)
+            self.cart.remove(item)
+            if self.cart.items[item] <= 0:
+                # Remove the row if quantity reaches 0
+                self.beginRemoveRows(QModelIndex(), position, position)
+                del self.cart.items[item]
+                self.endRemoveRows()
+            else:
+                # Just update the quantity
+                top_left = self.index(position, 0)
+                self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole])
+
+    def clear(self):
+        self.beginResetModel()
+        self.cart.items.clear()
+        self.endResetModel()
