@@ -1,4 +1,7 @@
 # This Python file uses the following encoding: utf-8
+# IMPORTANT: Keep this import of config.py, otherwise environment variables will not be configured!
+import config
+# IMPORTANT: Keep this import of config.py, otherwise environment variables will not be configured!
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QStackedWidget
 from PySide6.QtGui import QFontDatabase, QColor
