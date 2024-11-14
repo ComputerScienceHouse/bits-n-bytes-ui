@@ -6,7 +6,7 @@ from PySide6.QtCore import Qt, QTimer, QRect, Signal
 from models import Cart, ItemListModel
 
 class RecieptScreen(QMainWindow):
-    go_home = Signal()
+    go_home_signal = Signal()
     
     def __init__(self, cart, parent=None):
         super(RecieptScreen, self).__init__(parent)
