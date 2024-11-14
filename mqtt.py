@@ -29,3 +29,5 @@ def open_doors() -> bool:
     result = client.publish(open_doors_topic, open_doors_msg)
     status = result[0]
     return status == 0
+
+client.loop_start()
