@@ -20,10 +20,13 @@ class RecieptScreen(QMainWindow):
 
         self.timer_button = QPushButton()
         self.timer_button.setObjectName(u"timer_button")
+        print("Timer button:", self.timer_button)
         self.timer_button.setGeometry(QRect(210, 0, 171, 31))
         self.timer = QTimer()
         self.timer.setInterval(1000)  # 10000ms = 10 seconds
         self.timer.timeout.connect(self.update_countdown)
+        if self.timer.isActive():
+            print("Timer is active")
         self.countdown_duration = 10
         self.remaining_time = self.countdown_duration
         self.start_timer()
