@@ -68,4 +68,7 @@ class RecieptScreen(QMainWindow):
         
     def run_timer(self):
         self.start_timer()
-        self.timer.timeout.connect(self.update_countdown)
+        # Connect only if not already connected
+        if not self.timer_connected:
+            self.timer.timeout.connect(self.update_countdown)
+            self.timer_connected = True
