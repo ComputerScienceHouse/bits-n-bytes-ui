@@ -273,164 +273,212 @@
      <string>normal</string>
     </property>
    </widget>
-   <widget class="QTextEdit" name="oneAValue">
+   <widget class="QLabel" name="oneAValue">
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>190</y>
+      <y>200</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="oneBValue">
+   <widget class="QLabel" name="oneBValue">
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>190</y>
+      <y>200</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="oneCValue">
+   <widget class="QLabel" name="oneCValue">
     <property name="geometry">
      <rect>
       <x>270</x>
-      <y>190</y>
+      <y>200</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="oneDValue">
+   <widget class="QLabel" name="oneDValue">
     <property name="geometry">
      <rect>
       <x>390</x>
-      <y>190</y>
+      <y>200</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="twoAValue">
+   <widget class="QLabel" name="twoAValue">
     <property name="geometry">
      <rect>
       <x>540</x>
-      <y>190</y>
+      <y>200</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="twoBValue">
+   <widget class="QLabel" name="twoBValue">
     <property name="geometry">
      <rect>
       <x>660</x>
-      <y>190</y>
+      <y>200</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="twoCValue">
+   <widget class="QLabel" name="twoCValue">
     <property name="geometry">
      <rect>
       <x>780</x>
-      <y>190</y>
+      <y>200</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="twoDValue">
+   <widget class="QLabel" name="twoDValue">
     <property name="geometry">
      <rect>
       <x>900</x>
-      <y>190</y>
+      <y>200</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="threeAValue">
+   <widget class="QLabel" name="threeAValue">
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>500</y>
+      <y>510</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="threeBValue">
+   <widget class="QLabel" name="threeBValue">
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>500</y>
+      <y>510</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="threeCValue">
+   <widget class="QLabel" name="threeCValue">
     <property name="geometry">
      <rect>
       <x>270</x>
-      <y>500</y>
+      <y>510</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="threeDValue">
+   <widget class="QLabel" name="threeDValue">
     <property name="geometry">
      <rect>
       <x>390</x>
-      <y>500</y>
+      <y>510</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="fourAValue">
+   <widget class="QLabel" name="fourAValue">
     <property name="geometry">
      <rect>
       <x>540</x>
-      <y>500</y>
+      <y>510</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="fourBValue">
+   <widget class="QLabel" name="fourBValue">
     <property name="geometry">
      <rect>
       <x>660</x>
-      <y>500</y>
+      <y>510</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="fourCValue">
+   <widget class="QLabel" name="fourCValue">
     <property name="geometry">
      <rect>
       <x>780</x>
-      <y>500</y>
+      <y>510</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
-   <widget class="QTextEdit" name="fourDValue">
+   <widget class="QLabel" name="fourDValue">
     <property name="geometry">
      <rect>
       <x>900</x>
-      <y>500</y>
+      <y>510</y>
       <width>91</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
     </property>
    </widget>
   </widget>
