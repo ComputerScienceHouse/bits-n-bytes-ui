@@ -23,11 +23,11 @@ class RecieptScreen(QMainWindow):
         # print("Timer button:", self.timer_button)
         # self.timer_button.setGeometry(QRect(210, 0, 171, 31))
         self.timer = QTimer()
-        self.timer.setInterval(1000)  # 10000ms = 10 seconds
-        self.timer.timeout.connect(self.update_countdown)
+        self.timer.setInterval(1000)  # 1000ms = 1 second
+        # self.timer.timeout.connect(self.update_countdown)
         if self.timer.isActive():
             print("Timer is active")
-        self.countdown_duration = 10
+        self.countdown_duration = 15
         self.remaining_time = self.countdown_duration
         self.start_timer()
 
@@ -50,7 +50,7 @@ class RecieptScreen(QMainWindow):
         
        
     def start_timer(self):
-        self.remaining_time = 10
+        self.remaining_time = 15
         self.ui.timeoutLabel.setText(f"Timeout in {self.remaining_time}s")
         self.timer.start()
         
@@ -64,3 +64,6 @@ class RecieptScreen(QMainWindow):
             
     def go_home(self):
         self.go_home_signal.emit()
+        
+    def run_timer(self):
+        self.timer.timeout.connect(self.update_countdown)
