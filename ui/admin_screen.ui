@@ -113,6 +113,22 @@
      <string>normal</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="powerOff">
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>80</y>
+      <width>211</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Power Off</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

@@ -45,6 +45,9 @@ class Ui_Admin(object):
         self.tareButton = QPushButton(self.centralwidget)
         self.tareButton.setObjectName(u"tareButton")
         self.tareButton.setGeometry(QRect(610, 340, 211, 71))
+        self.powerOff = QPushButton(self.centralwidget)
+        self.powerOff.setObjectName(u"powerOff")
+        self.powerOff.setGeometry(QRect(420, 80, 211, 71))
         Admin.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Admin)
@@ -65,5 +68,7 @@ class Ui_Admin(object):
         self.exitButton.setProperty(u"type", QCoreApplication.translate("Admin", u"normal", None))
         self.tareButton.setText(QCoreApplication.translate("Admin", u"Tare", None))
         self.tareButton.setProperty(u"type", QCoreApplication.translate("Admin", u"normal", None))
+        self.powerOff.setText(QCoreApplication.translate("Admin", u"Power Off", None))
+        self.powerOff.setProperty(u"type", QCoreApplication.translate("Admin", u"normal", None))
     # retranslateUi
 
