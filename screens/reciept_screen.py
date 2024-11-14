@@ -50,7 +50,7 @@ class RecieptScreen(QMainWindow):
         
        
     def start_timer(self):
-        self.remaining_time = self.countdown_duration
+        self.remaining_time = 10
         self.ui.timeoutLabel.setText(f"Timeout in {self.remaining_time}s")
         self.timer.start()
         
