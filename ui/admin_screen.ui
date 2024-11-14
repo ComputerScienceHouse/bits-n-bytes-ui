@@ -37,7 +37,7 @@
     <property name="geometry">
      <rect>
       <x>230</x>
-      <y>100</y>
+      <y>180</y>
       <width>211</width>
       <height>71</height>
      </rect>
@@ -53,7 +53,7 @@
     <property name="geometry">
      <rect>
       <x>610</x>
-      <y>100</y>
+      <y>180</y>
       <width>211</width>
       <height>71</height>
      </rect>
@@ -68,8 +68,8 @@
    <widget class="QPushButton" name="exitAppButton">
     <property name="geometry">
      <rect>
-      <x>610</x>
-      <y>250</y>
+      <x>230</x>
+      <y>340</y>
       <width>211</width>
       <height>71</height>
      </rect>
@@ -84,8 +84,8 @@
    <widget class="QPushButton" name="exitButton">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>250</y>
+      <x>800</x>
+      <y>0</y>
       <width>211</width>
       <height>71</height>
      </rect>
@@ -100,8 +100,8 @@
    <widget class="QPushButton" name="tareButton">
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>380</y>
+      <x>610</x>
+      <y>340</y>
       <width>211</width>
       <height>71</height>
      </rect>
