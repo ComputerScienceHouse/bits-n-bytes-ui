@@ -63,4 +63,4 @@ class RecieptScreen(QMainWindow):
             self.go_home()
             
     def go_home(self):
-        self.go_home.emit()
+        self.go_home_signal.emit()
