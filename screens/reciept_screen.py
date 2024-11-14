@@ -18,10 +18,10 @@ class RecieptScreen(QMainWindow):
         self.model = ItemListModel(cart)
         self.ui.itemList.setModel(self.model)
 
-        self.timer_button = QPushButton()
-        self.timer_button.setObjectName(u"timer_button")
-        print("Timer button:", self.timer_button)
-        self.timer_button.setGeometry(QRect(210, 0, 171, 31))
+        # self.timer_button = QPushButton()
+        # self.timer_button.setObjectName(u"timer_button")
+        # print("Timer button:", self.timer_button)
+        # self.timer_button.setGeometry(QRect(210, 0, 171, 31))
         self.timer = QTimer()
         self.timer.setInterval(1000)  # 10000ms = 10 seconds
         self.timer.timeout.connect(self.update_countdown)
@@ -51,12 +51,12 @@ class RecieptScreen(QMainWindow):
        
     def start_timer(self):
         self.remaining_time = self.countdown_duration
-        self.timer_button.setText(f"Timeout in {self.remaining_time}s")
+        self.ui.timeoutLabel.setText(f"Timeout in {self.remaining_time}s")
         self.timer.start()
         
     def update_countdown(self):
         self.remaining_time -= 1
-        self.timer_button.setText(f"Timeout in {self.remaining_time}s")
+        self.ui.timeoutLabel.setText(f"Timeout in {self.remaining_time}s")
 
         if self.remaining_time <= 0:
             self.timer.stop()
