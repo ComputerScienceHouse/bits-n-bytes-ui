@@ -51,6 +51,7 @@ def open_hatch() -> bool:
 
 
 def on_message(client, userdata, msg):
+    print("On message")
     if msg.topic == shelf_data_topic:
         if callable(shelf_data_received_callback):
             shelf_data_received_callback(client, userdata, msg)
