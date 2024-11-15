@@ -61,7 +61,7 @@ class TareScreen(QMainWindow):
 
    def change_button_color(self, button: TareButton):
         # Cycle colors: 0 (default), 1 (yellow), 2 (green)
-        state = self.button_states[button.button]
+        state = self.button_states[button]
 
         if state == 0:
             button.button.setStyleSheet("background-color: yellow;")
