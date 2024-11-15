@@ -57,9 +57,9 @@ class TareScreen(QMainWindow):
           TareButton(self.ui.fourD, "", 3),
         ]
         # Set default color and connect the click events
-        for button in self.button_list:
-            button.button.setStyleSheet("background-color: #323232;")  # Default color
-            button.button.clicked.connect(lambda b=button: self.change_button_color(b))
+        for tare_button in self.button_list:
+            tare_button.button.setStyleSheet("background-color: #323232;")  # Default color
+            tare_button.button.clicked.connect(lambda b=tare_button: self.change_button_color(b))
 
 
     def change_button_color(self, button: TareButton):
