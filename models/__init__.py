@@ -188,7 +188,7 @@ class Shelf:
         self.last_report_time = update_received_time
         results_dict = dict()
         # Iterate through all weight values
-        for i in range(2):
+        for i in range(4):
             # Make sure a slot corresponds to this weight
             if i < len(self.slots) and raw_weights[i] is not None:
                 # Update the weight
