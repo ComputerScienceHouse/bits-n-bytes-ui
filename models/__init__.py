@@ -125,6 +125,7 @@ class Slot:
         item = self.items[0]
         # Normalize weight using conversion factor
         normalized_weight_g = new_weight * self._conversion_factor
+        print(f"Normalized weight: {normalized_weight_g}g")
         # Add this weight to the weight store, and remove the oldest stored weight
         self._weight_store.insert(0, normalized_weight_g)
         oldest_weight = self._weight_store.pop()
@@ -145,7 +146,6 @@ class Slot:
                 print(f"{quantity} item(s) removed")
                 quantity_to_modify_cart = quantity
         self._previous_weight_g = oldest_weight
-        print(f"new previous weight: {self._previous_weight_g}")
         return [(item, quantity_to_modify_cart)]
 
 
