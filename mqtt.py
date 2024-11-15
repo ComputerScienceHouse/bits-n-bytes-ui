@@ -12,7 +12,6 @@ import os
 
 import paho.mqtt.client as mqtt
 
-# TODO update broker URI with local broker
 broker = os.environ.get("MQTT_BROKER", 'test.mosquitto.org')
 port = 1883
 open_doors_topic = "aux/control/doors"
@@ -22,7 +21,7 @@ shelf_data_topic = "shelf/data"
 
 client = mqtt.Client()
 client.connect(broker, port)
-client.subscribe(shelf_data_topic)
+client.subscribe(shelf_data_topic, qos=1)
 
 shelf_data_received_callback = None
 
