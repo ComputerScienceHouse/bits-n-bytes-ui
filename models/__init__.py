@@ -155,6 +155,10 @@ class Slot:
                     quantity_to_modify_cart = quantity
                     self._last_neg = True
                     self._last_pos = False
+            else:
+                # No change
+                self._last_pos = False
+                self._last_neg = False
         else:
             # No change
             self._last_pos = False
