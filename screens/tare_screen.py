@@ -15,12 +15,14 @@ class TareButton:
     shelf_mac: str
     slot_index: int
     zero_weight_value: float
+    state: int
 
     def __init__(self, button: QPushButton, shelf_mac: str, slot_index: int):
         self.button = button
         self.shelf_mac = shelf_mac
         self.slot_index = slot_index
         self.zero_weight_value = 0
+        self.state = 0
 
 
 class TareScreen(QMainWindow):
@@ -57,30 +59,25 @@ class TareScreen(QMainWindow):
         # Set default color and connect the click events
         for button in self.button_list:
             button.button.setStyleSheet("background-color: #323232;")  # Default color
-            button.button.clicked.connect(lambda checked, b=button: self.change_button_color(b))
-
-        # Track button states to cycle colors
-        self.button_states = {button: 0 for button in self.button_list}
+            button.button.clicked.connect(lambda b=button: self.change_button_color(b))
 
 
     def change_button_color(self, button: TareButton):
         # Cycle colors: 0 (default), 1 (yellow), 2 (green)
-        state = self.button_states[button]
-
-        if state == 0:
+        if button.state == 0:
             button.button.setStyleSheet("background-color: yellow;")
             button.zero_weight_value = self.shelf_manager.get_most_recent_value(button.shelf_mac, button.slot_index)
             print(f"set zero weight value to {button.zero_weight_value}")
-        elif state == 1:
+            button.state = 1
+        elif button.state == 1:
             button.button.setStyleSheet("background-color: green;")
             current_value = self.shelf_manager.get_most_recent_value(button.shelf_mac, button.slot_index)
             print(f"got most recent value: {current_value}")
             self.shelf_manager.tare_shelf(button.shelf_mac, button.slot_index, button.zero_weight_value, current_value)
+            button.state = 2
         else:
             button.button.setStyleSheet("background-color: #323232;")  # Back to default
-
-        # Update button state for next press
-        self.button_states[button] = (state + 1) % 3
+            button.state = 0
 
 
     def on_show_admin(self):
