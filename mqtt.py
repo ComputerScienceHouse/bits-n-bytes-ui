@@ -55,6 +55,6 @@ def on_message(client, userdata, msg):
         if callable(shelf_data_received_callback):
             shelf_data_received_callback(client, userdata, msg)
 
-client.message_callback = on_message
+client.on_message = on_message
 
 client.loop_start()
