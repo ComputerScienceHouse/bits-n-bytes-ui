@@ -59,7 +59,7 @@ class ShelfManager:
         received_time = datetime.datetime.now()
 
         # Parse MQTT message as JSON
-        json_data = json.load(msg)
+        json_data = json.load(msg.payload.decode("utf-8"))
         if "id" not in json_data or "data" not in json_data:
             # Ignore the JSON if it doesn't contain an "id" and "data" field
             print("ShelfManager: Received MQTT data without 'id' or 'data' field.")
