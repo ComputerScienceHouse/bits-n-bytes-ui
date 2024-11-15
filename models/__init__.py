@@ -86,6 +86,15 @@ class Slot:
         self._previous_weight_g = weight
 
 
+    def get_previous_weight(self) -> float | None:
+        """
+        Get previous weight of this slot
+        Returns:
+
+        """
+        return self._previous_weight_g
+
+
     def calc_conversion_factor(self, zero_weight_g: float, loaded_weight_g: float, known_weight_g: float):
         """
         Calculate and set the conversion factor of this slot.

@@ -28,9 +28,9 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.setFixedSize(1024, 600)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+        self.shelf_manager = ShelfManager(add_to_cart_cb=self.cart_screen.add_item_to_cart, remove_from_cart_cb=self.cart_screen.remove_item_from_cart)
         self.initUI()
         # Create the shelf manager
-        self.shelf_manager = ShelfManager(add_to_cart_cb=self.cart_screen.add_item_to_cart, remove_from_cart_cb=self.cart_screen.remove_item_from_cart)
         # Tell MQTT to call the shelf manager "on_shelf_data_cb" function whenever it receives
         # data on the shelf data topic
         mqtt.shelf_data_received_callback = lambda client, userdata, msg: self.shelf_manager.on_shelf_data_cb(client, userdata, msg)
@@ -52,7 +52,7 @@ class MainWindow(QMainWindow):
         self.cart_screen = CartScreen(self.user)
         self.reciept_screen = RecieptScreen(self.cart_screen.cart)
         self.admin_screen = AdminScreen()
-        self.tare_screen = TareScreen()
+        self.tare_screen = TareScreen(shelf_manager=self.shelf_manager)
 
         # Add screens to the stack with respective indices
         self.stack.addWidget(self.welcome_screen)    # Index 0

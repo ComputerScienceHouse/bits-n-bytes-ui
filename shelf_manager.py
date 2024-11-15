@@ -17,6 +17,8 @@ import time
 import datetime
 import json
 
+KNOWN_TARE_WEIGHT_G = 226
+
 SHELF_ITEM_MAP = {
     "80:65:99:49:EF:8E": [ Slot([database.MOCK_ITEMS[9]]) , Slot([database.MOCK_ITEMS[9]]) , Slot([database.MOCK_ITEMS[9]]) , Slot([database.MOCK_ITEMS[9]]) ],
     "MAC_2": [ Slot([]) , Slot([]) , Slot([]) , Slot([]) ],
@@ -106,6 +108,29 @@ class ShelfManager:
                 elif quantity_change < 0:
                     for i in range(abs(quantity_change)):
                         self.remove_from_cart_cb(item)
+
+
+    def tare_shelf(self, shelf_mac: str, slot_index: int, zero_weight: float, loaded_weight: float):
+        """
+        Tare a shelf
+        Args:
+            shelf_mac:
+            slot_index:
+            zero_weight:
+            loaded_weight:
+
+        Returns:
+
+        """
+        if shelf_mac in self._mac_to_shelf_map:
+            self._mac_to_shelf_map[shelf_mac].slots[slot_index].calc_conversion_factor(zero_weight, loaded_weight, KNOWN_TARE_WEIGHT_G)
+
+
+    def get_most_recent_value(self, shelf_mac: str, slot_index: int) -> float | None:
+        if shelf_mac in self._mac_to_shelf_map:
+            return self._mac_to_shelf_map[shelf_mac].slots[slot_index].get_previous_weight()
+        else:
+            return None
 
 
     def main_loop(self):
