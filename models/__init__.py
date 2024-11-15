@@ -7,7 +7,7 @@ import copy
 import datetime
 
 WEIGHT_UNIT = "g"
-CERTAINTY_CONSTANT = 3  # number of update iterations before an item is classified as "added" or "removed"
+CERTAINTY_CONSTANT = 5  # number of update iterations before an item is classified as "added" or "removed"
 
 class Item:
     def __init__(
@@ -69,10 +69,8 @@ class Slot:
         """
         self.items = copy.deepcopy(items)
         self._previous_weight_g = None
-        self._conversion_factor = 1
-        self._weight_store = list()
-        for i in range(CERTAINTY_CONSTANT - 1):
-            self._weight_store.append(0)
+        self._conversion_factor = .44
+        self._weight_store = [0] * CERTAINTY_CONSTANT
 
 
     def set_previous_weight(self, weight: float | None) -> None:
@@ -108,8 +106,10 @@ class Slot:
         Returns:
 
         """
-        print(f"calc conv factor w/ den ({loaded_weight_g} - {zero_weight_g})")
-        self._conversion_factor = known_weight_g / (loaded_weight_g - zero_weight_g)
+        if loaded_weight_g == zero_weight_g:
+            print("Loaded weight and zero weight are the same, can't calculate conversion factor.")
+        else:
+            self._conversion_factor = known_weight_g / (loaded_weight_g - zero_weight_g)
 
 
     def update(self, new_weight: float) -> List[Tuple[Item, int]]:
@@ -132,10 +132,10 @@ class Slot:
         rolling_median = median(self._weight_store)
         # Difference from previous iteration to now
         difference_g = rolling_median - self._previous_weight_g
-        remainder_weight = difference_g % item.avg_weight
+        remainder_weight = abs(difference_g % item.avg_weight)
         quantity_to_modify_cart = 0
         # Check that remainder is within top std_dev or bottom_std of the avg_weight
-        if remainder_weight >= item.avg_weight - item.std_weight or remainder_weight <= item.avg_weight + item.std_weight:
+        if item.avg_weight - item.std_weight <= remainder_weight <= item.avg_weight + item.std_weight:
             # Calculate quantity removed
             quantity = round(difference_g / item.avg_weight)
             if quantity > 0:
