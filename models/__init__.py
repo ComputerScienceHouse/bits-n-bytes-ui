@@ -108,6 +108,7 @@ class Slot:
         Returns:
 
         """
+        print(f"calc conv factor w/ den ({loaded_weight_g} - {zero_weight_g})")
         self._conversion_factor = known_weight_g / (loaded_weight_g - zero_weight_g)
 
 

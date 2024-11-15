@@ -73,6 +73,7 @@ class TareScreen(QMainWindow):
         elif state == 1:
             button.button.setStyleSheet("background-color: green;")
             current_value = self.shelf_manager.get_most_recent_value(button.shelf_mac, button.slot_index)
+            print(f"got most recent value: {current_value}")
             self.shelf_manager.tare_shelf(button.shelf_mac, button.slot_index, button.zero_weight_value, current_value)
         else:
             button.button.setStyleSheet("background-color: #323232;")  # Back to default
