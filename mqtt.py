@@ -18,9 +18,15 @@ port = 1883
 open_doors_topic = "aux/control/doors"
 open_hatch_topic = "aux/control/hatch"
 open_doors_and_hatch_msg = "open"
+shelf_data_topic = "shelf/data"
 
 client = mqtt.Client()
 client.connect(broker, port)
+client.subscribe(shelf_data_topic)
+
+client.loop_start()
+
+shelf_data_received_callback = None
 
 
 def open_doors() -> bool:
@@ -47,4 +53,7 @@ def open_hatch() -> bool:
     return status == 0
 
 
-client.loop_start()
+def on_message(client, userdata, msg):
+    if msg.topic == shelf_data_topic:
+        if shelf_data_received_callback is not None:
+            shelf_data_received_callback()

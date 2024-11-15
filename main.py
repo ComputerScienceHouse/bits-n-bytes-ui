@@ -16,6 +16,7 @@ import resources_rc  # Ensure your resources are compiled and available
 import nfc
 from concurrent.futures import ThreadPoolExecutor
 import database
+from shelf_manager import ShelfManager
 
 try:
     import config
@@ -28,6 +29,11 @@ class MainWindow(QMainWindow):
         self.setFixedSize(1024, 600)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.initUI()
+        # Create the shelf manager
+        self.shelf_manager = ShelfManager(add_to_cart_cb=self.cart_screen.add_item_to_cart, remove_from_cart_cb=self.cart_screen.remove_item_from_cart)
+        # Tell MQTT to call the shelf manager "on_shelf_data_cb" function whenever it receives
+        # data on the shelf data topic
+        mqtt.shelf_data_received_callback = self.shelf_manager.on_shelf_data_cb
 
     def initUI(self):
         # Create a QStackedWidget to manage different screens
