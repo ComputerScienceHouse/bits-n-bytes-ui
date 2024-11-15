@@ -104,10 +104,10 @@ class ShelfManager:
             for item, quantity_change in item_quantity_changes:
                 if quantity_change > 0:
                     for i in range(quantity_change):
-                        self.add_to_cart_cb(item)
+                        self.remove_from_cart_cb(item)
                 elif quantity_change < 0:
                     for i in range(abs(quantity_change)):
-                        self.remove_from_cart_cb(item)
+                        self.add_to_cart_cb(item)
 
 
     def tare_shelf(self, shelf_mac: str, slot_index: int, zero_weight: float, loaded_weight: float):
