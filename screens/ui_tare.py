@@ -122,6 +122,9 @@ class Ui_Tare(object):
         self.fourDValue = QLabel(self.centralwidget)
         self.fourDValue.setObjectName(u"fourDValue")
         self.fourDValue.setGeometry(QRect(900, 510, 91, 61))
+        self.exitButton = QPushButton(self.centralwidget)
+        self.exitButton.setObjectName(u"exitButton")
+        self.exitButton.setGeometry(QRect(460, 271, 101, 41))
         Tare.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Tare)
@@ -179,5 +182,6 @@ class Ui_Tare(object):
         self.fourBValue.setText(QCoreApplication.translate("Tare", u"TextLabel", None))
         self.fourCValue.setText(QCoreApplication.translate("Tare", u"TextLabel", None))
         self.fourDValue.setText(QCoreApplication.translate("Tare", u"TextLabel", None))
+        self.exitButton.setText(QCoreApplication.translate("Tare", u"Exit", None))
     # retranslateUi
 

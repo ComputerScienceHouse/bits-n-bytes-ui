@@ -24,16 +24,19 @@ class TareButton:
 
 
 class TareScreen(QMainWindow):
-    
-   def __init__(self, parent=None, shelf_manager: ShelfManager = None):
-      super(TareScreen, self).__init__(parent)
-      self.shelf_manager = shelf_manager
-      self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
-      self.ui = Ui_Tare()
-      self.ui.setupUi(self)
+    show_admin_signal = Signal()
 
-      # Set up a list of the buttons
-      self.button_list = [
+    def __init__(self, parent=None, shelf_manager: ShelfManager = None):
+        super(TareScreen, self).__init__(parent)
+        self.shelf_manager = shelf_manager
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+        self.ui = Ui_Tare()
+        self.ui.setupUi(self)
+
+        self.ui.exitButton.clicked.connect(lambda: self.on_show_admin())
+
+        # Set up a list of the buttons
+        self.button_list = [
           TareButton(self.ui.oneA, "80:65:99:49:EF:8E", 0),
           TareButton(self.ui.oneB, "80:65:99:49:EF:8E", 1),
           TareButton(self.ui.oneC, "80:65:99:49:EF:8E", 2),
@@ -50,16 +53,17 @@ class TareScreen(QMainWindow):
           TareButton(self.ui.fourB, "", 1),
           TareButton(self.ui.fourC, "", 2),
           TareButton(self.ui.fourD, "", 3),
-      ]
-      # Set default color and connect the click events
-      for button in self.button_list:
+        ]
+        # Set default color and connect the click events
+        for button in self.button_list:
             button.button.setStyleSheet("background-color: #323232;")  # Default color
             button.button.clicked.connect(lambda checked, b=button: self.change_button_color(b))
 
-      # Track button states to cycle colors
-      self.button_states = {button: 0 for button in self.button_list}
+        # Track button states to cycle colors
+        self.button_states = {button: 0 for button in self.button_list}
 
-   def change_button_color(self, button: TareButton):
+
+    def change_button_color(self, button: TareButton):
         # Cycle colors: 0 (default), 1 (yellow), 2 (green)
         state = self.button_states[button]
 
@@ -75,3 +79,7 @@ class TareScreen(QMainWindow):
 
         # Update button state for next press
         self.button_states[button] = (state + 1) % 3
+
+
+    def on_show_admin(self):
+        self.show_admin_signal.emit()

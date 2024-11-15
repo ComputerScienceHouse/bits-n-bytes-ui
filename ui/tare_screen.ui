@@ -481,6 +481,19 @@
      <string>TextLabel</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="exitButton">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>271</y>
+      <width>101</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Exit</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>
