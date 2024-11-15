@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
         self.shelf_manager = ShelfManager(add_to_cart_cb=self.cart_screen.add_item_to_cart, remove_from_cart_cb=self.cart_screen.remove_item_from_cart)
         # Tell MQTT to call the shelf manager "on_shelf_data_cb" function whenever it receives
         # data on the shelf data topic
-        mqtt.shelf_data_received_callback = self.shelf_manager.on_shelf_data_cb
+        mqtt.shelf_data_received_callback = lambda client, userdata, msg: self.shelf_manager.on_shelf_data_cb(client, userdata, msg)
 
     def initUI(self):
         # Create a QStackedWidget to manage different screens
