@@ -144,6 +144,7 @@ class Slot:
                 print(f"{quantity} item(s) removed")
                 quantity_to_modify_cart = quantity
         self._previous_weight_g = oldest_weight
+        print(f"new previous weight: {self._previous_weight_g}")
         return [(item, quantity_to_modify_cart)]
 
 
