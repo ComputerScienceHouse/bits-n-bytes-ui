@@ -70,7 +70,6 @@ class WelcomeScreen(QMainWindow):
 
         """
         click_x, click_y = (event.position().x(), event.position().y())
-        print(f"{click_x}, {click_y}")
         sequence_completed = False
         # Check if any of the corners were clicked
         if click_x < ADMIN_TAP_DEAD_ZONE:

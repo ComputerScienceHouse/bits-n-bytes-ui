@@ -89,7 +89,6 @@ class MainWindow(QMainWindow):
         Params:
         index: The index of the screen switched to
         """
-        print(index)
         if index == 0 and not self.is_nfc_active:
             # Switched to the welcome screen
             self.start_nfc_scan()

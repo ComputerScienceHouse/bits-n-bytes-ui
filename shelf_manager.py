@@ -53,7 +53,7 @@ class ShelfManager:
         Returns:
 
         """
-
+        print("Received shelf data")
         received_time = datetime.datetime.now()
 
         # Parse MQTT message as JSON
