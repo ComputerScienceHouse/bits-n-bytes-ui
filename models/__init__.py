@@ -153,7 +153,7 @@ class Shelf:
             initial_weights: A list of the initial weights for each slot.
         """
         self.slots = slots
-        self.last_report_time = datetime.datetime(0, 0, 0, 0, 0, 0, 0)
+        self.last_report_time = datetime.datetime(2022, 2, 2, 2, 2, 2, 2)
         # Only iterate the lowest number of times if the lengths are not equal to avoid errors
         j = min(len(initial_weights), len(slots))
         for i in range(j):
