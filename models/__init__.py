@@ -5,7 +5,6 @@ from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex
 from typing import List, Any, Tuple
 import copy
 import datetime
-
 WEIGHT_UNIT = "g"
 CERTAINTY_CONSTANT = 5  # number of update iterations before an item is classified as "added" or "removed"
 
@@ -94,7 +93,7 @@ class Slot:
         Returns:
 
         """
-        return self._previous_weight_g
+        return copy.deepcopy(self._previous_weight_g)
 
 
     def calc_conversion_factor(self, zero_weight_g: float, loaded_weight_g: float, known_weight_g: float):
