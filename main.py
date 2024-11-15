@@ -28,7 +28,6 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.setFixedSize(1024, 600)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
-        self.shelf_manager = ShelfManager(add_to_cart_cb=self.cart_screen.add_item_to_cart, remove_from_cart_cb=self.cart_screen.remove_item_from_cart)
         self.initUI()
         # Create the shelf manager
         # Tell MQTT to call the shelf manager "on_shelf_data_cb" function whenever it receives
