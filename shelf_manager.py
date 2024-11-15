@@ -130,6 +130,7 @@ class ShelfManager:
         if shelf_mac in self._mac_to_shelf_map:
             return self._mac_to_shelf_map[shelf_mac].slots[slot_index].get_previous_weight()
         else:
+            print("Get most recent value: Shelf not found")
             return None
 
 
