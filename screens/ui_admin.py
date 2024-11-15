@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'admin_screen.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.7.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -32,16 +32,22 @@ class Ui_Admin(object):
         self.label.setStyleSheet(u"")
         self.openDoorButton = QPushButton(self.centralwidget)
         self.openDoorButton.setObjectName(u"openDoorButton")
-        self.openDoorButton.setGeometry(QRect(230, 100, 211, 71))
+        self.openDoorButton.setGeometry(QRect(230, 180, 211, 71))
         self.openHatchButton = QPushButton(self.centralwidget)
         self.openHatchButton.setObjectName(u"openHatchButton")
-        self.openHatchButton.setGeometry(QRect(610, 100, 211, 71))
+        self.openHatchButton.setGeometry(QRect(610, 180, 211, 71))
         self.exitAppButton = QPushButton(self.centralwidget)
         self.exitAppButton.setObjectName(u"exitAppButton")
-        self.exitAppButton.setGeometry(QRect(610, 250, 211, 71))
+        self.exitAppButton.setGeometry(QRect(230, 340, 211, 71))
         self.exitButton = QPushButton(self.centralwidget)
         self.exitButton.setObjectName(u"exitButton")
-        self.exitButton.setGeometry(QRect(230, 250, 211, 71))
+        self.exitButton.setGeometry(QRect(800, 0, 211, 71))
+        self.tareButton = QPushButton(self.centralwidget)
+        self.tareButton.setObjectName(u"tareButton")
+        self.tareButton.setGeometry(QRect(610, 340, 211, 71))
+        self.powerOff = QPushButton(self.centralwidget)
+        self.powerOff.setObjectName(u"powerOff")
+        self.powerOff.setGeometry(QRect(420, 80, 211, 71))
         Admin.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Admin)
@@ -60,5 +66,9 @@ class Ui_Admin(object):
         self.exitAppButton.setProperty(u"type", QCoreApplication.translate("Admin", u"normal", None))
         self.exitButton.setText(QCoreApplication.translate("Admin", u"Exit Admin", None))
         self.exitButton.setProperty(u"type", QCoreApplication.translate("Admin", u"normal", None))
+        self.tareButton.setText(QCoreApplication.translate("Admin", u"Tare", None))
+        self.tareButton.setProperty(u"type", QCoreApplication.translate("Admin", u"normal", None))
+        self.powerOff.setText(QCoreApplication.translate("Admin", u"Power Off", None))
+        self.powerOff.setProperty(u"type", QCoreApplication.translate("Admin", u"normal", None))
     # retranslateUi
 

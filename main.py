@@ -10,6 +10,7 @@ from screens.cart_screen import CartScreen
 from screens.welcome_screen import WelcomeScreen
 from screens.reciept_screen import RecieptScreen
 from screens.admin_screen import AdminScreen
+from screens.tare_screen import TareScreen
 import mqtt
 import resources_rc  # Ensure your resources are compiled and available
 import nfc
@@ -45,12 +46,14 @@ class MainWindow(QMainWindow):
         self.cart_screen = CartScreen(self.user)
         self.reciept_screen = RecieptScreen(self.cart_screen.cart)
         self.admin_screen = AdminScreen()
+        self.tare_screen = TareScreen()
 
         # Add screens to the stack with respective indices
         self.stack.addWidget(self.welcome_screen)    # Index 0
         self.stack.addWidget(self.cart_screen)       # Index 1
         self.stack.addWidget(self.reciept_screen)    # Index 2
         self.stack.addWidget(self.admin_screen)      # Index 3
+        self.stack.addWidget(self.tare_screen)       # Index 4
 
         # Connect buttons for navigation (for debugging/development)
         self.cart_screen.show_receipt_signal.connect(lambda: self.show_receipt_screen())
@@ -58,7 +61,7 @@ class MainWindow(QMainWindow):
         self.admin_screen.show_welcome_signal.connect(lambda: self.stack.setCurrentIndex(0))
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart())
         self.cart_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(0))
-        
+        self.admin_screen.ui.tareButton.clicked.connect(lambda: self.stack.setCurrentIndex(4))
         self.reciept_screen.go_home_signal.connect(lambda: self.stack.setCurrentIndex(0))
         self.stack.currentChanged.connect(self.on_screen_change_cb)
         # Navigate to the welcome screen, triggering the NFC callback
