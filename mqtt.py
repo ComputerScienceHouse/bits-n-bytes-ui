@@ -28,7 +28,6 @@ client.loop_start()
 
 shelf_data_received_callback = None
 
-
 def open_doors() -> bool:
     """
     Send a MQTT message to open the cabinet doors.
@@ -55,5 +54,5 @@ def open_hatch() -> bool:
 
 def on_message(client, userdata, msg):
     if msg.topic == shelf_data_topic:
-        if shelf_data_received_callback is not None:
-            shelf_data_received_callback()
+        if callable(shelf_data_received_callback):
+            shelf_data_received_callback(client, userdata, msg)
