@@ -24,8 +24,6 @@ client = mqtt.Client()
 client.connect(broker, port)
 client.subscribe(shelf_data_topic)
 
-client.loop_start()
-
 shelf_data_received_callback = None
 
 def open_doors() -> bool:
@@ -56,3 +54,7 @@ def on_message(client, userdata, msg):
     if msg.topic == shelf_data_topic:
         if callable(shelf_data_received_callback):
             shelf_data_received_callback(client, userdata, msg)
+
+client.message_callback = on_message
+
+client.loop_start()
