@@ -10,13 +10,15 @@
 from threading import Thread, Lock
 from types import new_class
 from typing import Dict
+
+import database
 from models import Shelf, Slot, Item
 import time
 import datetime
 import json
 
 SHELF_ITEM_MAP = {
-    "MAC_1": [ Slot([]) , Slot([]) , Slot([]) , Slot([]) ],
+    "80:65:99:49:EF:8E": [ Slot([database.MOCK_ITEMS[9]]) , Slot([database.MOCK_ITEMS[9]]) , Slot([database.MOCK_ITEMS[9]]) , Slot([database.MOCK_ITEMS[9]]) ],
     "MAC_2": [ Slot([]) , Slot([]) , Slot([]) , Slot([]) ],
     "MAC_3": [ Slot([]) , Slot([]) , Slot([]) , Slot([]) ],
     "MAC_4": [ Slot([]) , Slot([]) , Slot([]) , Slot([]) ],
