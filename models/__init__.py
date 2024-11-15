@@ -61,6 +61,8 @@ class Slot:
     _previous_weight_g: float | None
     _conversion_factor: float
     _weight_store: list
+    _last_pos: bool
+    _last_neg: bool
 
     def __init__(self, items: List[Item]):
         """
@@ -71,6 +73,8 @@ class Slot:
         self._previous_weight_g = None
         self._conversion_factor = .44
         self._weight_store = [0] * CERTAINTY_CONSTANT
+        self._last_pos = False
+        self._last_neg = False
 
 
     def set_previous_weight(self, weight: float | None) -> None:
@@ -140,11 +144,21 @@ class Slot:
             # Calculate quantity removed
             quantity = round(difference_g / item.avg_weight)
             if quantity > 0:
-                print(f"{quantity} item(s) placed back")
-                quantity_to_modify_cart = quantity
+                if not self._last_pos:
+                    print(f"{quantity} item(s) placed back")
+                    quantity_to_modify_cart = quantity
+                    self._last_pos = True
+                    self._last_neg = False
             elif quantity < 0:
-                print(f"{quantity} item(s) removed")
-                quantity_to_modify_cart = quantity
+                if not self._last_neg:
+                    print(f"{quantity} item(s) removed")
+                    quantity_to_modify_cart = quantity
+                    self._last_neg = True
+                    self._last_pos = False
+        else:
+            # No change
+            self._last_pos = False
+            self._last_neg = False
         self._previous_weight_g = oldest_weight
         return [(item, quantity_to_modify_cart)]
 
