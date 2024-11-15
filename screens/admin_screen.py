@@ -18,6 +18,7 @@ class AdminScreen(QMainWindow):
         self.ui.setupUi(self)
 
         self.ui.openDoorButton.clicked.connect(lambda: mqtt.open_doors())
+        self.ui.openHatchButton.clicked.connect(lambda: mqtt.open_hatch())
         self.ui.exitButton.clicked.connect(self.on_show_welcome)
         self.ui.exitAppButton.clicked.connect(lambda: QCoreApplication.quit())
         self.ui.powerOff.clicked.connect(lambda: self.run_command("sudo poweroff"))
