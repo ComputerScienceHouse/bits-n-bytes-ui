@@ -17,7 +17,7 @@ import time
 import datetime
 import json
 
-KNOWN_TARE_WEIGHT_G = 226
+KNOWN_TARE_WEIGHT_G = 226.0
 
 SHELF_ITEM_MAP = {
     "80:65:99:49:EF:8E": [ Slot([database.MOCK_ITEMS[9]]) , Slot([database.MOCK_ITEMS[9]]) , Slot([database.MOCK_ITEMS[9]]) , Slot([database.MOCK_ITEMS[9]]) ],
