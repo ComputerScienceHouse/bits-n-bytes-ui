@@ -5,7 +5,7 @@ import config
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QStackedWidget
 from PySide6.QtGui import QFontDatabase, QColor
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, Signal
 from screens.cart_screen import CartScreen
 from screens.welcome_screen import WelcomeScreen
 from screens.reciept_screen import RecieptScreen
@@ -24,6 +24,9 @@ except ModuleNotFoundError:
     print("No config.py found, code might not work properly")
 
 class MainWindow(QMainWindow):
+    
+    show_receipt_signal = Signal()
+    
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setFixedSize(1024, 600)
@@ -33,6 +36,9 @@ class MainWindow(QMainWindow):
         # Tell MQTT to call the shelf manager "on_shelf_data_cb" function whenever it receives
         # data on the shelf data topic
         mqtt.shelf_data_received_callback = lambda client, userdata, msg: self.shelf_manager.on_shelf_data_cb(client, userdata, msg)
+        # TODO add door closed callback below
+        self.show_receipt_signal.connect(self.show_receipt_screen)
+        mqtt.doors_closed_status_callback = lambda: self.show_receipt_signal.emit()
 
     def initUI(self):
         # Create a QStackedWidget to manage different screens
@@ -66,7 +72,6 @@ class MainWindow(QMainWindow):
         self.welcome_screen.show_admin_signal.connect(lambda: self.stack.setCurrentIndex(3))
         self.admin_screen.show_welcome_signal.connect(lambda: self.stack.setCurrentIndex(0))
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart())
-        self.cart_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(0))
         self.admin_screen.ui.tareButton.clicked.connect(lambda: self.stack.setCurrentIndex(4))
         self.reciept_screen.go_home_signal.connect(lambda: self.stack.setCurrentIndex(0))
         self.stack.currentChanged.connect(self.on_screen_change_cb)
