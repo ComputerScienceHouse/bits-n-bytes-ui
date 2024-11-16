@@ -71,6 +71,7 @@ QListView {
 
 QListView::item {
     font-family: Roboto;
+    font-size: 14pt;
     background-color: #6C0164;  /* Light purple background for items */
     border: 1px solid #d4b1d7;  /* Light border */
     border-radius: 18px;        /* Rounded corners */
