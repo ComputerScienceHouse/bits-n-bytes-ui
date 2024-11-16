@@ -22,7 +22,7 @@ KNOWN_TARE_WEIGHT_G = 226.0
 SHELF_ITEM_MAP = {
     "MAC_1": [Slot([]), Slot([]), Slot([]), Slot([])],
     "80:65:99:49:EF:8E": [ Slot([database.MOCK_ITEMS[9]]) , Slot([database.MOCK_ITEMS[14]]) , Slot([database.MOCK_ITEMS[1]]) , Slot([database.MOCK_ITEMS[6]]) ],
-    "80:65:99:E3:EF:50": [ Slot([database.MOCK_ITEMS[12]]) , Slot([database.MOCK_ITEMS[12]]) , Slot([database.MOCK_ITEMS[12]]) , Slot([database.MOCK_ITEMS[12]]) ],
+    "80:65:99:E3:EF:50": [ Slot([database.MOCK_ITEMS[9]]) , Slot([database.MOCK_ITEMS[14]]) , Slot([database.MOCK_ITEMS[1]]) , Slot([database.MOCK_ITEMS[6]]) ],
     "80:65:99:E3:8B:92": [ Slot([database.MOCK_ITEMS[13]]) , Slot([database.MOCK_ITEMS[11]]) , Slot([database.MOCK_ITEMS[10]]) , Slot([database.MOCK_ITEMS[12]]) ],
 }
 NUM_SLOTS_PER_SHELF = 4
