@@ -36,7 +36,6 @@ class MainWindow(QMainWindow):
         # Tell MQTT to call the shelf manager "on_shelf_data_cb" function whenever it receives
         # data on the shelf data topic
         mqtt.shelf_data_received_callback = lambda client, userdata, msg: self.shelf_manager.on_shelf_data_cb(client, userdata, msg)
-        # TODO add door closed callback below
         self.show_receipt_signal.connect(self.show_receipt_screen)
         mqtt.doors_closed_status_callback = lambda: self.show_receipt_signal.emit()
 
@@ -55,7 +54,7 @@ class MainWindow(QMainWindow):
         # Instantiate the screens
         self.welcome_screen = WelcomeScreen()
         self.cart_screen = CartScreen(self.user)
-        self.shelf_manager = ShelfManager(add_to_cart_cb=self.cart_screen.add_item_to_cart, remove_from_cart_cb=self.cart_screen.remove_item_from_cart)
+        self.shelf_manager = ShelfManager(add_to_cart_cb=self.add_to_cart, remove_from_cart_cb=self.remove_from_cart)
         self.reciept_screen = RecieptScreen(self.cart_screen.cart)
         self.admin_screen = AdminScreen()
         self.tare_screen = TareScreen(shelf_manager=self.shelf_manager)
@@ -134,6 +133,14 @@ class MainWindow(QMainWindow):
             self.is_nfc_active = False  # Reset the NFC active flag
         else:
             print("No NFC thread to stop.")
+
+    def add_to_cart(self, item):
+        if self.stack.currentIndex() == 1:
+            self.cart_screen.add_item_to_cart(item)
+
+    def remove_from_cart(self, item):
+        if self.stack.currentIndex() == 1:
+            self.cart_screen.remove_item_from_cart(item)
 
 def load_stylesheet(theme):
     with open(f"resources/styles/{theme}_style.qss", "r") as file:
