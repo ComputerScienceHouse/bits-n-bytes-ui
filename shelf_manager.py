@@ -98,7 +98,7 @@ class ShelfManager:
             new_shelf = Shelf(SHELF_ITEM_MAP[mac], received_time, data)
             self._mac_to_shelf_map[mac] = new_shelf
         else:
-            print("ShelfManager: Received data from existing shelf")
+            #print("ShelfManager: Received data from existing shelf")
             # Existing shelf
             item_quantity_changes = self._mac_to_shelf_map[mac].update(data, received_time)
             for item, quantity_change in item_quantity_changes:

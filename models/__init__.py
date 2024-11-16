@@ -140,7 +140,7 @@ class Slot:
             self._conversion_factor = known_weight_g / (loaded_weight_g - zero_weight_g)
 
 
-    def update(self, new_weight: float) -> List[Tuple[Item, int]]:
+    def update(self, new_weight: float, print_debug=False) -> List[Tuple[Item, int]]:
         """
         Update this shelf with a new weight value. This calculates what items
         were removed, and returns a list of tuples of (Item, int).  Positive
@@ -163,6 +163,9 @@ class Slot:
         # Difference from previous iteration to now
         difference_g = rolling_median - self._previous_weight_g
         remainder_weight = abs(difference_g % item.avg_weight)
+        if print_debug:
+            print(f"Weight diff g: {difference_g}")
+            print(f"\tRemainder: {remainder_weight}")
         quantity_to_modify_cart = 0
         # Check that remainder is within top std_dev or bottom_std of the avg_weight
         if item.avg_weight - item.std_weight <= remainder_weight <= item.avg_weight + item.std_weight:
@@ -170,20 +173,20 @@ class Slot:
             quantity = round(difference_g / item.avg_weight)
             if quantity > 0:
                 if not self._last_pos:
-                    print(f"{quantity} item(s) placed back")
+                    print(f"\t{quantity} item(s) placed back")
                     quantity_to_modify_cart = quantity
                     self._last_pos = True
                     self._last_neg = False
                     self._iterations_no_update = 0
             elif quantity < 0:
                 if not self._last_neg:
-                    print(f"{quantity} item(s) removed")
+                    print(f"\t{quantity} item(s) removed")
                     quantity_to_modify_cart = quantity
                     self._last_neg = True
                     self._last_pos = False
                     self._iterations_no_update = 0
             else:
-                print("No cart updates")
+                #print("No cart updates")
                 if self._iterations_no_update >= ITERS_REQD_NO_UPDATE:
                     self._last_pos = False
                     self._last_neg = False
@@ -237,7 +240,7 @@ class Shelf:
             if i < len(self.slots) and raw_weights[i] is not None:
                 # Update the weight
                 if self.slots[i] is not None:
-                    items_added_list = self.slots[i].update(raw_weights[i])
+                    items_added_list = self.slots[i].update(raw_weights[i], print_debug=(i == 0))
                     # Add items returned to the dictionary of total item differences
                     for item_added, quantity_added in items_added_list:
                         if item_added not in results_dict:
