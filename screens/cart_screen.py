@@ -23,7 +23,6 @@ class CartScreen(QMainWindow):
 
         # Connect the button click to the method
         self.ui.addButton.clicked.connect(self.on_add_to_cart)
-        self.ui.navRecieptButton.clicked.connect(self.on_show_receipt)  # Connect to a new method
         # intialize subtotal
         self.update_subtotal()
 
