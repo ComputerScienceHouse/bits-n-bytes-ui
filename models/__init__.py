@@ -174,6 +174,7 @@ class Slot:
             print(f"\tRemainder: {remainder_weight}")
         if abs(difference_g) > EXTRANEOUS_VALUE_LIMIT:
             print(f"\tExtraneous value, ignoring.")
+            self._previous_weight_g = oldest_weight
             return []
         quantity_to_modify_cart = 0
         # Check that remainder is within top std_dev or bottom_std of the avg_weight
