@@ -54,6 +54,10 @@ class CartScreen(QMainWindow):
         self.update_subtotal()
 
 
+    def clear_cart(self) -> None:
+        self.model.clear()
+
+
     def on_add_to_cart(self): 
         # TODO: once ESP32 stuff is implemented bascially refer to the index of said item here
         id = 3
@@ -74,7 +78,7 @@ class CartScreen(QMainWindow):
     def on_show_receipt(self):
         # Create an instance of the receipt screen and pass the cart
         self.show_receipt_signal.emit()
-        self.reciept_screen = RecieptScreen(self.cart) 
+        #self.reciept_screen = RecieptScreen(self.cart)
 
     def set_user(self, user):
         self.user = user

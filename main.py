@@ -83,10 +83,12 @@ class MainWindow(QMainWindow):
         # Only show receipt screen if we are on the cart screen
         if self.stack.currentIndex() == 1:
             self.stack.setCurrentIndex(2)
+            self.reciept_screen.display_cart_items()
             self.reciept_screen.run_timer()
 
     def go_to_cart(self):
         mqtt.open_doors()
+        self.cart_screen.clear_cart()
         widget.stack.setCurrentIndex(1)
 
     def on_screen_change_cb(self, index):
