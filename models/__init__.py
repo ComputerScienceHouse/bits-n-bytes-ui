@@ -5,6 +5,7 @@ from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex
 from typing import List, Any, Tuple
 import copy
 import datetime
+
 WEIGHT_UNIT = "g"
 CERTAINTY_CONSTANT = 2  # number of update iterations before an item is classified as "added" or "removed"
 ITERS_REQD_NO_UPDATE = 0
@@ -273,6 +274,7 @@ class Shelf:
 class Cart:
     def __init__(self):
         self.items = {}
+        self.subtotal = 0.0;
 
     def add(self, item: Item):
         if item in self.items:
@@ -284,14 +286,17 @@ class Cart:
         if item in self.items:
             self.items[item] -= 1
 
-    def get_subtotal(self):
-        subtotal = 0.0
+    def get_subtotal(self, caller):
+        from screens.cart_screen import CartScreen
+        if isinstance(caller, CartScreen):
+            for item, quantity in self.items.items():
+                print("Item:", item)
+                print("Quantity:", quantity)
+                self.subtotal += item.price * quantity
+            return self.subtotal
 
-        for item, quantity in self.items.items():
-            subtotal += item.price * quantity
-
-        return subtotal
-
+    def retrieve_subtotal(self):
+        return self.subtotal
 
 class ItemListModel(QAbstractListModel):
     def __init__(self, cart: Cart, parent=None):

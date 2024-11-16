@@ -64,6 +64,9 @@ class Ui_Cart(object):
         self.nameLabel = QLabel(self.centralwidget)
         self.nameLabel.setObjectName(u"nameLabel")
         self.nameLabel.setGeometry(QRect(20, 10, 241, 31))
+        self.addToCart = QPushButton(self.centralwidget)
+        self.addToCart.setObjectName(u"addToCart")
+        self.addToCart.setGeometry(QRect(110, 50, 121, 31))
         Cart.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Cart)
@@ -84,5 +87,6 @@ class Ui_Cart(object):
         self.cancelButton.setProperty(u"type", QCoreApplication.translate("Cart", u"secondary", None))
         self.nameLabel.setText(QCoreApplication.translate("Cart", u"<html><head/><body><p><span style=\" font-size:18pt;\">Cart</span></p></body></html>", None))
         self.nameLabel.setProperty(u"class", QCoreApplication.translate("Cart", u"heading", None))
+        self.addToCart.setText(QCoreApplication.translate("Cart", u"Add", None))
     # retranslateUi
 
