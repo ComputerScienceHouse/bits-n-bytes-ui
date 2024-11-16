@@ -20,9 +20,8 @@ class CartScreen(QMainWindow):
         # Initialize an index for the next item and set the first item
         self.model = ItemListModel(self.cart)
         self.ui.itemList.setModel(self.model)
-
+    
         self.update_subtotal()
-
 
     def add_item_to_cart(self, item: Item) -> None:
         """
@@ -35,7 +34,6 @@ class CartScreen(QMainWindow):
         """
         self.model.addItem(item)
         self.update_subtotal()
-
 
     def remove_item_from_cart(self, item: Item) -> None:
         """
@@ -50,11 +48,9 @@ class CartScreen(QMainWindow):
         self.model.removeItem(item)
         self.update_subtotal()
 
-
     def clear_cart(self) -> None:
         self.model.clear()
         self.update_subtotal()
-
 
     def on_add_to_cart(self): 
         # TODO: once ESP32 stuff is implemented bascially refer to the index of said item here
@@ -63,14 +59,13 @@ class CartScreen(QMainWindow):
         if item:
             self.add_item_to_cart(item)
 
-
     def on_remove_from_cart(self, item):
        self.model.removeItem(item)
        self.update_subtotal()
 
     def update_subtotal(self):
         # Update the subtotal label
-        subtotal = self.cart.get_subtotal()
+        subtotal = self.cart.get_subtotal(self)
         self.ui.subtotalLabel.setText(f"Subtotal: ${subtotal:.2f}")
 
     def on_show_receipt(self):
@@ -83,3 +78,6 @@ class CartScreen(QMainWindow):
         print(user)
         if self.user:
             self.ui.nameLabel.setText(f"Welcome, {self.user}")
+
+    def activateScreen(self):
+        self.screenActivated.emit()
