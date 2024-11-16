@@ -16,6 +16,7 @@ import resources_rc  # Ensure your resources are compiled and available
 import nfc
 from concurrent.futures import ThreadPoolExecutor
 import database
+from shelf_manager import ShelfManager
 
 try:
     import config
@@ -28,6 +29,10 @@ class MainWindow(QMainWindow):
         self.setFixedSize(1024, 600)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.initUI()
+        # Create the shelf manager
+        # Tell MQTT to call the shelf manager "on_shelf_data_cb" function whenever it receives
+        # data on the shelf data topic
+        mqtt.shelf_data_received_callback = lambda client, userdata, msg: self.shelf_manager.on_shelf_data_cb(client, userdata, msg)
 
     def initUI(self):
         # Create a QStackedWidget to manage different screens
@@ -44,9 +49,10 @@ class MainWindow(QMainWindow):
         # Instantiate the screens
         self.welcome_screen = WelcomeScreen()
         self.cart_screen = CartScreen(self.user)
+        self.shelf_manager = ShelfManager(add_to_cart_cb=self.cart_screen.add_item_to_cart, remove_from_cart_cb=self.cart_screen.remove_item_from_cart)
         self.reciept_screen = RecieptScreen(self.cart_screen.cart)
         self.admin_screen = AdminScreen()
-        self.tare_screen = TareScreen()
+        self.tare_screen = TareScreen(shelf_manager=self.shelf_manager)
 
         # Add screens to the stack with respective indices
         self.stack.addWidget(self.welcome_screen)    # Index 0
@@ -64,6 +70,7 @@ class MainWindow(QMainWindow):
         self.admin_screen.ui.tareButton.clicked.connect(lambda: self.stack.setCurrentIndex(4))
         self.reciept_screen.go_home_signal.connect(lambda: self.stack.setCurrentIndex(0))
         self.stack.currentChanged.connect(self.on_screen_change_cb)
+        self.tare_screen.show_admin_signal.connect(lambda: self.stack.setCurrentIndex(3))
         # Navigate to the welcome screen, triggering the NFC callback
         self.stack.setCurrentIndex(1)
         self.stack.setCurrentIndex(0)
@@ -83,7 +90,6 @@ class MainWindow(QMainWindow):
         Params:
         index: The index of the screen switched to
         """
-        print(index)
         if index == 0 and not self.is_nfc_active:
             # Switched to the welcome screen
             self.start_nfc_scan()
