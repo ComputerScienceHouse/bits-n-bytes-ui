@@ -168,7 +168,7 @@ class Slot:
             print(f"\tRemainder: {remainder_weight}")
         quantity_to_modify_cart = 0
         # Check that remainder is within top std_dev or bottom_std of the avg_weight
-        if item.avg_weight - item.std_weight <= remainder_weight <= item.avg_weight + item.std_weight:
+        if  item.avg_weight - item.std_weight <= remainder_weight or remainder_weight <= item.std_weight:
             # Calculate quantity removed
             quantity = round(difference_g / item.avg_weight)
             if quantity > 0:
