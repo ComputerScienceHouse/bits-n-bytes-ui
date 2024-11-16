@@ -56,6 +56,7 @@ class CartScreen(QMainWindow):
 
     def clear_cart(self) -> None:
         self.model.clear()
+        self.update_subtotal()
 
 
     def on_add_to_cart(self): 
