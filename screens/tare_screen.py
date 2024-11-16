@@ -39,22 +39,22 @@ class TareScreen(QMainWindow):
 
         # Set up a list of the buttons
         self.button_list = [
-          TareButton(self.ui.oneA, "80:65:99:49:EF:8E", 0),
-          TareButton(self.ui.oneB, "80:65:99:49:EF:8E", 1),
-          TareButton(self.ui.oneC, "80:65:99:49:EF:8E", 2),
-          TareButton(self.ui.oneD, "80:65:99:49:EF:8E", 3),
-          TareButton(self.ui.twoA, "", 0),
-          TareButton(self.ui.twoB, "", 1),
-          TareButton(self.ui.twoC, "", 2),
-          TareButton(self.ui.twoD, "", 3),
-          TareButton(self.ui.threeA, "", 0),
-          TareButton(self.ui.threeB, "", 1),
-          TareButton(self.ui.threeC, "", 2),
-          TareButton(self.ui.threeD, "", 3),
-          TareButton(self.ui.fourA, "", 0),
-          TareButton(self.ui.fourB, "", 1),
-          TareButton(self.ui.fourC, "", 2),
-          TareButton(self.ui.fourD, "", 3),
+          TareButton(self.ui.oneA, "", 0),
+          TareButton(self.ui.oneB, "", 1),
+          TareButton(self.ui.oneC, "", 2),
+          TareButton(self.ui.oneD, "", 3),
+          TareButton(self.ui.twoA, "80:65:99:49:EF:8E", 0),
+          TareButton(self.ui.twoB, "80:65:99:49:EF:8E", 1),
+          TareButton(self.ui.twoC, "80:65:99:49:EF:8E", 2),
+          TareButton(self.ui.twoD, "80:65:99:49:EF:8E", 3),
+          TareButton(self.ui.threeA, "80:65:99:E3:EF:50", 0),
+          TareButton(self.ui.threeB, "80:65:99:E3:EF:50", 1),
+          TareButton(self.ui.threeC, "80:65:99:E3:EF:50", 2),
+          TareButton(self.ui.threeD, "80:65:99:E3:EF:50", 3),
+          TareButton(self.ui.fourA, "80:65:99:E3:8B:92", 0),
+          TareButton(self.ui.fourB, "80:65:99:E3:8B:92", 1),
+          TareButton(self.ui.fourC, "80:65:99:E3:8B:92", 2),
+          TareButton(self.ui.fourD, "80:65:99:E3:8B:92", 3),
         ]
         # Set default color and connect the click events
         for tare_button in self.button_list:

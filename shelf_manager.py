@@ -20,10 +20,10 @@ import json
 KNOWN_TARE_WEIGHT_G = 226.0
 
 SHELF_ITEM_MAP = {
+    "MAC_1": [Slot([]), Slot([]), Slot([]), Slot([])],
     "80:65:99:49:EF:8E": [ Slot([database.MOCK_ITEMS[9]]) , Slot([database.MOCK_ITEMS[1]]) , Slot([database.MOCK_ITEMS[9]]) , Slot([database.MOCK_ITEMS[6]]) ],
-    "MAC_2": [ Slot([]) , Slot([]) , Slot([]) , Slot([]) ],
-    "MAC_3": [ Slot([]) , Slot([]) , Slot([]) , Slot([]) ],
-    "MAC_4": [ Slot([]) , Slot([]) , Slot([]) , Slot([]) ],
+    "80:65:99:E3:EF:50": [ Slot([]) , Slot([]) , Slot([]) , Slot([]) ],
+    "80:65:99:E3:8B:92": [ Slot([]) , Slot([]) , Slot([]) , Slot([]) ],
 }
 NUM_SLOTS_PER_SHELF = 4
 LOOP_DELAY_MS = 200
