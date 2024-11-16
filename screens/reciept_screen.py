@@ -33,6 +33,7 @@ class RecieptScreen(QMainWindow):
 
         self.ui.textButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
         self.ui.emailButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))
+        self.ui.noRecieptButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0), self.timer.stop())
 
         self.timer.timeout.connect(self.update_countdown)
 
