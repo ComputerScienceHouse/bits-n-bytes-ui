@@ -292,7 +292,7 @@ class Cart:
             for item, quantity in self.items.items():
                 print("Item:", item)
                 print("Quantity:", quantity)
-                self.subtotal += item.price * quantity
+                self.subtotal += item.price
             return self.subtotal
 
     def retrieve_subtotal(self):
