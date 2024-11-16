@@ -110,6 +110,11 @@ class ShelfManager:
                         self.add_to_cart_cb(item)
 
 
+    def set_conversion_factor(self, shelf_mac: str, slot_index: int, conversion_factor: float):
+        if shelf_mac in self._mac_to_shelf_map:
+            self._mac_to_shelf_map[shelf_mac].slots[slot_index].set_conversion_factor(conversion_factor)
+
+
     def tare_shelf(self, shelf_mac: str, slot_index: int, zero_weight: float, loaded_weight: float):
         """
         Tare a shelf
@@ -123,7 +128,8 @@ class ShelfManager:
 
         """
         if shelf_mac in self._mac_to_shelf_map:
-            self._mac_to_shelf_map[shelf_mac].slots[slot_index].calc_conversion_factor(zero_weight, loaded_weight, KNOWN_TARE_WEIGHT_G)
+            conversion_factor = self._mac_to_shelf_map[shelf_mac].slots[slot_index].calc_conversion_factor(zero_weight, loaded_weight, KNOWN_TARE_WEIGHT_G)
+            return conversion_factor
 
 
     def get_most_recent_value(self, shelf_mac: str, slot_index: int) -> float | None:
