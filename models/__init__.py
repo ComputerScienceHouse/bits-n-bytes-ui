@@ -286,7 +286,7 @@ class Cart:
         if item in self.items:
             self.items[item] -= 1
 
-    def get_subtotal(self, caller):
+    def update_subtotal(self, caller):
         from screens.cart_screen import CartScreen
         if isinstance(caller, CartScreen):
             for item, quantity in self.items.items():
@@ -295,8 +295,13 @@ class Cart:
                 self.subtotal += item.price
             return self.subtotal
 
-    def retrieve_subtotal(self):
+    def get_subtotal(self):
         return self.subtotal
+    
+    def clear(self):
+        print("Clearing cart")
+        self.items = {}
+        self.subtotal = 0.0
 
 class ItemListModel(QAbstractListModel):
     def __init__(self, cart: Cart, parent=None):
@@ -324,7 +329,7 @@ class ItemListModel(QAbstractListModel):
 
         return None
 
-    def addItem(self, item):
+    def addItem(self, item, caller):
         if item not in self.cart.items:
             # Insert a new row if the item is not already in the cart
             position = len(self.cart.items)
@@ -333,8 +338,10 @@ class ItemListModel(QAbstractListModel):
             self.endInsertRows()
         else:
             # Just update the existing item's quantity
+            from screens.cart_screen import CartScreen
             position = list(self.cart.items.keys()).index(item)
-            self.cart.add(item)
+            if isinstance(caller, CartScreen):
+                self.cart.add(item)
             top_left = self.index(position, 0)
             self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole])
 

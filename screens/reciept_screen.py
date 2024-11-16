@@ -45,9 +45,9 @@ class RecieptScreen(QMainWindow):
         # self.model.clear()  # Clear existing items
         for item in self.cart.items:
             # Add each item as a new list entry
-            self.model.addItem(item)
+            self.model.addItem(item, self)
 
-        subtotal = self.cart.retrieve_subtotal()
+        subtotal = self.cart.get_subtotal()
         print(f"Subtotal: {subtotal}")  # Debugging
         self.ui.subtotalLabel.setText(f"Subtotal: ${subtotal:.2f}")
         
