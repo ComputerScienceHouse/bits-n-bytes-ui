@@ -169,17 +169,19 @@ class Slot:
             # Calculate quantity removed
             quantity = round(difference_g / item.avg_weight)
             if quantity > 0:
-                print(f"{quantity} item(s) placed back")
-                quantity_to_modify_cart = quantity
-                self._last_pos = True
-                self._last_neg = False
-                self._iterations_no_update = 0
+                if not self._last_pos:
+                    print(f"{quantity} item(s) placed back")
+                    quantity_to_modify_cart = quantity
+                    self._last_pos = True
+                    self._last_neg = False
+                    self._iterations_no_update = 0
             elif quantity < 0:
-                print(f"{quantity} item(s) removed")
-                quantity_to_modify_cart = quantity
-                self._last_neg = True
-                self._last_pos = False
-                self._iterations_no_update = 0
+                if not self._last_neg:
+                    print(f"{quantity} item(s) removed")
+                    quantity_to_modify_cart = quantity
+                    self._last_neg = True
+                    self._last_pos = False
+                    self._iterations_no_update = 0
             else:
                 if self._iterations_no_update >= ITERS_REQD_NO_UPDATE:
                     self._last_pos = False
