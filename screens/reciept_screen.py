@@ -42,7 +42,7 @@ class RecieptScreen(QMainWindow):
 
     def display_cart_items(self):
         print("Reciept items:", self.cart.items)  # Debugging line
-        self.model.clear()  # Clear existing items
+        # self.model.clear()  # Clear existing items
         for item in self.cart.items:
             print(item)
             # Add each item as a new list entry
