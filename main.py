@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
         # data on the shelf data topic
         mqtt.shelf_data_received_callback = lambda client, userdata, msg: self.shelf_manager.on_shelf_data_cb(client, userdata, msg)
         # TODO add door closed callback below
-        #mqtt.doors_status_topic = lambda
+        mqtt.doors_closed_status_callback = lambda: self.show_receipt_screen()
 
     def initUI(self):
         # Create a QStackedWidget to manage different screens
