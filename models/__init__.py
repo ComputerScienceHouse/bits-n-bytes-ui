@@ -190,12 +190,6 @@ class Slot:
                     self._last_neg = abs(quantity)
                     self._last_pos = False
                     self._iterations_no_update = 0
-                # if item.avg_weight - item.std_weight <= abs(difference_g / quantity) <= item.avg_weight + item.std_weight:
-                #     print(f"\t{quantity} item(s) removed")
-                #     quantity_to_modify_cart = -1 * (abs(quantity) + self._last_neg)
-                #     self._last_neg += abs(quantity_to_modify_cart)
-                #     self._last_pos = False
-                #     self._iterations_no_update = 0
             else:
                 #print("No cart updates")
                 if self._iterations_no_update >= ITERS_REQD_NO_UPDATE:
