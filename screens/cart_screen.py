@@ -20,6 +20,7 @@ class CartScreen(QMainWindow):
         # Initialize an index for the next item and set the first item
         self.model = ItemListModel(self.cart)
         self.ui.itemList.setModel(self.model)
+        self.ui.addToCart.clicked.connect(self.on_add_to_cart)
     
         self.update_subtotal()
 
