@@ -59,6 +59,7 @@ def on_message(client, userdata, msg):
     if msg.topic == doors_status_topic:
         if callable(doors_closed_status_callback):
             if msg.payload.decode('utf-8') == "closed":
+                print("Doors are closed")
                 doors_closed_status_callback()
 
 
