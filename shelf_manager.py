@@ -128,7 +128,7 @@ class ShelfManager:
 
     def get_most_recent_value(self, shelf_mac: str, slot_index: int) -> float | None:
         if shelf_mac in self._mac_to_shelf_map:
-            return self._mac_to_shelf_map[shelf_mac].slots[slot_index].get_previous_weight()
+            return self._mac_to_shelf_map[shelf_mac].slots[slot_index].get_previous_raw_weight()
         else:
             print("Get most recent value: Shelf not found")
             return None

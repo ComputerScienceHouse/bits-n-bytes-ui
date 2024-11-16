@@ -62,6 +62,7 @@ class Slot:
     _weight_store: list
     _last_pos: bool
     _last_neg: bool
+    _previous_raw_weight: float | None
 
     def __init__(self, items: List[Item]):
         """
@@ -74,6 +75,7 @@ class Slot:
         self._weight_store = [0] * CERTAINTY_CONSTANT
         self._last_pos = False
         self._last_neg = False
+        self._previous_raw_weight = 0
 
 
     def set_previous_weight(self, weight: float | None) -> None:
@@ -94,6 +96,26 @@ class Slot:
 
         """
         return copy.deepcopy(self._previous_weight_g)
+
+
+    def set_previous_raw_weight(self, weight: float | None) -> None:
+        """
+        Set the previous weight of this shelf to this weight
+        Args:
+            weight: The weight to set as a float
+
+        Returns:
+        """
+        self._previous_raw_weight = weight
+
+
+    def get_previous_raw_weight(self) -> float | None:
+        """
+        Get previous weight of this slot
+        Returns:
+
+        """
+        return copy.deepcopy(self._previous_raw_weight)
 
 
     def calc_conversion_factor(self, zero_weight_g: float, loaded_weight_g: float, known_weight_g: float):
@@ -125,6 +147,7 @@ class Slot:
 
         Returns:
         """
+        self._previous_raw_weight = new_weight
         item = self.items[0]
         # Normalize weight using conversion factor
         normalized_weight_g = new_weight * self._conversion_factor
