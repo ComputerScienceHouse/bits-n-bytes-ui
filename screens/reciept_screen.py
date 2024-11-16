@@ -15,7 +15,8 @@ class RecieptScreen(QMainWindow):
         self.ui.setupUi(self)
         self.cart = cart   
 
-        self.model = ItemListModel(cart)
+        item_list_cart = Cart()
+        self.model = ItemListModel(item_list_cart)
         self.ui.itemList.setModel(self.model)
 
         # self.timer_button = QPushButton()
