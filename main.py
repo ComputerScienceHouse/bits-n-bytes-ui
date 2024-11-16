@@ -72,7 +72,6 @@ class MainWindow(QMainWindow):
         self.welcome_screen.show_admin_signal.connect(lambda: self.stack.setCurrentIndex(3))
         self.admin_screen.show_welcome_signal.connect(lambda: self.stack.setCurrentIndex(0))
         self.welcome_screen.ui.tapButton.clicked.connect(lambda: self.go_to_cart())
-        self.cart_screen.ui.navButton.clicked.connect(lambda: self.stack.setCurrentIndex(0))
         self.admin_screen.ui.tareButton.clicked.connect(lambda: self.stack.setCurrentIndex(4))
         self.reciept_screen.go_home_signal.connect(lambda: self.stack.setCurrentIndex(0))
         self.stack.currentChanged.connect(self.on_screen_change_cb)
