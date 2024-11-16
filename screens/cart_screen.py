@@ -21,7 +21,7 @@ class CartScreen(QMainWindow):
         self.model = ItemListModel(self.cart)
         self.ui.itemList.setModel(self.model)
         self.ui.addToCart.clicked.connect(self.on_add_to_cart)
-    
+        self.ui.navReciept.clicked.connect(self.on_show_receipt)
         self.update_subtotal()
 
     def add_item_to_cart(self, item: Item) -> None:
@@ -33,7 +33,7 @@ class CartScreen(QMainWindow):
         Returns:
             None
         """
-        self.model.addItem(item)
+        self.model.addItem(item, self)
         self.update_subtotal()
 
     def remove_item_from_cart(self, item: Item) -> None:
@@ -50,6 +50,7 @@ class CartScreen(QMainWindow):
         self.update_subtotal()
 
     def clear_cart(self) -> None:
+        self.cart.clear()
         self.model.clear()
         self.update_subtotal()
 
@@ -66,7 +67,7 @@ class CartScreen(QMainWindow):
 
     def update_subtotal(self):
         # Update the subtotal label
-        subtotal = self.cart.get_subtotal(self)
+        subtotal = self.cart.update_subtotal(self)
         self.ui.subtotalLabel.setText(f"Subtotal: ${subtotal:.2f}")
 
     def on_show_receipt(self):
