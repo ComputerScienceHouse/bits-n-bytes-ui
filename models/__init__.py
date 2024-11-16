@@ -186,7 +186,7 @@ class Slot:
                     self._last_pos = False
                     self._iterations_no_update = 0
                 elif item.avg_weight - item.std_weight <= abs(difference_g / quantity) <= item.avg_weight + item.std_weight:
-                    quantity_to_modify_cart = quantity + self._last_neg
+                    quantity_to_modify_cart = -1 * (abs(quantity) + self._last_neg)
                     self._last_neg += abs(quantity_to_modify_cart)
                     self._last_pos = False
                     self._iterations_no_update = 0
