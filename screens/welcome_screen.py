@@ -65,8 +65,8 @@ class WelcomeScreen(QMainWindow):
         width, height = self.size().width(), self.size().height()
 
         # Calculate dynamic dead zones
-        dead_zone_width = width * 0.25
-        dead_zone_height = height * 0.25
+        dead_zone_width = width * 0.50
+        dead_zone_height = height * 0.50
 
         if click_x < dead_zone_width:
             if click_y < dead_zone_height:
