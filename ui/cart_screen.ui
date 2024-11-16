@@ -49,6 +49,25 @@
      <string>heading</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="navButton">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>0</y>
+      <width>151</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Go to Welcome Screen</string>
+    </property>
+    <property name="type" stdset="0">
+     <string>normal</string>
+    </property>
+   </widget>
    <widget class="QGroupBox" name="nutritionBox">
     <property name="geometry">
      <rect>
@@ -160,12 +179,12 @@
      <string>heading</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="addButton">
+   <widget class="QPushButton" name="navRecieptButton">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>60</y>
-      <width>101</width>
+      <x>280</x>
+      <y>0</y>
+      <width>151</width>
       <height>51</height>
      </rect>
     </property>
@@ -173,7 +192,7 @@
      <string notr="true"/>
     </property>
     <property name="text">
-     <string>Add Item</string>
+     <string>Go To Reciept</string>
     </property>
     <property name="type" stdset="0">
      <string>normal</string>
