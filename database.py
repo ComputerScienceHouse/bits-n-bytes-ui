@@ -26,9 +26,11 @@ MOCK_ITEMS = {
     7: Item(7, "Swedish Fish Original", "789012345678", 19.99, 100, 141, 10, "images/item_placeholder.png", "pouch"),
     8: Item(8, "Welch's Fruit Snacks", "890123456789", 39.99, 40, 142, 14, "images/item_placeholder.png", "rectangle"),
     9: Item(9, "Sour Patch Kids", "", 3.50, 100, 226, 20, "images/item_placeholder.png", "sour-patch"),
-    10: Item(10, "12 Pack Pepsi", "", 5.50, 100, 4000, 500, "images/item_placeholder.png", "pepsi-box"),
+    10: Item(10, "12 Pack Wild Cherry Pepsi", "", 5.50, 100, 4000, 500, "images/item_placeholder.png", "pepsi-box"),
     11: Item(11, "12 Pack Loganberry", "", 5.50, 100, 4000, 500, "images/item_placeholder.png", "loganberry-box"),
-    12: Item(12, "EMPTY", "", 0, 100, 10000000, 0, "images/item_placeholder.png", "")
+    12: Item(12, "EMPTY", "", 0, 100, 10000000, 0, "images/item_placeholder.png", ""),
+    13: Item(13, "Wild Cherry Pepsi Can", "", 2.50, 100, 200, 20, "images/item_placeholder.png", ""),
+    14: Item(1, "Little Bites Blueberry", "123456789012", 2.10, 100, 47, 10, "images/item_placeholder.png", "pouch"),
 }
 
 MOCK_USERS = {

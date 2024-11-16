@@ -122,7 +122,7 @@ class Slot:
         return copy.deepcopy(self._previous_raw_weight)
 
 
-    def calc_conversion_factor(self, zero_weight_g: float, loaded_weight_g: float, known_weight_g: float):
+    def calc_conversion_factor(self, zero_weight_g: float, loaded_weight_g: float, known_weight_g: float) -> float:
         """
         Calculate and set the conversion factor of this slot.
         Args:
@@ -139,6 +139,11 @@ class Slot:
             print("Loaded weight and zero weight are the same, can't calculate conversion factor.")
         else:
             self._conversion_factor = known_weight_g / (loaded_weight_g - zero_weight_g)
+        return self._conversion_factor
+
+
+    def set_conversion_factor(self, conversion_factor: float):
+        self._conversion_factor = conversion_factor
 
 
     def update(self, new_weight: float, print_debug=False) -> List[Tuple[Item, int]]:
