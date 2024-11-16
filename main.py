@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
         self.stack.currentChanged.connect(self.on_screen_change_cb)
         self.tare_screen.show_admin_signal.connect(lambda: self.stack.setCurrentIndex(3))
         # Navigate to the welcome screen, triggering the NFC callback
-        self.stack.setCurrentIndex(1)
+        self.stack.setCurrentIndex(3)
         self.stack.setCurrentIndex(0)
 
     def show_receipt_screen(self):
