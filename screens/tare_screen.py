@@ -74,7 +74,8 @@ class TareScreen(QMainWindow):
             with open(TARE_STORE_FILE, 'r') as in_file:
                 data = json.load(in_file)
         for button in self.button_list:
-            self.shelf_manager.set_conversion_factor(button.shelf_mac, button.slot_index, data[button.shelf_mac][button.slot_index])
+            if button.shelf_mac != "":
+                self.shelf_manager.set_conversion_factor(button.shelf_mac, button.slot_index, data[button.shelf_mac][button.slot_index])
 
 
     def change_button_color(self, button: TareButton):
