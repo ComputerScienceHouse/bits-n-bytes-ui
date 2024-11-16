@@ -184,7 +184,7 @@ class Slot:
                     self._last_neg = 0
                     self._iterations_no_update = 0
             elif quantity < 0:
-                if self._last_neg != 0:
+                if self._last_neg == 0:
                     print(f"\t{quantity} item(s) removed")
                     quantity_to_modify_cart = quantity
                     self._last_neg = abs(quantity)
