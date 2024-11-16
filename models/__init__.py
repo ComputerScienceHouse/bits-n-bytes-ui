@@ -7,7 +7,7 @@ import copy
 import datetime
 WEIGHT_UNIT = "g"
 CERTAINTY_CONSTANT = 3  # number of update iterations before an item is classified as "added" or "removed"
-ITERS_REQD_NO_UPDATE = 3
+ITERS_REQD_NO_UPDATE = 0
 
 class Item:
     def __init__(
@@ -154,7 +154,7 @@ class Slot:
         item = self.items[0]
         # Normalize weight using conversion factor
         normalized_weight_g = new_weight * self._conversion_factor
-        print(f"Normalized weight: {normalized_weight_g}g")
+        #print(f"Normalized weight: {normalized_weight_g}g")
         # Add this weight to the weight store, and remove the oldest stored weight
         self._weight_store.insert(0, normalized_weight_g)
         oldest_weight = self._weight_store.pop()
@@ -183,6 +183,7 @@ class Slot:
                     self._last_pos = False
                     self._iterations_no_update = 0
             else:
+                print("No cart updates")
                 if self._iterations_no_update >= ITERS_REQD_NO_UPDATE:
                     self._last_pos = False
                     self._last_neg = False
