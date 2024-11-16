@@ -30,7 +30,7 @@ MOCK_ITEMS = {
     11: Item(11, "12 Pack Loganberry", "", 5.50, 100, 4000, 500, "images/item_placeholder.png", "loganberry-box"),
     12: Item(12, "EMPTY", "", 0, 100, 10000000, 0, "images/item_placeholder.png", ""),
     13: Item(13, "Wild Cherry Pepsi Can", "", 2.50, 100, 200, 20, "images/item_placeholder.png", ""),
-    14: Item(1, "Little Bites Blueberry", "123456789012", 2.10, 100, 47, 10, "images/item_placeholder.png", "pouch"),
+    14: Item(14, "Little Bites Blueberry", "123456789012", 2.10, 100, 47, 10, "images/item_placeholder.png", "pouch"),
 }
 
 MOCK_USERS = {
