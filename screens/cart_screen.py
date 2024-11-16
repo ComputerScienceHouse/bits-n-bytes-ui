@@ -21,9 +21,6 @@ class CartScreen(QMainWindow):
         self.model = ItemListModel(self.cart)
         self.ui.itemList.setModel(self.model)
 
-        # Connect the button click to the method
-        self.ui.addButton.clicked.connect(self.on_add_to_cart)
-        # intialize subtotal
         self.update_subtotal()
 
 
