@@ -117,10 +117,10 @@ class MainWindow(QMainWindow):
                 print(f"User {user} found for token {token}")
                 self.cart_screen.set_user(user.name)
                 self.go_to_cart()  # Switch to the cart screen
+                self.stop_nfc_scan()
             else:
                 print("User not found for scanned token.")
 
-            self.stop_nfc_scan()
             # Stop NFC thread after processing the token
     
     def stop_nfc_scan(self):    
