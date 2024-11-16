@@ -5,7 +5,7 @@ from .ui_welcome import Ui_Welcome
 from screens.admin_screen import AdminScreen
 import resources_rc
 
-ADMIN_TAP_DEAD_ZONE = 200
+ADMIN_TAP_DEAD_ZONE = 250
 ADMIN_TARGET_SEQUENCE = [2, 1, 3, 4]
 
 class WelcomeScreen(QMainWindow):
@@ -61,53 +61,35 @@ class WelcomeScreen(QMainWindow):
 
 
     def mousePressEvent(self, event):
-        """
-        Callback for when the mouse is clicked (screen is tapped)
-        Args:
-            event:
+        click_x, click_y = event.position().x(), event.position().y()
+        width, height = self.size().width(), self.size().height()
 
-        Returns:
+        # Calculate dynamic dead zones
+        dead_zone_width = width * 0.50
+        dead_zone_height = height * 0.50
 
-        """
-        click_x, click_y = (event.position().x(), event.position().y())
-        print(f"{click_x}, {click_y}")
-        sequence_completed = False
-        # Check if any of the corners were clicked
-        if click_x < ADMIN_TAP_DEAD_ZONE:
-            if click_y < ADMIN_TAP_DEAD_ZONE:
-                # Top left
-                location_id = 1
-                if self.is_sequence_completed(location_id):
-                    self.on_show_admin()
-                    pass
-            elif click_y > self.size().height() - ADMIN_TAP_DEAD_ZONE:
-                # Bottom left
-                location_id = 3
-                if self.is_sequence_completed(location_id):
-                    self.on_show_admin()
-                    pass
+        if click_x < dead_zone_width:
+            if click_y < dead_zone_height:
+                location_id = 1  # Top-left
+            elif click_y > height - dead_zone_height:
+                location_id = 3  # Bottom-left
             else:
-                # None, clear the sequence
-                self.admin_sequence_pressed = list()
-        elif click_x > self.size().width() - ADMIN_TAP_DEAD_ZONE:
-            if click_y < ADMIN_TAP_DEAD_ZONE:
-                # Top right
-                location_id = 2
-                if self.is_sequence_completed(location_id):
-                    self.on_show_admin()
-                    pass
-            elif click_y > self.size().height() - ADMIN_TAP_DEAD_ZONE:
-                # Bottom right
-                location_id = 4
-                if self.is_sequence_completed(location_id):
-                    self.on_show_admin()
-                    pass
+                self.admin_sequence_pressed.clear()
+                return
+        elif click_x > width - dead_zone_width:
+            if click_y < dead_zone_height:
+                location_id = 2  # Top-right
+            elif click_y > height - dead_zone_height:
+                location_id = 4  # Bottom-right
             else:
-                # None, clear the sequence
-                self.admin_sequence_pressed = list()
+                self.admin_sequence_pressed.clear()
+                return
         else:
-            # None, clear the sequence
-            self.admin_sequence_pressed = list()
+            self.admin_sequence_pressed.clear()
+            return
+
+        if self.is_sequence_completed(location_id):
+            self.on_show_admin()
 
     
 

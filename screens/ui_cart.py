@@ -72,10 +72,6 @@ class Ui_Cart(object):
         self.navRecieptButton.setObjectName(u"navRecieptButton")
         self.navRecieptButton.setGeometry(QRect(280, 0, 151, 51))
         self.navRecieptButton.setStyleSheet(u"")
-        self.addButton = QPushButton(self.centralwidget)
-        self.addButton.setObjectName(u"addButton")
-        self.addButton.setGeometry(QRect(20, 60, 101, 51))
-        self.addButton.setStyleSheet(u"")
         Cart.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Cart)
@@ -100,7 +96,5 @@ class Ui_Cart(object):
         self.nameLabel.setProperty(u"class", QCoreApplication.translate("Cart", u"heading", None))
         self.navRecieptButton.setText(QCoreApplication.translate("Cart", u"Go To Reciept", None))
         self.navRecieptButton.setProperty(u"type", QCoreApplication.translate("Cart", u"normal", None))
-        self.addButton.setText(QCoreApplication.translate("Cart", u"Add Item", None))
-        self.addButton.setProperty(u"type", QCoreApplication.translate("Cart", u"normal", None))
     # retranslateUi
 

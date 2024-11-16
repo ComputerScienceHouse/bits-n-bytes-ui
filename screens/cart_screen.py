@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QMainWindow
 from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex, Signal
 from screens.reciept_screen import RecieptScreen
 from .ui_cart import Ui_Cart  # Import the generated UI class
-from models import Cart, ItemListModel
+from models import Cart, ItemListModel, Item
 from database import MOCK_ITEMS
 import array
 
@@ -21,19 +21,48 @@ class CartScreen(QMainWindow):
         self.model = ItemListModel(self.cart)
         self.ui.itemList.setModel(self.model)
 
-        # Connect the button click to the method
-        self.ui.addButton.clicked.connect(self.on_add_to_cart)
-        self.ui.navRecieptButton.clicked.connect(self.on_show_receipt)  # Connect to a new method
-        # intialize subtotal
         self.update_subtotal()
+
+
+    def add_item_to_cart(self, item: Item) -> None:
+        """
+        Add an item to the cart
+        Args:
+            item: The Item to add
+
+        Returns:
+            None
+        """
+        self.model.addItem(item)
+        self.update_subtotal()
+
+
+    def remove_item_from_cart(self, item: Item) -> None:
+        """
+        Remove an item from the cart
+        Args:
+            item: The Item to remove
+
+        Returns:
+            None
+
+        """
+        self.model.removeItem(item)
+        self.update_subtotal()
+
+
+    def clear_cart(self) -> None:
+        self.model.clear()
+        self.update_subtotal()
+
 
     def on_add_to_cart(self): 
         # TODO: once ESP32 stuff is implemented bascially refer to the index of said item here
         id = 3
         item = MOCK_ITEMS.get(id)
         if item:
-            self.model.addItem(item)
-            self.update_subtotal()
+            self.add_item_to_cart(item)
+
 
     def on_remove_from_cart(self, item):
        self.model.removeItem(item)
@@ -47,7 +76,7 @@ class CartScreen(QMainWindow):
     def on_show_receipt(self):
         # Create an instance of the receipt screen and pass the cart
         self.show_receipt_signal.emit()
-        self.reciept_screen = RecieptScreen(self.cart) 
+        #self.reciept_screen = RecieptScreen(self.cart)
 
     def set_user(self, user):
         self.user = user

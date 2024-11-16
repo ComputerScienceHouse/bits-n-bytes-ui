@@ -198,25 +198,6 @@
      <string>normal</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="addButton">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>60</y>
-      <width>101</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true"/>
-    </property>
-    <property name="text">
-     <string>Add Item</string>
-    </property>
-    <property name="type" stdset="0">
-     <string>normal</string>
-    </property>
-   </widget>
   </widget>
  </widget>
  <resources/>

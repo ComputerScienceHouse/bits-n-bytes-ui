@@ -1,8 +1,13 @@
-from typing import List, Any
-from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex
+from statistics import median
+from unicodedata import normalize
 
+from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex
+from typing import List, Any, Tuple
+import copy
+import datetime
 WEIGHT_UNIT = "g"
-CERTAINTY_CONSTANT = 3  # number of update iterations before an item is classified as "added" or "removed"
+CERTAINTY_CONSTANT = 2  # number of update iterations before an item is classified as "added" or "removed"
+ITERS_REQD_NO_UPDATE = 0
 
 class Item:
     def __init__(
@@ -24,6 +29,19 @@ class Item:
                 f'{self.units}units,{self.avg_weight}{WEIGHT_UNIT},'
                 f'{self.std_weight}{WEIGHT_UNIT},{self.thumbnail_url},'
                 f'{self.vision_class}]')
+
+
+    def __eq__(self, other):
+        if isinstance(other, Item):
+            return self.item_id == other.item_id
+        else:
+            return False
+
+
+    def __hash__(self):
+        return hash(self.item_id)
+
+
     
 class User:
     def __init__(self, uid, name, token, balance, payment_type, email, phone):
@@ -35,53 +53,212 @@ class User:
         self.email = email
         self.phone = phone
 
+
+
 class Slot:
 
-    def __init__(self, item: Item):
+    items: List[Item]
+    _previous_weight_g: float | None
+    _conversion_factor: float
+    _weight_store: list
+    _last_pos: bool
+    _last_neg: bool
+    _previous_raw_weight: float | None
+    _iterations_no_update: int
+
+    def __init__(self, items: List[Item]):
         """
         Create a Slot
-        :param item: Item stocked in this slot
+        :param items: A list of items in this slot
         """
-        return None
+        self.items = copy.deepcopy(items)
+        self._previous_weight_g = None
+        self._conversion_factor = .44
+        self._weight_store = [0] * CERTAINTY_CONSTANT
+        self._last_pos = False
+        self._last_neg = False
+        self._previous_raw_weight = 0
+        self._iterations_no_update = 0
 
-    def update(self, raw_weight_value) -> int:
+
+    def set_previous_weight(self, weight: float | None) -> None:
         """
-        Update this slot object with its newly received weight value
-        :param raw_weight_value: Raw weight value
-        :return:
+        Set the previous weight of this shelf to this weight
+        Args:
+            weight: The weight to set as a float
+
+        Returns:
         """
-        
-        return None
+        self._previous_weight_g = weight
+
+
+    def get_previous_weight(self) -> float | None:
+        """
+        Get previous weight of this slot
+        Returns:
+
+        """
+        return copy.deepcopy(self._previous_weight_g)
+
+
+    def set_previous_raw_weight(self, weight: float | None) -> None:
+        """
+        Set the previous weight of this shelf to this weight
+        Args:
+            weight: The weight to set as a float
+
+        Returns:
+        """
+        self._previous_raw_weight = weight
+
+
+    def get_previous_raw_weight(self) -> float | None:
+        """
+        Get previous weight of this slot
+        Returns:
+
+        """
+        return copy.deepcopy(self._previous_raw_weight)
+
+
+    def calc_conversion_factor(self, zero_weight_g: float, loaded_weight_g: float, known_weight_g: float):
+        """
+        Calculate and set the conversion factor of this slot.
+        Args:
+            zero_weight_g: The weight recorded by the load cells with nothing
+            loaded on the platform.
+            loaded_weight_g: The weight recorded by the load cells with an
+            object of a known weight loaded on the platform
+            known_weight_g: The known weight of the object
+
+        Returns:
+
+        """
+        if loaded_weight_g == zero_weight_g:
+            print("Loaded weight and zero weight are the same, can't calculate conversion factor.")
+        else:
+            self._conversion_factor = known_weight_g / (loaded_weight_g - zero_weight_g)
+
+
+    def update(self, new_weight: float, print_debug=False) -> List[Tuple[Item, int]]:
+        """
+        Update this shelf with a new weight value. This calculates what items
+        were removed, and returns a list of tuples of (Item, int).  Positive
+        numbers add to the cart, and negative remove from it.
+        Args:
+            new_weight: The new weight for this shelf.
+
+        Returns:
+        """
+        self._previous_raw_weight = new_weight
+        item = self.items[0]
+        # Normalize weight using conversion factor
+        normalized_weight_g = new_weight * self._conversion_factor
+        #print(f"Normalized weight: {normalized_weight_g}g")
+        # Add this weight to the weight store, and remove the oldest stored weight
+        self._weight_store.insert(0, normalized_weight_g)
+        oldest_weight = self._weight_store.pop()
+        # Calculate rolling median weight
+        rolling_median = median(self._weight_store)
+        # Difference from previous iteration to now
+        difference_g = rolling_median - self._previous_weight_g
+        remainder_weight = abs(difference_g % item.avg_weight)
+        if print_debug:
+            print(f"Weight diff g: {difference_g}")
+            print(f"\tRemainder: {remainder_weight}")
+        quantity_to_modify_cart = 0
+        # Check that remainder is within top std_dev or bottom_std of the avg_weight
+        if  item.avg_weight - item.std_weight <= remainder_weight or remainder_weight <= item.std_weight:
+            # Calculate quantity removed
+            quantity = round(difference_g / item.avg_weight)
+            if quantity > 0:
+                if not self._last_pos:
+                    print(f"\t{quantity} item(s) placed back")
+                    quantity_to_modify_cart = quantity
+                    self._last_pos = True
+                    self._last_neg = 0
+                    self._iterations_no_update = 0
+            elif quantity < 0:
+                if self._last_neg != 0:
+                    print(f"\t{quantity} item(s) removed")
+                    quantity_to_modify_cart = quantity
+                    self._last_neg = abs(quantity)
+                    self._last_pos = False
+                    self._iterations_no_update = 0
+                elif item.avg_weight - item.std_weight <= abs(difference_g / quantity) <= item.avg_weight + item.std_weight:
+                    quantity_to_modify_cart = -1 * (abs(quantity) + self._last_neg)
+                    self._last_neg += abs(quantity_to_modify_cart)
+                    self._last_pos = False
+                    self._iterations_no_update = 0
+            else:
+                #print("No cart updates")
+                if self._iterations_no_update >= ITERS_REQD_NO_UPDATE:
+                    self._last_pos = False
+                    self._last_neg = 0
+                else:
+                    self._iterations_no_update += 1
+        self._previous_weight_g = oldest_weight
+        return [(item, quantity_to_modify_cart)]
+
+
 
 class Shelf:
 
     slots: List[Slot]
+    last_report_time: datetime.datetime
 
-    def __init__(self, items: List[Item]):
+    def __init__(self, slots: List[Slot], created_time: datetime.datetime, initial_weights: List[float | None]):
         """
-        Create a new shelf
-        :param items: List of items in this shelf, one per slot
+        Args:
+            slots: List of slots in this shelf
+            created_time: The time the message was received that caused the
+            creation of this shelf.
+            initial_weights: A list of the initial weights for each slot.
         """
-        self.slots = list()
+        self.slots = slots
+        self.last_report_time = datetime.datetime(2022, 2, 2, 2, 2, 2, 2)
+        # Only iterate the lowest number of times if the lengths are not equal to avoid errors
+        j = min(len(initial_weights), len(slots))
+        for i in range(j):
+            if initial_weights[i] is not None:
+                self.slots[i].set_previous_weight(initial_weights[i])
 
-    def update(self, raw_weights: List[float]):
+
+
+    def update(self, raw_weights: List[float], update_received_time: datetime.datetime) -> List[Tuple[Item, int]]:
         """
-        Update all slots in this shelf with the raw weights
-        :param raw_weights:
-        :return: List of tuples (item, quantity_adjust)
+        Update this shelf with raw weights for each slot.
+        Args:
+            raw_weights: The raw weights from this update.
+            update_received_time: The time the update was received.
+
+        Returns:
+        A list of tuples containing (Item, int) pairs, mapping Items that were
+        added or removed from the cart with the quantity added or removed.
+        Positive numbers add to the cart, negative remove from it.
         """
-        result = list()
-        # iterate through all weight values
-        for i in range(len(raw_weights)):
+        self.last_report_time = update_received_time
+        results_dict = dict()
+        # Iterate through all weight values
+        for i in range(4):
             # Make sure a slot corresponds to this weight
-            if i < len(self.slots):
+            if i < len(self.slots) and raw_weights[i] is not None:
                 # Update the weight
-                if self.items[i] is not None:
-                    quantity_adjust = self.slots[i].update(raw_weights[i])
-                    if quantity_adjust != 0:
-                        result.append((self.items[i], quantity_adjust))
+                if self.slots[i] is not None:
+                    items_added_list = self.slots[i].update(raw_weights[i], print_debug=(i == 0))
+                    # Add items returned to the dictionary of total item differences
+                    for item_added, quantity_added in items_added_list:
+                        if item_added not in results_dict:
+                            results_dict[item_added] = quantity_added
+                        else:
+                            results_dict[item_added] += quantity_added
+        # Convert dictionary to list of tuples for returning
+        results_list = list()
+        for item in results_dict:
+            results_list.append((item, results_dict[item]))
+        return results_list
 
-        return result
+
 
 class Cart:
     def __init__(self):

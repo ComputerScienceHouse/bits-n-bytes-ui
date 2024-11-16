@@ -25,6 +25,10 @@ MOCK_ITEMS = {
     6: Item(6, "Brownie Brittle Chocolate Chip", "678901234567", 34.99, 60, 78, 10, "images/item_placeholder.png", "rectangle"),
     7: Item(7, "Swedish Fish Original", "789012345678", 19.99, 100, 141, 10, "images/item_placeholder.png", "pouch"),
     8: Item(8, "Welch's Fruit Snacks", "890123456789", 39.99, 40, 142, 14, "images/item_placeholder.png", "rectangle"),
+    9: Item(9, "Sour Patch Kids", "", 3.50, 100, 226, 20, "images/item_placeholder.png", "sour-patch"),
+    10: Item(10, "12 Pack Pepsi", "", 5.50, 100, 4000, 500, "images/item_placeholder.png", "pepsi-box"),
+    11: Item(11, "12 Pack Loganberry", "", 5.50, 100, 4000, 500, "images/item_placeholder.png", "loganberry-box"),
+    12: Item(12, "EMPTY", "", 0, 100, 10000000, 0, "images/item_placeholder.png", "")
 }
 
 MOCK_USERS = {
