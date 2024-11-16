@@ -8,6 +8,7 @@ import datetime
 WEIGHT_UNIT = "g"
 CERTAINTY_CONSTANT = 2  # number of update iterations before an item is classified as "added" or "removed"
 ITERS_REQD_NO_UPDATE = 0
+EXTRANEOUS_VALUE_LIMIT = 5000
 
 class Item:
     def __init__(
@@ -171,6 +172,9 @@ class Slot:
         if print_debug:
             print(f"Weight diff g: {difference_g}")
             print(f"\tRemainder: {remainder_weight}")
+        if abs(difference_g) > EXTRANEOUS_VALUE_LIMIT:
+            print(f"\tExtraneous value, ignoring.")
+            return []
         quantity_to_modify_cart = 0
         # Check that remainder is within top std_dev or bottom_std of the avg_weight
         if  item.avg_weight - item.std_weight <= remainder_weight or remainder_weight <= item.std_weight:
