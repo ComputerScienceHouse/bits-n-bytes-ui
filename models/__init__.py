@@ -264,6 +264,7 @@ class Shelf:
 class Cart:
     def __init__(self):
         self.items = {}
+        self.subtotal = 0.0;
 
     def add(self, item: Item):
         if item in self.items:
@@ -278,13 +279,14 @@ class Cart:
     def get_subtotal(self, caller):
         from screens.cart_screen import CartScreen
         if isinstance(caller, CartScreen):
-            subtotal = 0.0
             for item, quantity in self.items.items():
                 print("Item:", item)
                 print("Quantity:", quantity)
-                subtotal += item.price * quantity
-            return subtotal
+                self.subtotal += item.price * quantity
+            return self.subtotal
 
+    def retrieve_subtotal(self):
+        return self.subtotal
 
 class ItemListModel(QAbstractListModel):
     def __init__(self, cart: Cart, parent=None):
