@@ -7,6 +7,7 @@ import copy
 import datetime
 WEIGHT_UNIT = "g"
 CERTAINTY_CONSTANT = 5  # number of update iterations before an item is classified as "added" or "removed"
+ITERS_REQD_NO_UPDATE = 3
 
 class Item:
     def __init__(
@@ -63,6 +64,7 @@ class Slot:
     _last_pos: bool
     _last_neg: bool
     _previous_raw_weight: float | None
+    _iterations_no_update: int
 
     def __init__(self, items: List[Item]):
         """
@@ -76,6 +78,7 @@ class Slot:
         self._last_pos = False
         self._last_neg = False
         self._previous_raw_weight = 0
+        self._iterations_no_update = 0
 
 
     def set_previous_weight(self, weight: float | None) -> None:
@@ -168,16 +171,21 @@ class Slot:
             if quantity > 0:
                 print(f"{quantity} item(s) placed back")
                 quantity_to_modify_cart = quantity
+                self._last_pos = True
+                self._last_neg = False
+                self._iterations_no_update = 0
             elif quantity < 0:
                 print(f"{quantity} item(s) removed")
                 quantity_to_modify_cart = quantity
-            else:
+                self._last_neg = True
                 self._last_pos = False
-                self._last_neg = False
-        else:
-            # No change
-            self._last_pos = False
-            self._last_neg = False
+                self._iterations_no_update = 0
+            else:
+                if self._iterations_no_update >= ITERS_REQD_NO_UPDATE:
+                    self._last_pos = False
+                    self._last_neg = False
+                else:
+                    self._iterations_no_update += 1
         self._previous_weight_g = oldest_weight
         return [(item, quantity_to_modify_cart)]
 
