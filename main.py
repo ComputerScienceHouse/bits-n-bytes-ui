@@ -5,7 +5,7 @@ import config
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QStackedWidget
 from PySide6.QtGui import QFontDatabase, QColor
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, QMetaObject
 from screens.cart_screen import CartScreen
 from screens.welcome_screen import WelcomeScreen
 from screens.reciept_screen import RecieptScreen
@@ -34,8 +34,7 @@ class MainWindow(QMainWindow):
         # data on the shelf data topic
         mqtt.shelf_data_received_callback = lambda client, userdata, msg: self.shelf_manager.on_shelf_data_cb(client, userdata, msg)
         # TODO add door closed callback below
-        mqtt.doors_closed_status_callback = lambda: self.show_receipt_screen()
-
+        mqtt.doors_closed_status_callback = lambda: QTimer.singleShot(0, self.show_receipt_screen)
     def initUI(self):
         # Create a QStackedWidget to manage different screens
         self.stack = QStackedWidget()
