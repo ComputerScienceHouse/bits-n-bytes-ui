@@ -5,7 +5,7 @@ from .ui_welcome import Ui_Welcome
 from screens.admin_screen import AdminScreen
 import resources_rc
 
-ADMIN_TAP_DEAD_ZONE = 200
+ADMIN_TAP_DEAD_ZONE = 600
 ADMIN_TARGET_SEQUENCE = [2, 1, 3, 4]
 
 class WelcomeScreen(QMainWindow):
