@@ -112,17 +112,18 @@ class MainWindow(QMainWindow):
     def process_nfc_token(self, token):
         """Process the NFC token after it's detected"""
         if self.stack.currentIndex() == 0:  # Only process if on the welcome screen
-            user = database.get_user(user_token=token)
-            if user:
-                print(f"User {user} found for token {token}")
-                self.cart_screen.set_user(user.name)
-                self.go_to_cart()  # Switch to the cart screen
-                self.stop_nfc_scan()
-            else:
+            try:
+                user = database.get_user(user_token=token)
+                if user:
+                    print(f"User {user} found for token {token}")
+                    self.cart_screen.set_user(user.name)
+                    self.go_to_cart()  # Switch to the cart screen
+                    self.stop_nfc_scan()
+                else:
+                    print("User not found for scanned token.")
+            except:
                 print("User not found for scanned token.")
 
-            # Stop NFC thread after processing the token
-    
     def stop_nfc_scan(self):    
         """Stop the NFC scan and clean up the thread."""
         if self.nfc_thread:
