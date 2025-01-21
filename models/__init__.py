@@ -6,7 +6,7 @@ from typing import List, Any, Tuple
 import copy
 import datetime
 WEIGHT_UNIT = "g"
-CERTAINTY_CONSTANT = 2  # number of update iterations before an item is classified as "added" or "removed"
+CERTAINTY_CONSTANT = 16  # number of update iterations before an item is classified as "added" or "removed"
 ITERS_REQD_NO_UPDATE = 0
 
 class Item:
