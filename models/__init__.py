@@ -6,7 +6,7 @@ from typing import List, Any, Tuple
 import copy
 import datetime
 WEIGHT_UNIT = "g"
-CERTAINTY_CONSTANT = 16  # number of update iterations before an item is classified as "added" or "removed"
+CERTAINTY_CONSTANT = 2  # number of update iterations before an item is classified as "added" or "removed"
 ITERS_REQD_NO_UPDATE = 0
 
 class Item:
@@ -245,7 +245,7 @@ class Shelf:
             if i < len(self.slots) and raw_weights[i] is not None:
                 # Update the weight
                 if self.slots[i] is not None:
-                    items_added_list = self.slots[i].update(raw_weights[i], print_debug=(i == 1))
+                    items_added_list = self.slots[i].update(raw_weights[i], print_debug=False)
                     # Add items returned to the dictionary of total item differences
                     for item_added, quantity_added in items_added_list:
                         if item_added not in results_dict:
