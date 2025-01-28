@@ -90,6 +90,16 @@
      <string>info</string>
     </property>
    </widget>
+   <widget class="QLineEdit" name="lineEdit">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>30</y>
+      <width>411</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

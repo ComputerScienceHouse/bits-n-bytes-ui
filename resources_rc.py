@@ -1,6 +1,6 @@
 # Resource object code (Python 3)
 # Created by: object code
-# Created by: The Resource Compiler for Qt version 6.8.0
+# Created by: The Resource Compiler for Qt version 6.7.3
 # WARNING! All changes made in this file will be lost!
 
 from PySide6 import QtCore
@@ -26091,7 +26091,7 @@ $1\xbfx;\xd1\xbf\xbd\xb6\xf8\xb1+\x00\x00\x00\x00\
 \x00\x00\x00\x00\x00\x00\x00\x00\x00\xc6\xf0\xff\x03\xb0xI\
 H+\x9f\x15\xbb\x00\x00\x00\x00IEND\xaeB`\
 \x82\
-\x00\x00\x07R\
+\x00\x00\x07g\
 Q\
 Frame[frameShape\
 =\x224\x22], /* H-Line\
@@ -26169,48 +26169,49 @@ order: none;\x0a   \
 }\x0a\x0aQListView::it\
 em {\x0a    font-fa\
 mily: Roboto;\x0a  \
-  background-col\
-or: #6C0164;  /*\
- Light purple ba\
-ckground for ite\
-ms */\x0a    border\
-: 1px solid #d4b\
-1d7;  /* Light b\
-order */\x0a    bor\
-der-radius: 18px\
-;        /* Roun\
-ded corners */\x0a \
-   padding: 10px\
-;              /\
-* Padding inside\
- each item */\x0a  \
-  margin: 5px;  \
-              /*\
- Space between i\
-tems */\x0a    heig\
-ht: 40px;       \
-        /* Item \
-height */\x0a    co\
-lor: white;     \
-           /* Te\
-xt color */\x0a}\x0a\x0aQ\
-ListView::item:s\
-elected {\x0a    ba\
-ckground-color: \
-#4c0147;  /* Dif\
-ferent color whe\
-n selected */\x0a  \
-  color: gray;\x0a}\
-\x0a\x0a/* Styling for\
- different parts\
- of the item con\
-tent */\x0aQListVie\
-w::item:hover {\x0a\
-    background-c\
-olor: #5b0155;  \
-/* Slightly dark\
-er on hover */\x0a}\
-\x0a\
+  font-size: 14p\
+t;\x0a    backgroun\
+d-color: #6C0164\
+;  /* Light purp\
+le background fo\
+r items */\x0a    b\
+order: 1px solid\
+ #d4b1d7;  /* Li\
+ght border */\x0a  \
+  border-radius:\
+ 18px;        /*\
+ Rounded corners\
+ */\x0a    padding:\
+ 10px;          \
+    /* Padding i\
+nside each item \
+*/\x0a    margin: 5\
+px;             \
+   /* Space betw\
+een items */\x0a   \
+ height: 40px;  \
+             /* \
+Item height */\x0a \
+   color: white;\
+                \
+/* Text color */\
+\x0a}\x0a\x0aQListView::i\
+tem:selected {\x0a \
+   background-co\
+lor: #4c0147;  /\
+* Different colo\
+r when selected \
+*/\x0a    color: gr\
+ay;\x0a}\x0a\x0a/* Stylin\
+g for different \
+parts of the ite\
+m content */\x0aQLi\
+stView::item:hov\
+er {\x0a    backgro\
+und-color: #5b01\
+55;  /* Slightly\
+ darker on hover\
+ */\x0a}\x0a\
 \x00\x00\x0d7\
 \x89\
 PNG\x0d\x0a\x1a\x0a\x00\x00\x00\x0dIHDR\x00\
@@ -26479,14 +26480,14 @@ qt_resource_struct = b"\
 \x00\x00\x00\x00\x00\x00\x00\x00\
 \x00\x00\x00\x00\x00\x02\x00\x00\x00\x0a\x00\x00\x00\x02\
 \x00\x00\x00\x00\x00\x00\x00\x00\
-\x00\x00\x00\xda\x00\x00\x00\x00\x00\x01\x00\x06d\x81\
+\x00\x00\x00\xda\x00\x00\x00\x00\x00\x01\x00\x06d\x96\
 \x00\x00\x01\x92\x9b\x8cQ\xad\
 \x00\x00\x004\x00\x00\x00\x00\x00\x01\x00\x00\x00\x04\
 \x00\x00\x01\x92\x9b\x9f\x93\x14\
 \x00\x00\x00\x9c\x00\x00\x00\x00\x00\x01\x00\x05\xd3\x0b\
 \x00\x00\x01\x92\x98\xba\x17\x96\
 \x00\x00\x00\xc0\x00\x00\x00\x00\x00\x01\x00\x06]+\
-\x00\x00\x01\x93\x1e\x11Vl\
+\x00\x00\x01\x94\xaa\x93\xed#\
 \x00\x00\x00B\x00\x00\x00\x00\x00\x01\x00\x00\x04\xa9\
 \x00\x00\x01\x92\x96g<\x14\
 \x00\x00\x00\x88\x00\x00\x00\x00\x00\x01\x00\x05\xa3\x8e\

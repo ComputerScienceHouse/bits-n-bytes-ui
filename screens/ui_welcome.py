@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'welcome_screen.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.7.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,8 +15,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QLabel, QMainWindow, QPushButton,
-    QSizePolicy, QWidget)
+from PySide6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,
+    QPushButton, QSizePolicy, QWidget)
 
 class Ui_Welcome(object):
     def setupUi(self, Welcome):
@@ -42,6 +42,9 @@ class Ui_Welcome(object):
         self.infoButton.setObjectName(u"infoButton")
         self.infoButton.setGeometry(QRect(950, 10, 61, 61))
         self.infoButton.setStyleSheet(u"")
+        self.lineEdit = QLineEdit(self.centralwidget)
+        self.lineEdit.setObjectName(u"lineEdit")
+        self.lineEdit.setGeometry(QRect(290, 30, 411, 21))
         Welcome.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Welcome)
