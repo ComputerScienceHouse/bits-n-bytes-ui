@@ -245,7 +245,7 @@ class Shelf:
             if i < len(self.slots) and raw_weights[i] is not None:
                 # Update the weight
                 if self.slots[i] is not None:
-                    items_added_list = self.slots[i].update(raw_weights[i], print_debug=(i == 1))
+                    items_added_list = self.slots[i].update(raw_weights[i], print_debug=False)
                     # Add items returned to the dictionary of total item differences
                     for item_added, quantity_added in items_added_list:
                         if item_added not in results_dict:
