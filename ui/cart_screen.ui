@@ -49,23 +49,6 @@
      <string>heading</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="navButton">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>0</y>
-      <width>151</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 10px; padding: 5px; font-family: Roboto;}
-</string>
-    </property>
-    <property name="text">
-     <string>Go to Welcome Screen</string>
-    </property>
-   </widget>
    <widget class="QGroupBox" name="nutritionBox">
     <property name="geometry">
      <rect>
@@ -161,12 +144,12 @@
      </property>
     </widget>
    </widget>
-   <widget class="QLabel" name="cartLabel">
+   <widget class="QLabel" name="nameLabel">
     <property name="geometry">
      <rect>
       <x>20</x>
       <y>10</y>
-      <width>51</width>
+      <width>241</width>
       <height>31</height>
      </rect>
     </property>
@@ -175,40 +158,6 @@
     </property>
     <property name="class" stdset="0">
      <string>heading</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="navRecieptButton">
-    <property name="geometry">
-     <rect>
-      <x>280</x>
-      <y>0</y>
-      <width>151</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 10px; padding: 5px; font-family: Roboto;}
-</string>
-    </property>
-    <property name="text">
-     <string>Go To Reciept</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="addButton">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>60</y>
-      <width>101</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton{border: 2px solid grey; border-radius: 10px; padding: 5px; font-family: Roboto;}
-</string>
-    </property>
-    <property name="text">
-     <string>Add Item</string>
     </property>
    </widget>
   </widget>

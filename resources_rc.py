@@ -26091,7 +26091,7 @@ $1\xbfx;\xd1\xbf\xbd\xb6\xf8\xb1+\x00\x00\x00\x00\
 \x00\x00\x00\x00\x00\x00\x00\x00\x00\xc6\xf0\xff\x03\xb0xI\
 H+\x9f\x15\xbb\x00\x00\x00\x00IEND\xaeB`\
 \x82\
-\x00\x00\x06\xaf\
+\x00\x00\x07R\
 Q\
 Frame[frameShape\
 =\x224\x22], /* H-Line\
@@ -26106,100 +26106,111 @@ s: 0.1em;\x0a    mi\
 n-height: 0.1em;\
  \x0a    max-height\
 : 0.1em;  \x0a}\x0a\x0aQL\
-abel { \x0a    font\
--family: IBM Ple\
-x Mono; \x0a    col\
-or: white;\x0a}\x0a\x0aQL\
-abel[type=\x22logo\x22\
-] {    \x0a\x09qproper\
-ty-alignment: 'A\
-lignCenter';\x0a}\x0a\x0a\
-QPushButton[type\
-=\x22primary\x22] {\x0a  \
-  border-radius:\
- 18px; \x0a    padd\
+abel {\x0a    color\
+: white;\x0a    fon\
+t-family: IBM Pl\
+ex Mono;\x0a}\x0a\x0aQLab\
+el[type=\x22big\x22]{ \
+\x0a    font-size: \
+16pt; \x0a}\x0a\x0aQLabel\
+[type=\x22normal\x22]{\
+\x0a    font-size: \
+14pt;\x0a}\x0a\x0aQLabel[\
+type=\x22logo\x22] {  \
+  \x0a\x09qproperty-al\
+ignment: 'AlignC\
+enter';\x0a}\x0a\x0aQPush\
+Button{\x0a    padd\
 ing: 5px; \x0a    f\
 ont-family: Robo\
-to; \x0a    backgro\
-und-color: #6C01\
-64; \x0a    color: \
-white; \x0a    text\
--align: center;\x0a\
-}\x0a\x0aQPushButton[t\
-ype=\x22secondary\x22]\
- {\x0a    border-ra\
-dius: 18px; \x0a   \
- padding: 5px; \x0a\
-    font-family:\
- Roboto; \x0a    ba\
-ckground-color: \
-#F76902; \x0a    co\
-lor: white; \x0a   \
- text-align: cen\
-ter;\x0a}\x0a\x0aQPushBut\
-ton[type=\x22second\
-ary\x22]::hover{\x0a  \
+to;\x0a    color: w\
+hite;\x0a    backgr\
+ound-color: tran\
+sparent;\x0a    tex\
+t-align: center;\
+\x0a}\x0a\x0aQPushButton[\
+type=\x22primary\x22] \
+{\x0a    border-rad\
+ius: 18px; \x0a    \
+background-color\
+: #6C0164; \x0a}\x0a\x0aQ\
+PushButton[type=\
+\x22secondary\x22] {\x0a \
+   border-radius\
+: 18px; \x0a    bac\
+kground-color: #\
+F76902; \x0a}\x0a\x0aQPus\
+hButton[type=\x22no\
+rmal\x22]{\x0a    bord\
+er: 2px solid gr\
+ey; \x0a    border-\
+radius: 10px; \x0a}\
+\x0a\x0aQPushButton[ty\
+pe=\x22secondary\x22]:\
+:hover{\x0a    back\
+ground-color:#c5\
+5302;\x0a}\x0a\x0a\x0aQPushB\
+utton[type=\x22info\
+\x22]{\x0a    border-r\
+adius: 5px; \x0a   \
+ padding: 5px;\x0a}\
+\x0a\x0aQGroupBox {\x0a  \
   background-col\
-or:#c55302;\x0a}\x0a\x0a\x0a\
-QPushButton[type\
-=\x22info\x22]{\x0a    bo\
-rder-radius: 5px\
-; \x0a    padding: \
-5px;\x0a}\x0a\x0aQGroupBo\
-x {\x0a    backgrou\
-nd-color: #6C016\
-4;\x0a    border-ra\
-dius: 18px\x0a}\x0a\x0aQL\
-istView {\x0a    ba\
+or: #6C0164;\x0a   \
+ border-radius: \
+18px\x0a}\x0a\x0aQListVie\
+w {\x0a    backgrou\
+nd-color: transp\
+arent;  /* Backg\
+round color of t\
+he list */\x0a    b\
+order: none;\x0a   \
+ padding: 10px;\x0a\
+}\x0a\x0aQListView::it\
+em {\x0a    font-fa\
+mily: Roboto;\x0a  \
+  background-col\
+or: #6C0164;  /*\
+ Light purple ba\
+ckground for ite\
+ms */\x0a    border\
+: 1px solid #d4b\
+1d7;  /* Light b\
+order */\x0a    bor\
+der-radius: 18px\
+;        /* Roun\
+ded corners */\x0a \
+   padding: 10px\
+;              /\
+* Padding inside\
+ each item */\x0a  \
+  margin: 5px;  \
+              /*\
+ Space between i\
+tems */\x0a    heig\
+ht: 40px;       \
+        /* Item \
+height */\x0a    co\
+lor: white;     \
+           /* Te\
+xt color */\x0a}\x0a\x0aQ\
+ListView::item:s\
+elected {\x0a    ba\
 ckground-color: \
-transparent;  /*\
- Background colo\
-r of the list */\
-\x0a    border: non\
-e;\x0a    padding: \
-10px;\x0a}\x0a\x0aQListVi\
-ew::item {\x0a    b\
-ackground-color:\
- #6C0164;  /* Li\
-ght purple backg\
-round for items \
-*/\x0a    border: 1\
-px solid #d4b1d7\
-;  /* Light bord\
-er */\x0a    border\
--radius: 18px;  \
-      /* Rounded\
- corners */\x0a    \
-padding: 10px;  \
-            /* P\
-adding inside ea\
-ch item */\x0a    m\
-argin: 5px;     \
-           /* Sp\
-ace between item\
-s */\x0a    height:\
- 40px;          \
-     /* Item hei\
-ght */\x0a    color\
-: white;        \
-        /* Text \
-color */\x0a}\x0a\x0aQLis\
-tView::item:sele\
-cted {\x0a    backg\
-round-color: #4c\
-0147;  /* Differ\
-ent color when s\
-elected */\x0a    c\
-olor: gray;\x0a}\x0a\x0a/\
-* Styling for di\
-fferent parts of\
- the item conten\
-t */\x0aQListView::\
-item:hover {\x0a   \
- background-colo\
-r: #5b0155;  /* \
-Slightly darker \
-on hover */\x0a}\x0a\
+#4c0147;  /* Dif\
+ferent color whe\
+n selected */\x0a  \
+  color: gray;\x0a}\
+\x0a\x0a/* Styling for\
+ different parts\
+ of the item con\
+tent */\x0aQListVie\
+w::item:hover {\x0a\
+    background-c\
+olor: #5b0155;  \
+/* Slightly dark\
+er on hover */\x0a}\
+\x0a\
 \x00\x00\x0d7\
 \x89\
 PNG\x0d\x0a\x1a\x0a\x00\x00\x00\x0dIHDR\x00\
@@ -26468,14 +26479,14 @@ qt_resource_struct = b"\
 \x00\x00\x00\x00\x00\x00\x00\x00\
 \x00\x00\x00\x00\x00\x02\x00\x00\x00\x0a\x00\x00\x00\x02\
 \x00\x00\x00\x00\x00\x00\x00\x00\
-\x00\x00\x00\xda\x00\x00\x00\x00\x00\x01\x00\x06c\xde\
+\x00\x00\x00\xda\x00\x00\x00\x00\x00\x01\x00\x06d\x81\
 \x00\x00\x01\x92\x9b\x8cQ\xad\
 \x00\x00\x004\x00\x00\x00\x00\x00\x01\x00\x00\x00\x04\
 \x00\x00\x01\x92\x9b\x9f\x93\x14\
 \x00\x00\x00\x9c\x00\x00\x00\x00\x00\x01\x00\x05\xd3\x0b\
 \x00\x00\x01\x92\x98\xba\x17\x96\
 \x00\x00\x00\xc0\x00\x00\x00\x00\x00\x01\x00\x06]+\
-\x00\x00\x01\x92\xca\xb2\x11P\
+\x00\x00\x01\x93\x1e\x11Vl\
 \x00\x00\x00B\x00\x00\x00\x00\x00\x01\x00\x00\x04\xa9\
 \x00\x00\x01\x92\x96g<\x14\
 \x00\x00\x00\x88\x00\x00\x00\x00\x00\x01\x00\x05\xa3\x8e\
