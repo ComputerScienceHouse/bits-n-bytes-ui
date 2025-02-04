@@ -17,6 +17,9 @@ compile_ui() {
         admin)
             pyside6-uic ui/admin_screen.ui -o screens/ui_admin.py
             ;;
+        tare)
+            pyside6-uic ui/admin_screen.ui -o screens/ui_tare.py
+            ;;
         all)
             pyside6-rcc resources/resources.qrc -o resources_rc.py 
             pyside6-uic ui/welcome_screen.ui -o screens/ui_welcome.py
