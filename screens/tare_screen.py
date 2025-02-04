@@ -68,6 +68,7 @@ class TareScreen(QMainWindow):
 
         if not os.path.exists(TARE_STORE_FILE):
             data = { "80:65:99:49:EF:8E": [1, 1, 1, 1], "80:65:99:E3:EF:50": [1, 1, 1, 1], "80:65:99:E3:8B:92": [1, 1, 1, 1]}
+            os.mkdir("./tmp")
             with open(TARE_STORE_FILE, 'w') as out_file:
                 json.dump(data, out_file)
         else:
