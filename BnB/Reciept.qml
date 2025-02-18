@@ -10,8 +10,8 @@ import QtQuick.Effects
 Window {
     id: window
     visible: true
-    width: Constants.width
-    height: Constants.height
+    width: Screen.width
+    height: Screen.height
     flags: Qt.Window | Qt.FramelessWindowHint
 
     property var stackView

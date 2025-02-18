@@ -11,7 +11,6 @@ from PySide6.QtCore import QDir
 from PySide6.QtGui import QFontDatabase
 
 os.environ["QT_IM_MODULE"] = "qtvirtualkeyboard"
-os.environ['QT_QPA_PLATFORM'] = 'wayland'
 def main():
     app = QApplication(sys.argv)
     app.setStyle('Material')
