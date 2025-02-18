@@ -52,7 +52,7 @@ Rectangle {
     }
 
     ColumnLayout {
-        id: container
+        id: contact
         x: 662
         y: 131
         width: 341
@@ -170,7 +170,7 @@ Rectangle {
     }
 
     ColumnLayout {
-        id: columnLayout
+        id: reciept
         x: 20
         y: 65
         z: 1

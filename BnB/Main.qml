@@ -9,9 +9,16 @@ Window {
     height: Constants.height
     visible: true
 
+    property alias stackView: stackView
+
     StackView {
-        id: stack
+        id: stackView
         anchors.fill: parent
         initialItem: "Welcome.qml"
+    }
+
+    Component.onCompleted: {
+            // Example: push the Cart screen after initial load
+        stackView.push("Cart.qml")
     }
 }
