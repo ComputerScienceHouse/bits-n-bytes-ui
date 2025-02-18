@@ -12,6 +12,7 @@ Window {
     visible: true
     width: Constants.width
     height: Constants.height
+    flags: Qt.Window | Qt.FramelessWindowHint
 
     property var stackView
 
