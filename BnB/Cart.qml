@@ -1,8 +1,13 @@
 import QtQuick
 import Constants
 
-CartScreen {
+Rectangle {
     width: Constants.width
     height: Constants.height
     property var stackView
+
+    CartScreen{
+        id: screen
+    }
+    property alias button: screen.button
 }

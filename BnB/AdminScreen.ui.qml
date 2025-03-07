@@ -19,6 +19,9 @@ Rectangle {
     height: Constants.height
     color: "#292929"
 
+    property alias backButton: backButton
+    property alias tareButton: tareButton
+
     Button {
         id: powerOffButton
         x: 279
@@ -102,5 +105,16 @@ Rectangle {
         horizontalAlignment: Text.AlignLeft
         font.bold: true
         font.family: "IBM Plex Mono"
+    }
+
+    Button {
+        id: backButton
+        x: 958
+        y: 0
+        width: 58
+        height: 68
+        text: qsTr("⬅")
+        font.pointSize: 30
+        Material.background: "#F76902"
     }
 }

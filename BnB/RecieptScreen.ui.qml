@@ -19,7 +19,7 @@ Rectangle {
     color: "#292929"
     property alias emailButton: emailButton
     property alias textButton: textButton
-
+    property alias noRecieptButton: noRecieptButton
     Text {
         id: _text
         x: 15

@@ -5,8 +5,8 @@ idna==3.10
 paho-mqtt==2.1.0
 pyscard==2.2.1
 PySide6==6.8.0.2
-PySide6_Addons==6.8.2.1
-PySide6_Essentials==6.8.2.1
+PySide6_Addons==6.8.0.2
+PySide6_Essentials==6.8.0.2
 requests==2.32.3
-shiboken6==6.8.2.1
+shiboken6==6.8.0.2
 urllib3==2.3.0

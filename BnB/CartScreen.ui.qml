@@ -54,7 +54,8 @@ Rectangle {
             y: 501
             width: 266
             height: 68
-            text: qsTr("Cancel Transaction")
+            text: qsTr("Finish Transaction")
+            autoRepeat: true
             font.pointSize: 20
             font.family: "Roboto"
             Material.roundedScale: Material.MediumScale

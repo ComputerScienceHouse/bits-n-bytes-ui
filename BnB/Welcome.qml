@@ -2,34 +2,25 @@ import QtQuick
 import QtQuick.Controls 6.8
 import Constants
 
-Page {
+Rectangle {
     width: Constants.width
     height: Constants.height
 
     WelcomeScreen{
-        id: welcomeScreen
+        id: screen
+    }
 
-    }
-    tapButton.onClicked: {
-        stackView.push("Cart.qml")  // Navigate to Cart screen
-    }
+
+    property alias button: screen.button
     property var inputPattern: []  // Stores the user's button press sequence
     property var correctPattern: ["one", "two", "three", "four"] // Correct unlock sequence
-
-    function checkStackRef() {
-        if (stackView) {
-           console.log("Navigating to Admin Screen...")
-           stackView.push("AdminScreen.qml")  // Navigate to Admin screen
-       } else {
-           console.log("stackView is undefined.")
-       }
-    }
+    signal unlockAdminScreen()
 
     function checkPattern() {
         if (JSON.stringify(inputPattern) === JSON.stringify(correctPattern)) {
             console.log("Correct pattern! Unlocking Admin Screen...")
-            // backend.unlockAdminScreen()
-            checkStackRef()
+            unlockAdminScreen()
+            inputPattern = []
         } else if (inputPattern.length >= correctPattern.length) {
             console.log("Incorrect pattern. Resetting...")
             inputPattern = [] // Reset sequence if incorrect
@@ -43,7 +34,6 @@ Page {
         anchors.top: parent.top
         anchors.right: parent.right
         onClicked: {
-            console.log("stackView:", stackView)
             inputPattern.push("one")
             checkPattern()
         }
@@ -86,24 +76,3 @@ Page {
     }
 
 }
-
-
-// property var stackView
-
-// Connections {
-//     target: stackView
-//     onCompleted: {
-//         console.log("✅ stackView in Welcome.qml:", stackView); // This should now print the StackView
-//     }
-// }
-
-// WelcomeScreen {
-//     button.onClicked: {
-//         console.log("Clicked")
-//         if (stackView) {
-//             stackView.push("Name.qml")
-//         } else {
-//             console.warn("⚠️ stackView is not defined!");
-//         }
-//     }
-// }

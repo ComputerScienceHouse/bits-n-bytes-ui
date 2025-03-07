@@ -20,7 +20,7 @@ def main():
     import_path = os.path.join(os.getcwd(), "BnB", "imports")
     engine = QQmlApplicationEngine()
     engine.addImportPath(import_path)
-    engine.load(QUrl("BnB/Reciept.qml"))
+    engine.load(QUrl("BnB/Main.qml"))
 
     if not engine.rootObjects():
         sys.exit("Error: Main.qml failed to load.")

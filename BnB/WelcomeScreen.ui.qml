@@ -48,10 +48,10 @@ Rectangle {
 
     Image {
         id: info
-        x: 935
+        x: 951
         y: 10
-        width: 81
-        height: 67
+        width: 60
+        height: 61
         source: "images/info-light.png"
         fillMode: Image.PreserveAspectFit
     }

@@ -20,6 +20,7 @@ Rectangle {
     height: Constants.height
     color: "#292929"
 
+    property alias backButton: backButton
     Text {
         id: _text
         x: 15
@@ -272,5 +273,16 @@ Rectangle {
             font.pointSize: 24
             Material.roundedScale: Material.NotRounded
         }
+    }
+
+    Button {
+        id: backButton
+        x: 958
+        y: 0
+        width: 58
+        height: 68
+        text: qsTr("⬅")
+        font.pointSize: 30
+        Material.background: "#F76902"
     }
 }

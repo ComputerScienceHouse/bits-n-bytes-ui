@@ -7,36 +7,23 @@ import QtQuick.VirtualKeyboard.Styles
 import QtQuick.Layouts
 import QtQuick.Effects
 
-Window {
+Rectangle {
     id: window
     visible: true
-    width: Screen.width
-    height: Screen.height
-    flags: Qt.Window | Qt.FramelessWindowHint
+    width: Constants.width
+    height: Constants.height
 
-    property var stackView
+    RecieptScreen {id: screen}
 
-    // Loader to load the RecieptScreen.ui.qml dynamically
-    Loader {
-        id: recieptScreenLoader
-        source: "RecieptScreen.ui.qml"  // Path to the RecieptScreen.ui.qml file
+    property alias button: screen.noRecieptButton
 
-        // When the loader is done loading, we can set up connections
-        onLoaded: {
-            if (recieptScreenLoader.item) {
-                // Now we can connect signals and work with the loaded component
-                console.log("RecieptScreen loaded successfully!")
-                // stackView.push(recieptScreenLoader.item)
-                // console.log("Pushed recieptScreen onto stack!")
-                // Set up connections for the emailButton and textButton after they are loaded
-                recieptScreenLoader.item.emailButton.clicked.connect(() => {
-                    emailPopup.open()
-                })
-                recieptScreenLoader.item.textButton.clicked.connect(() => {
-                    textPopup.open()
-                })
-            }
-        }
+    Component.onCompleted: {
+        screen.emailButton.clicked.connect(() => {
+            emailPopup.open();
+        });
+        screen.textButton.clicked.connect(() => {
+            textPopup.open();
+        });
     }
 
     // Email Popup
