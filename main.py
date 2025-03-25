@@ -10,6 +10,8 @@ from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtCore import QDir
 from PySide6.QtGui import QFontDatabase
 
+from app_controller import AppController
+
 os.environ["QT_IM_MODULE"] = "qtvirtualkeyboard"
 def main():
     app = QApplication(sys.argv)
@@ -17,8 +19,10 @@ def main():
     # Optionally, load fonts if needed
     import_path = os.path.join(os.getcwd(), "BnB", "imports")
     font_dir = os.path.join(os.getcwd(), "BnB", "fonts")
+    controller = AppController()
     engine = QQmlApplicationEngine()
     engine.addImportPath(import_path)
+
     for font_file in os.listdir(font_dir):
         font_path = os.path.join(font_dir, font_file)
         font_id = QFontDatabase.addApplicationFont(font_path)
@@ -26,11 +30,20 @@ def main():
             print(f"Failed to load font: {font_file}")
         else:
             print(f"Loaded font: {font_file}")
+
+    engine.rootContext().setContextProperty("controller", controller)
     engine.load(QUrl("BnB/Main.qml"))
 
     if not engine.rootObjects():
         sys.exit("Error: Main.qml failed to load.")
 
+    # root = engine.rootObjects()[0]
+    # for child in root.children():
+    #     print("Child object name:", child.objectName())
+    # stack = root.findChildren(QObject, "stack")
+
+    # stack = stack[0] # gets actual stack ref in list
+    # controller = AppController(stack)
     root_object = engine.rootObjects()[0]
     root_object.showFullScreen()
 

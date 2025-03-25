@@ -10,7 +10,6 @@ Rectangle {
         id: screen
     }
 
-
     property alias button: screen.button
     property var inputPattern: []  // Stores the user's button press sequence
     property var correctPattern: ["one", "two", "three", "four"] // Correct unlock sequence

@@ -65,6 +65,7 @@ Rectangle {
         width: 212
         height: 69
         text: qsTr("Tare")
+        onClicked: controller.navigate("tare")
     }
 
     Text {

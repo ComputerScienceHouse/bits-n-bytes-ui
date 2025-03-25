@@ -60,6 +60,7 @@ Rectangle {
             font.family: "Roboto"
             Material.roundedScale: Material.MediumScale
             Material.background: "#F76902"
+            onClicked: controller.navigate("reciept")
         }
 
         Text {
@@ -90,7 +91,7 @@ Rectangle {
         width: 405
         height: 137
         color: "#ffffff"
-        text: qsTr("Welcome [Y/N]\nYour cart is empty, please grab your snacks\nfrom the cabinet to start. \nWe’ll do the rest")
+        text: qsTr("Welcome \nYour cart is empty, please grab your snacks\nfrom the cabinet to start. \nWe’ll do the rest")
         elide: Text.ElideNone
         font.pixelSize: 20
         horizontalAlignment: Text.AlignHCenter

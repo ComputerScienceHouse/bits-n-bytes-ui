@@ -115,6 +115,7 @@ Rectangle {
                     Layout.preferredHeight: 52
                     visible: true
                     text: qsTr("No Reciept")
+                    onClicked: controller.navigate("welcome")
                 }
             }
         }
