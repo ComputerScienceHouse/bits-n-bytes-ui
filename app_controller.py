@@ -11,6 +11,7 @@ from PySide6.QtWidgets import QApplication
 
 class AppController(QObject):
     
+    
     def __init__(self):
         super().__init__()
         self.stack=None
