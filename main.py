@@ -21,7 +21,11 @@ def main():
     engine.addImportPath(import_path)
     for font_file in os.listdir(font_dir):
         font_path = os.path.join(font_dir, font_file)
-        # font_id = QFontDatabase.addApplicationFont(font_path)
+        font_id = QFontDatabase.addApplicationFont(font_path)
+        if font_id == -1:
+            print(f"Failed to load font: {font_file}")
+        else:
+            print(f"Loaded font: {font_file}")
     engine.load(QUrl("BnB/Main.qml"))
 
     if not engine.rootObjects():
