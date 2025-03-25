@@ -25,6 +25,9 @@ def main():
     if not engine.rootObjects():
         sys.exit("Error: Main.qml failed to load.")
 
+    root_object = engine.rootObjects()[0]
+    root_object.showFullScreen()
+
     sys.exit(app.exec())
 
 if __name__ == "__main__":

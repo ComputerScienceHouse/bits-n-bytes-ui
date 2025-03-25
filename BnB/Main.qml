@@ -9,6 +9,7 @@ Window {
     width: Constants.width
     height: Constants.height
     visible: true
+    // visibility: Window.FullScreen
     flags: Qt.Window | Qt.FramelessWindowHint
 
     // Property to track current screen
