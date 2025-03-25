@@ -118,5 +118,6 @@ Rectangle {
         text: qsTr("⬅")
         font.pointSize: 30
         Material.background: "#F76902"
+        onClicked: controller.navigate("welcome")
     }
 }

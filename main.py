@@ -45,9 +45,22 @@ def main():
     # stack = stack[0] # gets actual stack ref in list
     # controller = AppController(stack)
     root_object = engine.rootObjects()[0]
-    root_object.showFullScreen()
+
+    if is_raspi():
+        root_object.showFullScreen()
 
     sys.exit(app.exec())
+
+def is_raspi():
+    try:
+        with open("/etc/os-release") as f:
+            os_info = f.read()
+            if "Raspberry Pi OS" in os_info:
+                return True
+            else:
+                return False
+    except FileNotFoundError:
+        pass
 
 if __name__ == "__main__":
     main()
