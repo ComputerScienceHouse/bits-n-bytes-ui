@@ -118,3 +118,4 @@ ui_*.h
 
 # Custom
 config.py
+*.qtds
