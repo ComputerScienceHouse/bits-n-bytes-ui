@@ -1,5 +1,9 @@
-import QtQuick
+import QtQuick 6.8
+import QtQuick.Controls 6.8
+import QtQuick.Controls.Material 6.8
 import Constants
+import QtQuick.Layouts
+import QtQuick.Effects
 
 Rectangle {
     width: Constants.width
@@ -11,4 +15,62 @@ Rectangle {
     property alias button: screen.backButton
     property alias tareButton: screen.tareButton
 
+    Component.onCompleted: {
+        screen.exitAppButton.clicked.connect(() => {
+            emailPopup.open();
+        });
+    }
+
+    Popup {
+        id: emailPopup
+        width: 300
+        height: 200
+        focus: true
+        closePolicy: Popup.CloseOnEscape
+        x: parent.width / 2 - (width / 2)
+        y: parent.height / 2 - (height / 2)
+        background: Rectangle {
+            color: "#333333"
+            radius: 10
+        }
+        ColumnLayout {
+            id: emailContainer
+            anchors.centerIn: parent
+            spacing: 10
+
+            Text {
+                text: qsTr("Are you sure you want to exit?")
+                color: "white"
+                font.pixelSize: 16
+                Layout.alignment: Qt.AlignHCenter
+            }
+
+            RowLayout {
+                id: buttonLayout
+                width: parent.width
+                Button {
+                    text: qsTr("Yes")
+                    Layout.fillWidth: true
+                    onClicked: {
+                        controller.exit()
+                    }
+                    font.pointSize: 12
+                    font.family: "Roboto"
+                    Material.roundedScale: Material.MediumScale
+                }
+
+                Button {
+                    text: qsTr("No")
+                    Layout.fillWidth: true
+                    onClicked: {
+                        emailPopup.close()
+                    }
+                    font.pointSize: 12
+                    font.family: "Roboto"
+                    Material.roundedScale: Material.MediumScale
+                }
+
+            }
+        }
+    }
 }

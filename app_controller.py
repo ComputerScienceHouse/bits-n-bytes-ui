@@ -7,6 +7,7 @@
 #
 ###############################################################################
 from PySide6.QtCore import QObject, QTimer, Slot
+from PySide6.QtWidgets import QApplication
 
 class AppController(QObject):
     
@@ -43,3 +44,7 @@ class AppController(QObject):
 
         if screen in screen_map:
             self.stack.setProperty("currentIndex", screen_map[screen])
+
+    @Slot()
+    def exit(self):
+        QApplication.instance().quit()

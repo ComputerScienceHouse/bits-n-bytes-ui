@@ -21,6 +21,7 @@ Rectangle {
 
     property alias backButton: backButton
     property alias tareButton: tareButton
+    property alias exitAppButton: exitAppButton
 
     Button {
         id: powerOffButton

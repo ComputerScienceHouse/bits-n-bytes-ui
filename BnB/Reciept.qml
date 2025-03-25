@@ -63,7 +63,6 @@ Rectangle {
                 onAccepted: {
                     console.log("Email entered:", text)
                     emailPopup.close()
-                    recieptScreenLoader.item.emailButton.checked = false
                 }
             }
 
@@ -73,7 +72,6 @@ Rectangle {
                 onClicked: {
                     console.log("Email entered:", emailInput.text)
                     emailPopup.close()
-                    recieptScreenLoader.item.emailButton.checked = false
                 }
                 font.pointSize: 12
                 font.family: "Roboto"
@@ -118,7 +116,6 @@ Rectangle {
                 onAccepted: {
                     console.log("Phone Number entered:", text)
                     textPopup.close()
-                    recieptScreenLoader.item.textButton.checked = false
                 }
             }
 
@@ -128,7 +125,6 @@ Rectangle {
                 onClicked: {
                     console.log("Phone Number entered:", textInput.text)
                     textPopup.close()
-                    recieptScreenLoader.item.emailButton.checked = false
                 }
                 font.pointSize: 12
                 font.family: "Roboto"
