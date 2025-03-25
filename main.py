@@ -16,10 +16,12 @@ def main():
     app.setStyle('Material')
     # Optionally, load fonts if needed
     import_path = os.path.join(os.getcwd(), "BnB", "imports")
-    font_path = os.path.join(os.getcwd(), "BnB", "fonts")
+    font_dir = os.path.join(os.getcwd(), "BnB", "fonts")
     engine = QQmlApplicationEngine()
     engine.addImportPath(import_path)
-    QFontDatabase.addApplicationFont(font_path)
+    for font_file in os.listdir(font_dir):
+        font_path = os.path.join(font_dir, font_file)
+        # font_id = QFontDatabase.addApplicationFont(font_path)
     engine.load(QUrl("BnB/Main.qml"))
 
     if not engine.rootObjects():
