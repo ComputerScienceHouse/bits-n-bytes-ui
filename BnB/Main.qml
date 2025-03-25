@@ -36,6 +36,7 @@ Window {
 
     StackLayout {
         id: stack
+        objectName: stack
         anchors.fill: parent
         currentIndex: 0 // Start with Name screen
         Welcome {
