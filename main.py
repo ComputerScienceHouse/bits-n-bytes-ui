@@ -15,11 +15,11 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle('Material')
     # Optionally, load fonts if needed
-    # QFontDatabase.addApplicationFont(":/resources/Roboto")
-    # QFontDatabase.addApplicationFont(":/resources/IBMPlexMono")
     import_path = os.path.join(os.getcwd(), "BnB", "imports")
+    font_path = os.path.join(os.getcwd(), "BnB", "fonts")
     engine = QQmlApplicationEngine()
     engine.addImportPath(import_path)
+    QFontDatabase.addApplicationFont(font_path)
     engine.load(QUrl("BnB/Main.qml"))
 
     if not engine.rootObjects():
