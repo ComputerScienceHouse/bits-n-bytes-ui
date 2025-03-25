@@ -6,6 +6,7 @@
 # will be used to interface with the model.
 #
 ###############################################################################
+<<<<<<< Updated upstream
 from PySide6.QtCore import QObject, QTimer
 
 class AppController(QObject):
@@ -26,4 +27,24 @@ class AppController(QObject):
         while(timer.remainingTime > 0):
             if(timer.remainingTime == 0):
                 switchScreen(screen)
+=======
+from PySide6.QtCore import QObject
+from mqtt import MqttClient
+from os import environ
+
+local_broker_url = environ.get('MQTT_LOCAL_BROKER_URL', None)
+local_broker_port = environ.get('MQTT_LOCAL_BROKER_PORT', 1883)
+remote_broker_url = environ.get('MQTT_REMOTE_BROKER_URL', None)
+remote_broker_port = environ.get('MQTT_REMOTE_BROKER_PORT', 1883)
+
+class AppController(QObject):
+
+    local_mqtt: MqttClient | None
+
+    def __init__(self):
+        super().__init__()
+
+        if local_broker_url is not None:
+            local
+>>>>>>> Stashed changes
 
