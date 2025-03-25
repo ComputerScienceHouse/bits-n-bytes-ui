@@ -67,5 +67,6 @@ Rectangle {
         font.pointSize: 24
         font.family: "Roboto"
         Material.background: "#6C0164"
+        onClicked: controller.navigate("cart")
     }
 }
