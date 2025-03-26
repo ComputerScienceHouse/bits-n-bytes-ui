@@ -29,8 +29,8 @@ Rectangle {
     // Email Popup
     Popup {
         id: emailPopup
-        width: 400
-        height: 300
+        width: 300
+        height: 250
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
@@ -88,8 +88,8 @@ Rectangle {
     // Phone Number Popup
     Popup {
         id: textPopup
-        width: 400
-        height: 300
+        width: 300
+        height: 250
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
