@@ -71,7 +71,7 @@ Rectangle {
         height: 100
         text: qsTr("Tare")
         font.pointSize: 20
-        // onClicked: controller.navigate("tare")
+        onClicked: controller.navigate("tare")
     }
 
     Text {
@@ -123,6 +123,6 @@ Rectangle {
         text: qsTr("⬅")
         font.pointSize: 30
         Material.background: "#F76902"
-        // onClicked: controller.navigate("welcome")
+        onClicked: controller.navigate("welcome")
     }
 }
