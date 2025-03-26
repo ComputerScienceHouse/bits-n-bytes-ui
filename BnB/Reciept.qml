@@ -29,12 +29,12 @@ Rectangle {
     // Email Popup
     Popup {
         id: emailPopup
-        width: 300
+        width: 400
         height: 250
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
-        y: parent.height / 8 - (height / 8)
+        y: parent.height / 6 - (height / 6)
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -56,7 +56,7 @@ Rectangle {
 
             TextField {
                 id: emailInput
-                Layout.preferredWidth: emailContainer.width
+                Layout.preferredWidth: emailPopup.width - (emailPopup.width/2)
                 placeholderText: qsTr("Email Address")
                 color: "white"
                 font.family: "Roboto"
@@ -94,7 +94,7 @@ Rectangle {
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
-        y: parent.height / 8 - (height / 8)
+        y: parent.height / 6 - (height / 6)
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -116,7 +116,7 @@ Rectangle {
 
             TextField {
                 id: textInput
-                Layout.preferredWidth: textContainer.width
+                Layout.preferredWidth: textPopup.width - (textPopup.width/2)
                 placeholderText: qsTr("Phone Number")
                 color: "white"
                 font.family: "Roboto"
