@@ -32,7 +32,7 @@ Rectangle {
         text: qsTr("Power Off")
         font.family: "Roboto"
         font.weight: Font.Normal
-        font.pointSize: 20
+        font.pointSize: 16
     }
 
     Button {
@@ -42,7 +42,9 @@ Rectangle {
         width: 307
         height: 100
         text: qsTr("Open Doors")
-        font.pointSize: 20
+        font.family: "Roboto"
+        font.weight: Font.Normal
+        font.pointSize: 16
     }
 
     Button {
@@ -52,8 +54,9 @@ Rectangle {
         width: 307
         height: 100
         text: qsTr("Exit App")
+        font.family: "Roboto"
         font.weight: Font.Normal
-        font.pointSize: 20
+        font.pointSize: 16
     }
 
     Button {
@@ -63,7 +66,9 @@ Rectangle {
         width: 307
         height: 100
         text: qsTr("Open Hatch")
-        font.pointSize: 20
+        font.family: "Roboto"
+        font.weight: Font.Normal
+        font.pointSize: 16
     }
 
     Button {
@@ -73,7 +78,9 @@ Rectangle {
         width: 307
         height: 100
         text: qsTr("Tare")
-        font.pointSize: 20
+        font.family: "Roboto"
+        font.weight: Font.Normal
+        font.pointSize: 16
         onClicked: controller.navigate("tare")
     }
 
@@ -124,6 +131,8 @@ Rectangle {
         width: 58
         height: 68
         text: qsTr("⬅")
+        font.family: "Roboto"
+        font.weight: Font.Normal
         font.pointSize: 30
         Material.background: "#F76902"
         onClicked: controller.navigate("welcome")

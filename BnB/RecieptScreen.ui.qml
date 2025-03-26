@@ -88,8 +88,8 @@ Rectangle {
                 Button {
                     Layout.alignment: Qt.AlignCenter
                     id: textButton
-                    Layout.preferredWidth: 234
-                    Layout.preferredHeight: 52
+                    Layout.preferredWidth: 235
+                    Layout.preferredHeight: 75
                     x: 685
                     y: 238
                     text: qsTr("Text")
@@ -104,8 +104,8 @@ Rectangle {
                     id: emailButton
                     x: 685
                     y: 296
-                    Layout.preferredWidth: 234
-                    Layout.preferredHeight: 52
+                    Layout.preferredWidth: 235
+                    Layout.preferredHeight: 75
                     visible: true
                     text: qsTr("Email")
                     font.family: "Roboto"
@@ -118,8 +118,8 @@ Rectangle {
                     id: noRecieptButton
                     x: 685
                     y: 354
-                    Layout.preferredWidth: 234
-                    Layout.preferredHeight: 52
+                    Layout.preferredWidth: 235
+                    Layout.preferredHeight: 75
                     visible: true
                     text: qsTr("No Reciept")
                     font.family: "Roboto"
