@@ -23,8 +23,8 @@ Rectangle {
 
     Popup {
         id: emailPopup
-        width: 300
-        height: 200
+        width: 450
+        height: 300
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
@@ -41,7 +41,9 @@ Rectangle {
             Text {
                 text: qsTr("Are you sure you want to exit?")
                 color: "white"
-                font.pixelSize: 16
+                font.family: "Roboto"
+                font.weight: Font.Normal
+                font.pixelSize: 24
                 Layout.alignment: Qt.AlignHCenter
             }
 
@@ -54,8 +56,9 @@ Rectangle {
                     onClicked: {
                         controller.exit()
                     }
-                    font.pointSize: 12
                     font.family: "Roboto"
+                    font.weight: Font.Normal
+                    font.pixelSize: 24
                     Material.roundedScale: Material.MediumScale
                 }
 
@@ -65,8 +68,9 @@ Rectangle {
                     onClicked: {
                         emailPopup.close()
                     }
-                    font.pointSize: 12
                     font.family: "Roboto"
+                    font.weight: Font.Normal
+                    font.pixelSize: 24
                     Material.roundedScale: Material.MediumScale
                 }
 
