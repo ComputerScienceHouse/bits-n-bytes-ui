@@ -26,7 +26,9 @@ Rectangle {
         width: 450
         height: 300
         focus: true
-        closePolicy: Popup.CloseOnEscape
+        modal: true
+        dim: true
+        closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
         x: parent.width / 2 - (width / 2)
         y: parent.height / 2 - (height / 2)
         background: Rectangle {
