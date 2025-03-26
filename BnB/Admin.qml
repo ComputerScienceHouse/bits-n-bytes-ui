@@ -17,20 +17,29 @@ Rectangle {
 
     Component.onCompleted: {
         screen.exitAppButton.clicked.connect(() => {
-            emailPopup.open();
+            exitPopup.open();
         });
     }
 
+    Rectangle {
+        id: overlay
+        anchors.fill: parent
+        color: "#000000"
+        opacity: 0.35
+        visible: exitPopup.opened
+        z: 10  // Lower than popup and keyboard
+    }
+
     Popup {
-        id: emailPopup
+        id: exitPopup
         width: 450
         height: 300
         focus: true
         modal: true
-        dim: true
         closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
         x: parent.width / 2 - (width / 2)
         y: parent.height / 2 - (height / 2)
+        z: 20
         background: Rectangle {
             color: "#333333"
             radius: 10
