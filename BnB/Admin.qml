@@ -77,7 +77,7 @@ Rectangle {
                     text: qsTr("No")
                     Layout.fillWidth: true
                     onClicked: {
-                        emailPopup.close()
+                        exitPopup.close()
                     }
                     font.family: "Roboto"
                     font.weight: Font.Normal
