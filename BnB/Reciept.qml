@@ -32,7 +32,9 @@ Rectangle {
         width: 400
         height: 250
         focus: true
-        closePolicy: Popup.CloseOnEscape
+        modal: true
+        dim: true
+        closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
         x: parent.width / 2 - (width / 2)
         y: parent.height / 14 - (height / 14)
         background: Rectangle {
@@ -92,7 +94,9 @@ Rectangle {
         width: 400
         height: 250
         focus: true
-        closePolicy: Popup.CloseOnEscape
+        modal: true
+        dim: true
+        closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
         x: parent.width / 2 - (width / 2)
         y: parent.height / 14 - (height / 14)
         background: Rectangle {
