@@ -34,7 +34,7 @@ Rectangle {
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
-        y: parent.height / 4 - (height / 4)
+        y: parent.height / 8 - (height / 8)
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -94,7 +94,7 @@ Rectangle {
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
-        y: parent.height / 4 - (height / 4)
+        y: parent.height / 8 - (height / 8)
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -140,6 +140,8 @@ Rectangle {
                 font.pointSize: 18
                 font.family: "Roboto"
                 font.weight: Font.Normal
+                width: 100
+                height: 50
                 Material.roundedScale: Material.MediumScale
             }
         }
