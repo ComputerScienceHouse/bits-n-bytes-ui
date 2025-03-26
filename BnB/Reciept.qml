@@ -34,7 +34,7 @@ Rectangle {
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
-        y: parent.height / 12 - (height / 12)
+        y: parent.height / 14 - (height / 14)
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -43,7 +43,7 @@ Rectangle {
         ColumnLayout {
             id: emailContainer
             anchors.centerIn: parent
-            spacing: 10
+            spacing: 15
 
             Text {
                 text: qsTr("Enter your email:")
@@ -81,8 +81,6 @@ Rectangle {
                 font.pointSize: 18
                 font.family: "Roboto"
                 font.weight: Font.Normal
-                width: 250
-                height: 100
                 Material.roundedScale: Material.MediumScale
             }
         }
@@ -96,7 +94,7 @@ Rectangle {
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
-        y: parent.height / 12 - (height / 12)
+        y: parent.height / 14 - (height / 14)
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -105,8 +103,7 @@ Rectangle {
         ColumnLayout {
             id: textContainer
             anchors.centerIn: parent
-            spacing: 10
-
+            spacing: 15
             Text {
                 text: qsTr("Enter your phone number:")
                 color: "white"
@@ -142,8 +139,6 @@ Rectangle {
                 font.pointSize: 18
                 font.family: "Roboto"
                 font.weight: Font.Normal
-                width: 250
-                height: 100
                 Material.roundedScale: Material.MediumScale
             }
         }
