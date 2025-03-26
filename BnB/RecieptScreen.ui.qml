@@ -55,12 +55,11 @@ Rectangle {
     ColumnLayout {
         id: contact
         x: 662
-        y: 131
+        y: 95
         width: 341
         height: 449
         Text {
             Layout.alignment: Qt.AlignCenter
-            Layout.topMargin: 20
             x: 668
             y: 177
             width: 269
@@ -70,7 +69,7 @@ Rectangle {
             font.pixelSize: 24
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-            font.weight: Font.DemiBold
+            font.weight: Font.Normal
             font.family: "Roboto"
             font.bold: true
         }
@@ -125,7 +124,7 @@ Rectangle {
                     font.family: "Roboto"
                     font.weight: Font.Normal
                     font.pointSize: 20
-                    onClicked: controller.navigate("welcome")
+                    // onClicked: controller.navigate("welcome")
                 }
             }
         }
@@ -139,10 +138,10 @@ Rectangle {
             height: 49
             color: "#ffffff"
             text: qsTr("Subtotal:")
-            font.pixelSize: 20
+            font.pixelSize: 24
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
-            font.weight: Font.DemiBold
+            font.weight: Font.Normal
             font.family: "Roboto"
             font.bold: true
         }
@@ -155,10 +154,10 @@ Rectangle {
             height: 49
             color: "#ffffff"
             text: qsTr("Tax:")
-            font.pixelSize: 20
+            font.pixelSize: 24
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
-            font.weight: Font.DemiBold
+            font.weight: Font.Normal
             font.family: "Roboto"
             font.bold: true
         }
@@ -171,10 +170,10 @@ Rectangle {
             height: 49
             color: "#ffffff"
             text: qsTr("Total:")
-            font.pixelSize: 20
+            font.pixelSize: 24
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
-            font.weight: Font.DemiBold
+            font.weight: Font.Normal
             font.family: "Roboto"
             font.bold: true
         }

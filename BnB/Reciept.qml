@@ -29,8 +29,8 @@ Rectangle {
     // Email Popup
     Popup {
         id: emailPopup
-        width: 300
-        height: 200
+        width: 450
+        height: 300
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
@@ -47,6 +47,8 @@ Rectangle {
 
             Text {
                 text: qsTr("Enter your email:")
+                font.family: "Roboto"
+                font.weight: Font.Normal
                 color: "white"
                 font.pixelSize: 16
                 Layout.alignment: Qt.AlignHCenter
@@ -57,6 +59,8 @@ Rectangle {
                 Layout.preferredWidth: 200
                 placeholderText: qsTr("Email Address")
                 color: "white"
+                font.family: "Roboto"
+                font.weight: Font.Normal
                 Material.accent: "#F76902"
                 inputMethodHints: Qt.ImhEmailCharactersOnly
                 focus: true
@@ -75,6 +79,7 @@ Rectangle {
                 }
                 font.pointSize: 12
                 font.family: "Roboto"
+                font.weight: Font.Normal
                 Material.roundedScale: Material.MediumScale
             }
         }
@@ -83,8 +88,8 @@ Rectangle {
     // Phone Number Popup
     Popup {
         id: textPopup
-        width: 300
-        height: 200
+        width: 450
+        height: 300
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
@@ -103,6 +108,8 @@ Rectangle {
                 text: qsTr("Enter your phone number:")
                 color: "white"
                 font.pixelSize: 16
+                font.family: "Roboto"
+                font.weight: Font.Normal
                 Layout.alignment: Qt.AlignHCenter
             }
 
@@ -111,6 +118,8 @@ Rectangle {
                 Layout.preferredWidth: 200
                 placeholderText: qsTr("Phone Number")
                 color: "white"
+                font.family: "Roboto"
+                font.weight: Font.Normal
                 Material.accent: "#F76902"
                 inputMethodHints: Qt.ImhDigitsOnly
                 onAccepted: {
@@ -128,6 +137,7 @@ Rectangle {
                 }
                 font.pointSize: 12
                 font.family: "Roboto"
+                font.weight: Font.Normal
                 Material.roundedScale: Material.MediumScale
             }
         }
