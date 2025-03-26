@@ -30,7 +30,7 @@ Rectangle {
         id: overlay
         anchors.fill: parent
         color: "#000000"
-        opacity: 0.5
+        opacity: 0.2
         visible: emailPopup.opened || textPopup.opened
         z: 10  // Lower than popup and keyboard
 
