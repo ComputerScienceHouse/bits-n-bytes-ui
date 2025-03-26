@@ -34,7 +34,7 @@ Rectangle {
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
-        y: parent.height / 8 - (height / 8)
+        y: parent.height / 10 - (height / 10)
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -81,6 +81,8 @@ Rectangle {
                 font.pointSize: 18
                 font.family: "Roboto"
                 font.weight: Font.Normal
+                width: 125
+                height: 75
                 Material.roundedScale: Material.MediumScale
             }
         }
@@ -89,12 +91,12 @@ Rectangle {
     // Phone Number Popup
     Popup {
         id: textPopup
-        width: 300
+        width: 400
         height: 250
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
-        y: parent.height / 8 - (height / 8)
+        y: parent.height / 10 - (height / 10)
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -140,8 +142,8 @@ Rectangle {
                 font.pointSize: 18
                 font.family: "Roboto"
                 font.weight: Font.Normal
-                width: 100
-                height: 50
+                width: 125
+                height: 75
                 Material.roundedScale: Material.MediumScale
             }
         }
