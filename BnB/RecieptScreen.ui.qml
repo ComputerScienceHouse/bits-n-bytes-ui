@@ -72,6 +72,7 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.DemiBold
             font.family: "Roboto"
+            font.weight: Font.Normal
             font.bold: true
         }
 
@@ -94,6 +95,7 @@ Rectangle {
                     y: 238
                     text: qsTr("Text")
                     font.family: "Roboto"
+                    font.weight: Font.Normal
                     font.pointSize: 20
                 }
 
@@ -108,6 +110,7 @@ Rectangle {
                     visible: true
                     text: qsTr("Email")
                     font.family: "Roboto"
+                    font.weight: Font.Normal
                     font.pointSize: 20
                 }
 
@@ -121,6 +124,7 @@ Rectangle {
                     visible: true
                     text: qsTr("No Reciept")
                     font.family: "Roboto"
+                    font.weight: Font.Normal
                     font.pointSize: 20
                     onClicked: controller.navigate("welcome")
                 }
@@ -141,6 +145,7 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.DemiBold
             font.family: "Roboto"
+            font.weight: Font.Normal
             font.bold: true
         }
 
@@ -157,6 +162,7 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.DemiBold
             font.family: "Roboto"
+            font.weight: Font.Normal
             font.bold: true
         }
 
@@ -173,6 +179,7 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.DemiBold
             font.family: "Roboto"
+            font.weight: Font.Normal
             font.bold: true
         }
     }

@@ -212,6 +212,7 @@ Rectangle {
             Layout.fillHeight: true
             text: qsTr("3D")
             font.family: "Roboto"
+            font.weight: Font.Normal
             font.pointSize: 24
             Material.roundedScale: Material.NotRounded
             Layout.rightMargin: 10
@@ -227,6 +228,7 @@ Rectangle {
             Layout.fillHeight: true
             text: qsTr("4A")
             font.family: "Roboto"
+            font.weight: Font.Normal
             font.pointSize: 24
             Material.roundedScale: Material.NotRounded
             Layout.leftMargin: 10
@@ -242,6 +244,7 @@ Rectangle {
             Layout.fillHeight: true
             text: qsTr("4B")
             font.family: "Roboto"
+            font.weight: Font.Normal
             font.pointSize: 24
             Material.roundedScale: Material.NotRounded
         }
@@ -256,6 +259,7 @@ Rectangle {
             Layout.fillHeight: true
             text: qsTr("4C")
             font.family: "Roboto"
+            font.weight: Font.Normal
             font.pointSize: 24
             Material.roundedScale: Material.NotRounded
         }
@@ -270,6 +274,7 @@ Rectangle {
             Layout.fillHeight: true
             text: qsTr("4D")
             font.family: "Roboto"
+            font.weight: Font.Normal
             font.pointSize: 24
             Material.roundedScale: Material.NotRounded
         }

@@ -30,6 +30,8 @@ Rectangle {
         width: 307
         height: 100
         text: qsTr("Power Off")
+        font.family: "Roboto"
+        font.weight: Font.Normal
         font.pointSize: 20
     }
 
@@ -50,6 +52,7 @@ Rectangle {
         width: 307
         height: 100
         text: qsTr("Exit App")
+        font.weight: Font.Normal
         font.pointSize: 20
     }
 

@@ -59,6 +59,7 @@ Rectangle {
             autoRepeat: true
             font.pointSize: 18
             font.family: "Roboto"
+            font.weight: Font.Normal
             Material.roundedScale: Material.MediumScale
             Material.background: "#F76902"
             onClicked: controller.navigate("reciept")
@@ -98,7 +99,8 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         textFormat: Text.PlainText
-        font.family: "Roboto"
+        font.family: "Roboto"'        
+        font.weight: Font.Normal
     }
 
     Text {
