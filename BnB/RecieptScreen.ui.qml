@@ -72,7 +72,6 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.DemiBold
             font.family: "Roboto"
-            font.weight: Font.Normal
             font.bold: true
         }
 
@@ -145,7 +144,6 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.DemiBold
             font.family: "Roboto"
-            font.weight: Font.Normal
             font.bold: true
         }
 
@@ -162,7 +160,6 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.DemiBold
             font.family: "Roboto"
-            font.weight: Font.Normal
             font.bold: true
         }
 
@@ -179,7 +176,6 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.DemiBold
             font.family: "Roboto"
-            font.weight: Font.Normal
             font.bold: true
         }
     }
