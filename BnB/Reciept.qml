@@ -38,14 +38,14 @@ Rectangle {
         x: parent.width / 2 - (width / 2)
         y: parent.height / 14 - (height / 14)
         overlay: Rectangle {
-            id: customOverlay
+            id: emailDimOverlay
             anchors.fill: parent
             color: "#000000"
             opacity: 0.5
             // Set a z that is lower than the keyboard’s z
             z: 10
         }
-        z: customOverlay.z + 1
+        z: emailDimOverlay.z + 1
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -109,14 +109,14 @@ Rectangle {
         x: parent.width / 2 - (width / 2)
         y: parent.height / 14 - (height / 14)
         overlay: Rectangle {
-            id: customOverlay
+            id: textDimOverlay
             anchors.fill: parent
             color: "#000000"
             opacity: 0.5
             // Set a z that is lower than the keyboard’s z
             z: 10
         }
-        z: customOverlay.z + 1
+        z: textDimOverlay.z + 1
         background: Rectangle {
             color: "#333333"
             radius: 10
