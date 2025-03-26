@@ -151,6 +151,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width
         height: 200
+        z: 9999
         visible: (emailPopup.opened && emailInput.activeFocus) || (textPopup.opened && textInput.activeFocus)
         
 
