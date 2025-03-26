@@ -55,8 +55,9 @@ Rectangle {
             width: 266
             height: 68
             text: qsTr("Finish Transaction")
+            font.bold: false
             autoRepeat: true
-            font.pointSize: 20
+            font.pointSize: 18
             font.family: "Roboto"
             Material.roundedScale: Material.MediumScale
             Material.background: "#F76902"

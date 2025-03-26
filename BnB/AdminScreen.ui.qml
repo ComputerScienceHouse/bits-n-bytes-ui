@@ -25,54 +25,59 @@ Rectangle {
 
     Button {
         id: powerOffButton
-        x: 279
-        y: 190
-        width: 184
-        height: 69
+        x: 181
+        y: 176
+        width: 307
+        height: 100
         text: qsTr("Power Off")
+        font.pointSize: 20
     }
 
     Button {
         id: openDoorButton
-        x: 543
-        y: 266
-        width: 212
-        height: 69
+        x: 553
+        y: 277
+        width: 307
+        height: 100
         text: qsTr("Open Doors")
+        font.pointSize: 20
     }
 
     Button {
         id: exitAppButton
-        x: 279
-        y: 266
-        width: 184
-        height: 69
+        x: 181
+        y: 277
+        width: 307
+        height: 100
         text: qsTr("Exit App")
+        font.pointSize: 20
     }
 
     Button {
         id: openHatchButton
-        x: 543
-        y: 190
-        width: 212
-        height: 69
+        x: 553
+        y: 176
+        width: 307
+        height: 100
         text: qsTr("Open Hatch")
+        font.pointSize: 20
     }
 
     Button {
         id: tareButton
-        x: 543
-        y: 341
-        width: 212
-        height: 69
+        x: 553
+        y: 377
+        width: 307
+        height: 100
         text: qsTr("Tare")
-        onClicked: controller.navigate("tare")
+        font.pointSize: 20
+        // onClicked: controller.navigate("tare")
     }
 
     Text {
         id: tare
-        x: 287
-        y: 135
+        x: 251
+        y: 121
         width: 168
         height: 49
         text: qsTr("System")
@@ -84,8 +89,8 @@ Rectangle {
 
     Text {
         id: app
-        x: 585
-        y: 135
+        x: 642
+        y: 121
         width: 129
         height: 49
         color: "#ffffff"
@@ -118,6 +123,6 @@ Rectangle {
         text: qsTr("⬅")
         font.pointSize: 30
         Material.background: "#F76902"
-        onClicked: controller.navigate("welcome")
+        // onClicked: controller.navigate("welcome")
     }
 }

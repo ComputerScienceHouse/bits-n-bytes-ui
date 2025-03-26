@@ -44,7 +44,7 @@ Rectangle {
         height: 49
         color: "#ffffff"
         text: qsTr("Timeout: 10")
-        font.pixelSize: 20
+        font.pixelSize: 24
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         font.weight: Font.DemiBold
@@ -67,7 +67,7 @@ Rectangle {
             height: 65
             color: "#ffffff"
             text: qsTr("Would you like your reciept?")
-            font.pixelSize: 20
+            font.pixelSize: 24
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.DemiBold
@@ -93,6 +93,8 @@ Rectangle {
                     x: 685
                     y: 238
                     text: qsTr("Text")
+                    font.family: "Roboto"
+                    font.pointSize: 20
                 }
 
                 Button {
@@ -105,6 +107,8 @@ Rectangle {
                     Layout.preferredHeight: 52
                     visible: true
                     text: qsTr("Email")
+                    font.family: "Roboto"
+                    font.pointSize: 20
                 }
 
                 Button {
@@ -116,6 +120,8 @@ Rectangle {
                     Layout.preferredHeight: 52
                     visible: true
                     text: qsTr("No Reciept")
+                    font.family: "Roboto"
+                    font.pointSize: 20
                     onClicked: controller.navigate("welcome")
                 }
             }
@@ -130,7 +136,7 @@ Rectangle {
             height: 49
             color: "#ffffff"
             text: qsTr("Subtotal:")
-            font.pixelSize: 16
+            font.pixelSize: 20
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.DemiBold
@@ -146,7 +152,7 @@ Rectangle {
             height: 49
             color: "#ffffff"
             text: qsTr("Tax:")
-            font.pixelSize: 16
+            font.pixelSize: 20
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.DemiBold
@@ -162,7 +168,7 @@ Rectangle {
             height: 49
             color: "#ffffff"
             text: qsTr("Total:")
-            font.pixelSize: 16
+            font.pixelSize: 20
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.DemiBold
