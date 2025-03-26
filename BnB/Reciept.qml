@@ -26,6 +26,21 @@ Rectangle {
         });
     }
 
+    Rectangle {
+        id: overlay
+        anchors.fill: parent
+        color: "#000000"
+        opacity: 0.5
+        visible: emailPopup.opened || textPopup.opened
+        z: 10  // Lower than popup and keyboard
+
+        // Block interaction with background while popup is open
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {}  // Prevent clicks from reaching background
+        }
+    }
+
     // Email Popup
     Popup {
         id: emailPopup
@@ -37,15 +52,7 @@ Rectangle {
         closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
         x: parent.width / 2 - (width / 2)
         y: parent.height / 14 - (height / 14)
-        overlay: Rectangle {
-            id: emailDimOverlay
-            anchors.fill: parent
-            color: "#000000"
-            opacity: 0.5
-            // Set a z that is lower than the keyboard’s z
-            z: 10
-        }
-        z: emailDimOverlay.z + 1
+        z: 20
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -108,15 +115,7 @@ Rectangle {
         closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
         x: parent.width / 2 - (width / 2)
         y: parent.height / 14 - (height / 14)
-        overlay: Rectangle {
-            id: textDimOverlay
-            anchors.fill: parent
-            color: "#000000"
-            opacity: 0.5
-            // Set a z that is lower than the keyboard’s z
-            z: 10
-        }
-        z: textDimOverlay.z + 1
+        z: 20
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -171,7 +170,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width
         height: 200
-        z: 20
+        z: 30
         visible: (emailPopup.opened && emailInput.activeFocus) || (textPopup.opened && textInput.activeFocus)
         
 
