@@ -34,7 +34,7 @@ Rectangle {
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
-        y: parent.height / 10 - (height / 10)
+        y: parent.height / 12 - (height / 12)
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -81,8 +81,8 @@ Rectangle {
                 font.pointSize: 18
                 font.family: "Roboto"
                 font.weight: Font.Normal
-                width: 125
-                height: 75
+                width: 250
+                height: 100
                 Material.roundedScale: Material.MediumScale
             }
         }
@@ -96,7 +96,7 @@ Rectangle {
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
-        y: parent.height / 10 - (height / 10)
+        y: parent.height / 12 - (height / 12)
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -142,8 +142,8 @@ Rectangle {
                 font.pointSize: 18
                 font.family: "Roboto"
                 font.weight: Font.Normal
-                width: 125
-                height: 75
+                width: 250
+                height: 100
                 Material.roundedScale: Material.MediumScale
             }
         }
