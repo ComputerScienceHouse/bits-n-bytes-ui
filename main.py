@@ -53,12 +53,8 @@ def main():
 
 def is_raspi():
     try:
-        with open("/etc/os-release") as f:
-            os_info = f.read()
-            if "Raspberry Pi OS" in os_info:
-                return True
-            else:
-                return False
+        with open("/proc/device-tree/model") as f:
+            return "Raspberry Pi" in f.read()
     except FileNotFoundError:
         pass
 
