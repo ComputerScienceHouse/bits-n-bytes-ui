@@ -124,7 +124,7 @@ Rectangle {
                     font.family: "Roboto"
                     font.weight: Font.Normal
                     font.pointSize: 20
-                    // onClicked: controller.navigate("welcome")
+                    onClicked: controller.navigate("welcome")
                 }
             }
         }

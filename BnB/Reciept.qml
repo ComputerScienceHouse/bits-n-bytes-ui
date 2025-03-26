@@ -29,12 +29,12 @@ Rectangle {
     // Email Popup
     Popup {
         id: emailPopup
-        width: 450
+        width: 400
         height: 300
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
-        y: parent.height / 6 - (height / 6)
+        y: parent.height / 8 - (height / 8)
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -50,13 +50,13 @@ Rectangle {
                 font.family: "Roboto"
                 font.weight: Font.Normal
                 color: "white"
-                font.pixelSize: 16
+                font.pixelSize: 24
                 Layout.alignment: Qt.AlignHCenter
             }
 
             TextField {
                 id: emailInput
-                Layout.preferredWidth: 200
+                Layout.preferredWidth: emailContainer.width
                 placeholderText: qsTr("Email Address")
                 color: "white"
                 font.family: "Roboto"
@@ -77,7 +77,7 @@ Rectangle {
                     console.log("Email entered:", emailInput.text)
                     emailPopup.close()
                 }
-                font.pointSize: 12
+                font.pointSize: 24
                 font.family: "Roboto"
                 font.weight: Font.Normal
                 Material.roundedScale: Material.MediumScale
@@ -88,12 +88,12 @@ Rectangle {
     // Phone Number Popup
     Popup {
         id: textPopup
-        width: 450
+        width: 400
         height: 300
         focus: true
         closePolicy: Popup.CloseOnEscape
         x: parent.width / 2 - (width / 2)
-        y: parent.height / 6 - (height / 6)
+        y: parent.height / 8 - (height / 8)
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -107,7 +107,7 @@ Rectangle {
             Text {
                 text: qsTr("Enter your phone number:")
                 color: "white"
-                font.pixelSize: 16
+                font.pixelSize: 24
                 font.family: "Roboto"
                 font.weight: Font.Normal
                 Layout.alignment: Qt.AlignHCenter
@@ -115,7 +115,7 @@ Rectangle {
 
             TextField {
                 id: textInput
-                Layout.preferredWidth: 200
+                Layout.preferredWidth: textContainer.width
                 placeholderText: qsTr("Phone Number")
                 color: "white"
                 font.family: "Roboto"
@@ -135,7 +135,7 @@ Rectangle {
                     console.log("Phone Number entered:", textInput.text)
                     textPopup.close()
                 }
-                font.pointSize: 12
+                font.pointSize: 24
                 font.family: "Roboto"
                 font.weight: Font.Normal
                 Material.roundedScale: Material.MediumScale
