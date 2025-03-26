@@ -37,6 +37,15 @@ Rectangle {
         closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
         x: parent.width / 2 - (width / 2)
         y: parent.height / 14 - (height / 14)
+        overlay: Rectangle {
+            id: customOverlay
+            anchors.fill: parent
+            color: "#000000"
+            opacity: 0.5
+            // Set a z that is lower than the keyboard’s z
+            z: 10
+        }
+        z: customOverlay.z + 1
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -99,6 +108,15 @@ Rectangle {
         closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
         x: parent.width / 2 - (width / 2)
         y: parent.height / 14 - (height / 14)
+        overlay: Rectangle {
+            id: customOverlay
+            anchors.fill: parent
+            color: "#000000"
+            opacity: 0.5
+            // Set a z that is lower than the keyboard’s z
+            z: 10
+        }
+        z: customOverlay.z + 1
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -153,7 +171,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width
         height: 200
-        z: 9999
+        z: 20
         visible: (emailPopup.opened && emailInput.activeFocus) || (textPopup.opened && textInput.activeFocus)
         
 
