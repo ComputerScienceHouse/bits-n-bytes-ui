@@ -100,7 +100,6 @@ Rectangle {
         verticalAlignment: Text.AlignVCenter
         textFormat: Text.PlainText
         font.family: "Roboto"
-        font.weight: Font.Normal        
         font.weight: Font.Normal
     }
 
