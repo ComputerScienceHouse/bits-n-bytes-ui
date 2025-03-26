@@ -33,6 +33,7 @@ Rectangle {
         height: 250
         focus: true
         modal: true
+        dim: false
         closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
         x: parent.width / 2 - (width / 2)
         y: parent.height / 14 - (height / 14)
@@ -94,6 +95,7 @@ Rectangle {
         height: 250
         focus: true
         modal: true
+        dim: false
         closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
         x: parent.width / 2 - (width / 2)
         y: parent.height / 14 - (height / 14)
