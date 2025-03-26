@@ -119,3 +119,4 @@ ui_*.h
 # Custom
 config.py
 *.qtds
+*.egg-info

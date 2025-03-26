@@ -11,7 +11,7 @@ from threading import Thread, Lock
 from types import new_class
 from typing import Dict
 
-import database
+import bnb.database as database
 from models import Shelf, Slot, Item
 import time
 import datetime

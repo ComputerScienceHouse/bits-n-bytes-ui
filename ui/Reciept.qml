@@ -8,20 +8,193 @@ import QtQuick.Layouts
 import QtQuick.Effects
 
 Rectangle {
-    id: window
+    Material.theme: Material.Dark
+    id: recieptScreen
     visible: true
     width: Constants.width
     height: Constants.height
+    color: "#292929"
 
-    RecieptScreen {id: screen}
+    Text {
+        id: _text
+        x: 15
+        y: 10
+        width: 168
+        height: 49
+        color: "#ffffff"
+        text: qsTr("Reciept")
+        font.pixelSize: 40
+        horizontalAlignment: Text.AlignHCenter
+        font.weight: Font.DemiBold
+        font.family: "IBM Plex Mono"
+        font.bold: true
+    }
 
-    property alias button: screen.noRecieptButton
+    Text {
+        id: timeout
+        x: 844
+        y: 10
+        width: 172
+        height: 49
+        color: "#ffffff"
+        text: qsTr("Timeout: 10")
+        font.pixelSize: 24
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        font.weight: Font.DemiBold
+        font.family: "Roboto"
+        font.bold: true
+    }
+
+    ColumnLayout {
+        id: contact
+        x: 662
+        y: 95
+        width: 341
+        height: 449
+        Text {
+            Layout.alignment: Qt.AlignCenter
+            x: 668
+            y: 177
+            width: 269
+            height: 65
+            color: "#ffffff"
+            text: qsTr("Would you like your reciept?")
+            font.pixelSize: 24
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.weight: Font.Normal
+            font.family: "Roboto"
+            font.bold: true
+        }
+
+        Item {
+            id: buttonContainer
+            // The container's size will be driven by the ColumnLayout's children.
+            // (Assuming the ColumnLayout’s children are added as normal QML children.)
+            width: buttons.childrenRect.width
+            height: buttons.childrenRect.height
+            Layout.alignment: Qt.AlignCenter
+            ColumnLayout {
+                id: buttons
+                spacing: 5
+                Button {
+                    Layout.alignment: Qt.AlignCenter
+                    id: textButton
+                    Layout.preferredWidth: 235
+                    Layout.preferredHeight: 75
+                    x: 685
+                    y: 238
+                    text: qsTr("Text")
+                    font.family: "Roboto"
+                    font.weight: Font.Normal
+                    font.pointSize: 20
+                }
+
+                Button {
+                    checked: false
+                    Layout.alignment: Qt.AlignCenter
+                    id: emailButton
+                    x: 685
+                    y: 296
+                    Layout.preferredWidth: 235
+                    Layout.preferredHeight: 75
+                    visible: true
+                    text: qsTr("Email")
+                    font.family: "Roboto"
+                    font.weight: Font.Normal
+                    font.pointSize: 20
+                }
+
+                Button {
+                    Layout.alignment: Qt.AlignCenter
+                    id: noRecieptButton
+                    x: 685
+                    y: 354
+                    Layout.preferredWidth: 235
+                    Layout.preferredHeight: 75
+                    visible: true
+                    text: qsTr("No Reciept")
+                    font.family: "Roboto"
+                    font.weight: Font.Normal
+                    font.pointSize: 20
+                    onClicked: controller.navigate("welcome")
+                }
+            }
+        }
+
+        Text {
+
+            id: subtotal
+            x: 685
+            y: 441
+            width: 234
+            height: 49
+            color: "#ffffff"
+            text: qsTr("Subtotal:")
+            font.pixelSize: 24
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            font.weight: Font.Normal
+            font.family: "Roboto"
+            font.bold: true
+        }
+
+        Text {
+            id: tax
+            x: 685
+            y: 476
+            width: 234
+            height: 49
+            color: "#ffffff"
+            text: qsTr("Tax:")
+            font.pixelSize: 24
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            font.weight: Font.Normal
+            font.family: "Roboto"
+            font.bold: true
+        }
+
+        Text {
+            id: total
+            x: 685
+            y: 511
+            width: 234
+            height: 49
+            color: "#ffffff"
+            text: qsTr("Total:")
+            font.pixelSize: 24
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            font.weight: Font.Normal
+            font.family: "Roboto"
+            font.bold: true
+        }
+    }
+
+    ColumnLayout {
+        id: reciept
+        x: 20
+        y: 65
+        z: 1
+        width: 607
+        height: 509
+        Rectangle {
+            id: rectangle
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            color: "#646c0164"
+            radius: 15
+        }
+    }
+
 
     Component.onCompleted: {
-        screen.emailButton.clicked.connect(() => {
+        emailButton.clicked.connect(() => {
             emailPopup.open();
         });
-        screen.textButton.clicked.connect(() => {
+        textButton.clicked.connect(() => {
             textPopup.open();
         });
     }
@@ -194,7 +367,7 @@ Rectangle {
             when: keyboard.active
             PropertyChanges {
                 target: keyboard
-                y: window.height - keyboard.height
+                y: recieptScreen.height - recieptScreen.height
             }
         }
         transitions: Transition {

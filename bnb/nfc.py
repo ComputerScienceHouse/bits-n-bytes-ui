@@ -4,7 +4,7 @@ from smartcard.CardRequest import CardRequest
 from smartcard.CardType import AnyCardType
 from PySide6.QtCore import QThread, Signal
 import threading
-import nfc
+import bnb.nfc as nfc
 
 def scanCardUID():
 	readers = smartcard.System.readers()

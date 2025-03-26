@@ -1,15 +1,9 @@
-
-
-/*
-This is a UI file (.ui.qml) that is intended to be edited in Qt Design Studio only.
-It is supposed to be strictly declarative and only uses a subset of QML. If you edit
-this file manually, you might introduce QML code that is not supported by Qt Design Studio.
-Check out https://doc.qt.io/qtcreator/creator-quick-ui-forms.html for details on .ui.qml files.
-*/
 import QtQuick 6.8
 import QtQuick.Controls 6.8
 import QtQuick.Controls.Material 6.8
 import Constants
+import QtQuick.Layouts
+import QtQuick.Effects
 
 Rectangle {
     Material.theme: Material.Dark
@@ -18,10 +12,6 @@ Rectangle {
     width: Constants.width
     height: Constants.height
     color: "#292929"
-
-    property alias backButton: backButton
-    property alias tareButton: tareButton
-    property alias exitAppButton: exitAppButton
 
     Button {
         id: powerOffButton
@@ -136,5 +126,79 @@ Rectangle {
         font.pointSize: 30
         Material.background: "#F76902"
         onClicked: controller.navigate("welcome")
+    }
+
+    Component.onCompleted: {
+        exitAppButton.clicked.connect(() => {
+            exitPopup.open();
+        });
+    }
+
+    Rectangle {
+        id: overlay
+        anchors.fill: parent
+        color: "#000000"
+        opacity: 0.35
+        visible: exitPopup.opened
+        z: 10  // Lower than popup and keyboard
+    }
+
+    Popup {
+        id: exitPopup
+        width: 450
+        height: 300
+        focus: true
+        modal: true
+        closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
+        x: parent.width / 2 - (width / 2)
+        y: parent.height / 2 - (height / 2)
+        z: 20
+        background: Rectangle {
+            color: "#333333"
+            radius: 10
+        }
+        ColumnLayout {
+            id: emailContainer
+            anchors.centerIn: parent
+            spacing: 10
+
+            Text {
+                text: qsTr("Are you sure you want to exit?")
+                color: "white"
+                font.family: "Roboto"
+                font.weight: Font.Normal
+                font.pixelSize: 24
+                Layout.alignment: Qt.AlignHCenter
+            }
+
+            RowLayout {
+                id: buttonLayout
+                width: parent.width
+                Button {
+                    text: qsTr("Yes")
+                    Layout.fillWidth: true
+                    onClicked: {
+                        controller.exit()
+                    }
+                    font.family: "Roboto"
+                    font.weight: Font.Normal
+                    font.pixelSize: 24
+                    Material.roundedScale: Material.MediumScale
+                }
+
+                Button {
+                    text: qsTr("No")
+                    Layout.fillWidth: true
+                    onClicked: {
+                        exitPopup.close()
+                    }
+                    font.family: "Roboto"
+                    font.weight: Font.Normal
+                    font.pixelSize: 24
+                    Material.roundedScale: Material.MediumScale
+                }
+
+            }
+        }
     }
 }
