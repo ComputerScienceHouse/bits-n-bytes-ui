@@ -61,6 +61,7 @@ Rectangle {
                 color: "white"
                 font.family: "Roboto"
                 font.weight: Font.Normal
+                font.pointSize: 18
                 Material.accent: "#F76902"
                 inputMethodHints: Qt.ImhEmailCharactersOnly
                 focus: true
@@ -77,7 +78,7 @@ Rectangle {
                     console.log("Email entered:", emailInput.text)
                     emailPopup.close()
                 }
-                font.pointSize: 24
+                font.pointSize: 18
                 font.family: "Roboto"
                 font.weight: Font.Normal
                 Material.roundedScale: Material.MediumScale
@@ -120,6 +121,7 @@ Rectangle {
                 color: "white"
                 font.family: "Roboto"
                 font.weight: Font.Normal
+                font.pointSize: 18
                 Material.accent: "#F76902"
                 inputMethodHints: Qt.ImhDigitsOnly
                 onAccepted: {
@@ -135,7 +137,7 @@ Rectangle {
                     console.log("Phone Number entered:", textInput.text)
                     textPopup.close()
                 }
-                font.pointSize: 24
+                font.pointSize: 18
                 font.family: "Roboto"
                 font.weight: Font.Normal
                 Material.roundedScale: Material.MediumScale
