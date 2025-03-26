@@ -64,9 +64,10 @@ Rectangle {
         height: 75
         icon.source: "images/tap.png"
         text: qsTr("Tap Card to Continue")
-        font.pointSize: 24
+        font.bold: false
+        font.pointSize: 20
         font.family: "Roboto"
         Material.background: "#6C0164"
-        onClicked: controller.navigate("cart")
+        // onClicked: controller.navigate("cart")
     }
 }
