@@ -140,6 +140,10 @@ class Model:
     def __init__(self):
         self._current_user = None
         self._cart = Cart()
+
+        # Add some sample items for testing
+        self._cart.add_item(Item(1, "Sour Patch Kids", 0, 2.50, 10, 200, 10, '', 'sour_patch'))
+        self._cart.add_item(Item(2, "Brownie Brittle", 0, 2.50, 5, 200, 10, '', 'sour_patch'))
         # TODO implement shelf manager
 
 
