@@ -8,6 +8,10 @@
 ###############################################################################
 from PySide6.QtCore import QObject, QTimer, Slot
 from PySide6.QtWidgets import QApplication
+from os import environ
+
+MQTT_LOCAL_BROKER_URL = environ.get('MQTT_LOCAL_BROKER_URL', None)
+MQTT_REMOTE_BROKER_URL = environ.get('')
 
 class AppController(QObject):
     
