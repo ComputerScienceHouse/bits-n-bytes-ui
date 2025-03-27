@@ -18,8 +18,9 @@ from bnb.app_controller import AppController
 app = typer.Typer(no_args_is_help=True)
 run = typer.Typer()
 app.add_typer(run)
-# os.environ["QT_QUICK_CONTROLS_STYLE"] = "MCUDefaultStyle"
-# os.environ["QT_IM_MODULE"] = "qtvirtualkeyboard"
+
+os.environ["QT_QUICK_CONTROLS_STYLE"] = "MCUDefaultStyle"
+os.environ["QT_IM_MODULE"] = "qtvirtualkeyboard"
 
 @run.command()
 def run(screen: Annotated[str, typer.Argument()] = "main"):
