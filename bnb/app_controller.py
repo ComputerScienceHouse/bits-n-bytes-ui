@@ -54,7 +54,7 @@ class AppController(QObject):
         if self._input == self._pattern:
             self.navigate('admin')
             print("Admin screen unlocked!")
-        if len(self._input) == len(self._pattern) and self._input != self._pattern:
+        elif len(self._input) == len(self._pattern):
             print("Incorrect pattern, try again.")
     
     @Slot(int)
