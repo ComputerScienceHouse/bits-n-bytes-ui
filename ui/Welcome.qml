@@ -58,22 +58,9 @@ Rectangle {
         font.family: "Roboto"
         font.weight: Font.Normal
         Material.background: "#6C0164"
-        onClicked: controller.navigate("cart")
-    }
-
-
-    property var inputPattern: []  // Stores the user's button press sequence
-    property var correctPattern: ["one", "two", "three", "four"] // Correct unlock sequence
-    signal unlockAdminScreen()
-
-    function checkPattern() {
-        if (JSON.stringify(inputPattern) === JSON.stringify(correctPattern)) {
-            console.log("Correct pattern! Unlocking Admin Screen...")
-            unlockAdminScreen()
-            inputPattern = []
-        } else if (inputPattern.length >= correctPattern.length) {
-            console.log("Incorrect pattern. Resetting...")
-            inputPattern = [] // Reset sequence if incorrect
+        onClicked: {
+            controller.navigate("name")
+            controller.startTimer()
         }
     }
 
@@ -84,8 +71,8 @@ Rectangle {
         anchors.top: parent.top
         anchors.right: parent.right
         onClicked: {
-            inputPattern.push("one")
-            checkPattern()
+            controller.pushInput(1)
+            controller.checkSeq()
         }
     }
 
@@ -96,8 +83,8 @@ Rectangle {
         anchors.top: parent.top
         anchors.left: parent.left
         onClicked: {
-            inputPattern.push("two")
-            checkPattern()
+            controller.pushInput(2)
+            controller.checkSeq()
         }
     }
 
@@ -108,8 +95,8 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         onClicked: {
-            inputPattern.push("three")
-            checkPattern()
+            controller.pushInput(3)
+            controller.checkSeq()
         }
     }
 
@@ -120,8 +107,8 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         onClicked: {
-            inputPattern.push("four")
-            checkPattern()
+            controller.pushInput(4)
+            controller.checkSeq()
         }
     }
 

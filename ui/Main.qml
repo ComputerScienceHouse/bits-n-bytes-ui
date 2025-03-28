@@ -18,7 +18,6 @@ Window {
         Welcome {
             id: welcome
             objectName: "welcome"
-            onUnlockAdminScreen: controller.navigate("admin")
         }
         Name { 
             id: name

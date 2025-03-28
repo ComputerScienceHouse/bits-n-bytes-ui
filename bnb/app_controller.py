@@ -6,31 +6,32 @@
 # will be used to interface with the model.
 #
 ###############################################################################
+import json
 from PySide6.QtCore import QObject, QTimer, Slot
 from PySide6.QtWidgets import QApplication
+import os
+import bnb.config as config
+from typing import List
 
 class AppController(QObject):
     
-    
+    _input: List
+    _pattern: List
+
     def __init__(self):
         super().__init__()
         self.stack=None
-        # welcome = self.stack.findChildren(QObject, "welcome")
-        # for child in stack_children:
-        #     print("Child object name:", child.objectName())  # Prints the QML component names inside the stack
+        self._input = []
+        self._pattern = json.loads(os.getenv("BNB_ADMIN_PATTERN"))
 
     @Slot(QObject)
     def set_stack(self, stack):
         self.stack = stack
         stack.currentIndex = 0 # auto set to welcome screen
 
-    def nameTimerSwitch(self, timer: QTimer):
-        timer.active = True
-        timer.setInterval(1000)
-        timer.start()
-        while(timer.remainingTime > 0):
-            if(timer.remainingTime == 0):
-                self.navigate("cart")
+    @Slot()
+    def startTimer(self):
+        QTimer.singleShot(1000, lambda: self.navigate("cart"))
 
     @Slot(str)
     def navigate(self, screen):
@@ -45,6 +46,20 @@ class AppController(QObject):
 
         if screen in screen_map:
             self.stack.setProperty("currentIndex", screen_map[screen])
+
+    @Slot()
+    def checkSeq(self):
+        if self._pattern == None:
+            return "BNB_ADMIN_PATTERN not implemented in config.py"
+        if self._input == self._pattern:
+            self.navigate('admin')
+            print("Admin screen unlocked!")
+        if len(self._input) == len(self._pattern) and self._input != self._pattern:
+            print("Incorrect pattern, try again.")
+    
+    @Slot(int)
+    def pushInput(self, num):
+        self._input.append(num)
 
     @Slot()
     def exit(self):

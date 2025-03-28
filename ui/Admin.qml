@@ -149,6 +149,7 @@ Rectangle {
         height: 300
         focus: true
         modal: true
+        dim: false
         closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
         x: parent.width / 2 - (width / 2)
         y: parent.height / 2 - (height / 2)
