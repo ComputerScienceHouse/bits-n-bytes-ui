@@ -34,6 +34,7 @@ os.environ["QT_VIRTUALKEYBOARD_STYLE"] = "dark"
 os.environ["QT_VIRTUALKEYBOARD_COLOR_SCHEME"] = "dark"
 os.environ["BNB_API_ENDPOINT"] = ************
 os.environ["BNB_AUTHORIZATION_KEY"] = ************
+os.environ["BNB_ADMIN_PATTERN"] = "[1, 2, 3, 4]"
 ```
 import the rest:
 
