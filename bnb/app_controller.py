@@ -10,7 +10,7 @@ import json
 from PySide6.QtCore import QObject, QTimer, Slot
 from PySide6.QtWidgets import QApplication
 import os
-from bnb import config
+from bnb.config import config
 from typing import List
 
 class AppController(QObject):
