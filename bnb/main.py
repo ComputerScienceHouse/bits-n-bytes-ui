@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-# import bnb.config as config  # Ensure environment variables are configured
+from . import config  # Ensure environment variables are configured
 import typer
 from rich.progress import track
 from typing_extensions import Annotated
