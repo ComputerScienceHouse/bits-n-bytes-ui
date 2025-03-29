@@ -9,7 +9,7 @@ from typing_extensions import Annotated
 
 from PySide6.QtWidgets import QApplication
 from PySide6.QtQml import QQmlApplicationEngine
-from PySide6.QtCore import QUrl
+from PySide6.QtCore import QUrl, QObject
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtCore import QDir
 from PySide6.QtGui import QFontDatabase
@@ -50,6 +50,10 @@ def run(screen: Annotated[str, typer.Argument()] = "main"):
             sys.exit("Error: Main.qml failed to load.")
 
         root_object = engine.rootObjects()[0] # Gets Window object
+
+        # all_children = root_object.findChildren(QObject)
+        # for child in all_children:
+            # print(f"Child: {child} is of type - {child.metaObject().className()}")
 
         if is_raspi():
             root_object.showFullScreen()

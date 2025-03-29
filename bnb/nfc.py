@@ -65,10 +65,10 @@ class NFCListenerThread(QThread):
 	def run(self):
 		while self.running:
 			try:
-					token = scanCardUID()  # This should be your method for scanning NFC cards
-					if token:
-						self.token_detected.emit(token)  # Emit token when detected
-						self.running = False
+				token = scanCardUID()  # This should be your method for scanning NFC cards
+				if token:
+					self.token_detected.emit(token)  # Emit token when detected
+					self.running = False
 			except Exception as e:
 				print(f"Error in NFCListenerThread: {e}")
 

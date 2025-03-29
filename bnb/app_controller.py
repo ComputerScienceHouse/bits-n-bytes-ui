@@ -7,26 +7,34 @@
 #
 ###############################################################################
 from PySide6.QtCore import QObject, QTimer, Slot
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QStackedLayout
 from os import environ
+from bnb.nfc import NFCListenerThread
 
 MQTT_LOCAL_BROKER_URL = environ.get('MQTT_LOCAL_BROKER_URL', None)
 MQTT_REMOTE_BROKER_URL = environ.get('')
 
 class AppController(QObject):
     
-    
+    nfc: NFCListenerThread
+
     def __init__(self):
         super().__init__()
-        self.stack=None
-        # welcome = self.stack.findChildren(QObject, "welcome")
-        # for child in stack_children:
-        #     print("Child object name:", child.objectName())  # Prints the QML component names inside the stack
+        self.stack = None
+        self.nfc = NFCListenerThread()
 
     @Slot(QObject)
     def set_stack(self, stack):
         self.stack = stack
+        # self.stack.currentChanged.connect(self.onCurrentItemChanged)
         stack.currentIndex = 0 # auto set to welcome screen
+
+    @Slot(QObject)
+    def runNFC(self, current_item: QObject):
+        if(current_item.objectName() == "welcome"):
+            self.nfc.run()
+        else:
+            self.nfc.stop()
 
     def nameTimerSwitch(self, timer: QTimer):
         timer.active = True
