@@ -7,8 +7,9 @@
 #
 ###############################################################################
 import json
-from PySide6.QtCore import QObject, QTimer, Slot
+from PySide6.QtCore import QObject, QTimer, Slot, QMetaObject, QUrl, Q_ARG, Qt, Property, Signal
 from PySide6.QtWidgets import QApplication, QStackedLayout
+from PySide6.QtQml import QQmlComponent
 from os import environ
 from bnb.nfc import NFCListenerThread
 
@@ -20,56 +21,45 @@ from typing import List
 
 class AppController(QObject):
     
-    nfc: NFCListenerThread
+    openAdmin = Signal()
 
+    nfc: NFCListenerThread
     _input: List
     _pattern: List
 
     def __init__(self):
         super().__init__()
-        self.stack=None
+        self.stack = None
         self._input = []
         self._pattern = json.loads(os.getenv("BNB_ADMIN_PATTERN"))
-        self.stack = None
         self.nfc = NFCListenerThread()
+        self.is_welcome_active = False
 
-    @Slot(QObject)
-    def set_stack(self, stack):
-        self.stack = stack
-        # self.stack.currentChanged.connect(self.onCurrentItemChanged)
-        stack.currentIndex = 0 # auto set to welcome screen
+    @Property(QObject)
+    def stackView(self):
+        return self.stack
 
-    @Slot(QObject)
-    def runNFC(self, current_item: QObject):
-        if(current_item.objectName() == "welcome"):
+    @stackView.setter
+    def stackView(self, value):
+        self.stack = value
+
+    @Slot()
+    def runNFC(self):
+        if self.is_welcome_active:
             self.nfc.run()
         else:
-            self.nfc.stop()
+            self.stopNFC()
     
     @Slot()
-    def startTimer(self):
-        QTimer.singleShot(1000, lambda: self.navigate("cart"))
-
-    @Slot(str)
-    def navigate(self, screen):
-        screen_map = {
-            "welcome": 0,
-            "name": 1,
-            "cart": 2,
-            "reciept": 3,
-            "admin": 4,
-            "tare": 5
-        }
-
-        if screen in screen_map:
-            self.stack.setProperty("currentIndex", screen_map[screen])
+    def stopNFC(self):
+        self.nfc.stop()
 
     @Slot()
     def checkSeq(self):
         if self._pattern == None:
             return "BNB_ADMIN_PATTERN not implemented in config.py"
         if self._input == self._pattern:
-            self.navigate('admin')
+            self.openAdmin.emit()
             print("Admin screen unlocked!")
         elif len(self._input) == len(self._pattern):
             print("Incorrect pattern, try again.")

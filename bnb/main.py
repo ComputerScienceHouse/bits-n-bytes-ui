@@ -50,17 +50,15 @@ def run(screen: Annotated[str, typer.Argument()] = "main"):
             sys.exit("Error: Main.qml failed to load.")
 
         root_object = engine.rootObjects()[0] # Gets Window object
-
+        # stack_view = root_object.findChild(QObject, "stack")
+        # engine.rootContext().setContextProperty("stack", stack_view)
         # all_children = root_object.findChildren(QObject)
         # for child in all_children:
-            # print(f"Child: {child} is of type - {child.metaObject().className()}")
+        #     print(f"Child: {child} is of type - {child.metaObject().className()}")
 
         if is_raspi():
             root_object.showFullScreen()
-
-        # navigate to screen if arg is given
-        controller.navigate(screen)
-
+            
         sys.exit(qmlApp.exec())
 
 def is_raspi():

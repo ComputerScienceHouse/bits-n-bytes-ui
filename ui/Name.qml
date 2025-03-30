@@ -26,4 +26,18 @@ Rectangle {
         anchors.centerIn: parent
         opacity: 1
     }
+
+    Timer {
+        id: navigationTimer
+        interval: 1000  // 1 second
+        running: false   // Start automatically when component is loaded
+        repeat: false
+        onTriggered: {
+            stack.replace("Cart.qml")
+        }
+    }
+
+    Component.onCompleted: {
+        navigationTimer.start()
+    }
 }

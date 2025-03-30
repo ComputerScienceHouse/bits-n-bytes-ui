@@ -52,7 +52,7 @@ Rectangle {
             font.weight: Font.Normal
             Material.roundedScale: Material.MediumScale
             Material.background: "#F76902"
-            onClicked: controller.navigate("reciept")
+            onClicked: stack.replace("Reciept.qml")
         }
 
         Text {
@@ -107,3 +107,5 @@ Rectangle {
         font.bold: true
     }
 }
+
+

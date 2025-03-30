@@ -5,48 +5,28 @@ import QtQuick.Window 2.1
 import QtQuick.Layouts
 
 Window {
-
     id: root
     width: Constants.width
     height: Constants.height
     visible: true
     flags: Qt.Window | Qt.FramelessWindowHint
 
-    StackLayout {
+    StackView {
         id: stack
         objectName: "stack"
         anchors.fill: parent
-        Welcome {
-            id: welcome
-            objectName: "welcome"
-        }
-        Name { 
-            id: name
-            objectName: "name"
-        }
-        Cart { 
-            id: cart
-            objectName: "cart"
-        }
-        Reciept { 
-            id: reciept
-            objectName: "reciept"
-        }
-        Admin { 
-            id: admin
-            objectName: "admin"
-        }
-        Tare { 
-            id: tare
-            objectName: "tare"
-        }
-        onCurrentIndexChanged: {
-            controller.runNFC(welcome)
-        }
+        initialItem: Welcome {}  // Set the initial item as the Component    
     }
 
     Component.onCompleted: {
-        controller.set_stack(stack)
+            controller.stackView = stack
+    }
+
+    Connections {
+        target: controller
+        
+        function onOpenAdmin() {
+            stack.push("Admin.qml")
+        }
     }
 }
-

@@ -71,7 +71,7 @@ Rectangle {
         font.family: "Roboto"
         font.weight: Font.Normal
         font.pointSize: 16
-        onClicked: controller.navigate("tare")
+        onClicked: stack.push("Tare.qml")
     }
 
     Text {
@@ -125,7 +125,7 @@ Rectangle {
         font.weight: Font.Normal
         font.pointSize: 30
         Material.background: "#F76902"
-        onClicked: controller.navigate("welcome")
+        onClicked: stack.pop()
     }
 
     Component.onCompleted: {
@@ -203,3 +203,4 @@ Rectangle {
         }
     }
 }
+

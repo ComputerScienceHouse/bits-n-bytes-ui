@@ -59,7 +59,7 @@ Rectangle {
         font.weight: Font.Normal
         Material.background: "#6C0164"
         onClicked: {
-            controller.navigate("name")
+            stack.replace("Name.qml")
             controller.startTimer()
         }
     }
@@ -112,4 +112,12 @@ Rectangle {
         }
     }
 
+    // Component.onCompleted: {
+    //     controller.runNFC()
+    // }
+    // Component.onDestruction: {
+    //     controller.stopNFC()
+    // }
 }
+
+
