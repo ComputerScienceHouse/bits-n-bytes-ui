@@ -144,6 +144,7 @@ class Model:
         # Add some sample items for testing
         self._cart.add_item(Item(1, "Sour Patch Kids", 0, 2.50, 10, 200, 10, '', 'sour_patch'))
         self._cart.add_item(Item(2, "Brownie Brittle", 0, 2.50, 5, 200, 10, '', 'sour_patch'))
+        self._current_user = User('', 'Sahil Patel', '', 999.99, 'IMAGINE25', 'sahilpatel@gmail.com', '+11111111111')
         # TODO implement shelf manager
 
 
