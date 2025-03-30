@@ -37,7 +37,7 @@ Rectangle {
         width: 172
         height: 49
         color: "#ffffff"
-        text: qsTr("Timeout: 10")
+        text: `Timeout: ${controller.countdown.remainingTime}`
         font.pixelSize: 24
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
@@ -191,12 +191,12 @@ Rectangle {
 
 
     Component.onCompleted: {
-        emailButton.clicked.connect(() => {
-            emailPopup.open();
-        });
-        textButton.clicked.connect(() => {
-            textPopup.open();
-        });
+        controller.countdown.startCountdown()
+        controller.countdown.finished.connect(() => {
+            stack.replace("Welcome.qml")
+        })
+        emailButton.clicked.connect(() => {emailPopup.open()})
+        textButton.clicked.connect(() => {textPopup.open()})
     }
 
     Rectangle {
