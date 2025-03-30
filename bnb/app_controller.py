@@ -37,8 +37,9 @@ class AppController(QObject):
         self.nfc = NFCListenerThread()
         self.model = Model()
 
+    @Slot(result=str)
     def getName(self):
-        self.model.get_user_name()
+        return self.model.get_user_name()
 
     @Property(QObject)
     def stackView(self):
