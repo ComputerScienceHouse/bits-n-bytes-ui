@@ -23,11 +23,7 @@ os.environ["QT_QUICK_CONTROLS_STYLE"] = "MCUDefaultStyle"
 os.environ["QT_IM_MODULE"] = "qtvirtualkeyboard"
 
 @run.command()
-def run(screen: Annotated[str, typer.Argument()] = "main"):
-    
-        if screen != screen.lower():
-            raise typer.BadParameter("The screen name must be in lowercase.")
-
+def run():
         qmlApp = QApplication(sys.argv)
         qmlApp.setStyle('Material')
         import_path = os.path.join(os.getcwd(), "ui", "imports")
@@ -58,7 +54,7 @@ def run(screen: Annotated[str, typer.Argument()] = "main"):
 
         if is_raspi():
             root_object.showFullScreen()
-            
+
         sys.exit(qmlApp.exec())
 
 def is_raspi():

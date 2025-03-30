@@ -9,7 +9,7 @@ import QtQuick.Effects
 
 Rectangle {
     Material.theme: Material.Dark
-    id: recieptScreen
+    id: receiptScreen
     visible: true
     width: Constants.width
     height: Constants.height
@@ -59,7 +59,7 @@ Rectangle {
             width: 269
             height: 65
             color: "#ffffff"
-            text: qsTr("Would you like your reciept?")
+            text: qsTr("Would you like your receipt?")
             font.pixelSize: 24
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -108,7 +108,7 @@ Rectangle {
 
                 Button {
                     Layout.alignment: Qt.AlignCenter
-                    id: noRecieptButton
+                    id: noReceiptButton
                     x: 685
                     y: 354
                     Layout.preferredWidth: 235
@@ -174,7 +174,7 @@ Rectangle {
     }
 
     ColumnLayout {
-        id: reciept
+        id: receipt
         x: 20
         y: 65
         z: 1
@@ -367,7 +367,7 @@ Rectangle {
             when: keyboard.active
             PropertyChanges {
                 target: keyboard
-                y: recieptScreen.height - recieptScreen.height
+                y: receiptScreen.height - receiptScreen.height
             }
         }
         transitions: Transition {
