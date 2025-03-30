@@ -19,7 +19,7 @@ Rectangle {
         text: "Welcome Joe Shmoe"
         textFormat: Text.RichText
         font.weight: Font.DemiBold
-        font.pointSize: 80
+        font.pointSize: 40
         font.family: "IBM Plex Mono"
         anchors.verticalCenterOffset: -24
         anchors.horizontalCenterOffset: 1
