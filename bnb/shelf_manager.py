@@ -16,7 +16,7 @@ from models import Shelf, Slot, Item
 import time
 import datetime
 import json
-from mqtt import MqttClient
+from bnb.mqtt import MqttClient
 from os import environ
 
 KNOWN_TARE_WEIGHT_G = 226.0
