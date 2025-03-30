@@ -60,7 +60,6 @@ Rectangle {
         Material.background: "#6C0164"
         onClicked: {
             stack.replace("Name.qml")
-            controller.startTimer()
         }
     }
 

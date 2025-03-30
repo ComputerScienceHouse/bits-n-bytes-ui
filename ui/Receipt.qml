@@ -22,7 +22,7 @@ Rectangle {
         width: 168
         height: 49
         color: "#ffffff"
-        text: qsTr("Reciept")
+        text: qsTr("Receipt")
         font.pixelSize: 40
         horizontalAlignment: Text.AlignHCenter
         font.weight: Font.DemiBold
@@ -114,7 +114,7 @@ Rectangle {
                     Layout.preferredWidth: 235
                     Layout.preferredHeight: 75
                     visible: true
-                    text: qsTr("No Reciept")
+                    text: qsTr("No Receipt")
                     font.family: "Roboto"
                     font.weight: Font.Normal
                     font.pointSize: 20
