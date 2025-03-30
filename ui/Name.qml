@@ -16,7 +16,7 @@ Rectangle {
         width: 828
         height: 101
         color: "#ffffff"
-        text: `Welcome {controller.getName()}`
+        text: `Welcome ${controller.getName()}`
         textFormat: Text.RichText
         font.weight: Font.DemiBold
         font.pointSize: 60
