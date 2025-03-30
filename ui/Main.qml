@@ -5,6 +5,7 @@ import QtQuick.Window 2.1
 import QtQuick.Layouts
 
 Window {
+
     id: root
     width: Constants.width
     height: Constants.height
@@ -38,6 +39,9 @@ Window {
         Tare { 
             id: tare
             objectName: "tare"
+        }
+        onCurrentIndexChanged: {
+            controller.runNFC(welcome)
         }
     }
 

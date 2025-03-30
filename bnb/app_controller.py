@@ -8,13 +8,20 @@
 ###############################################################################
 import json
 from PySide6.QtCore import QObject, QTimer, Slot
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QStackedLayout
+from os import environ
+from bnb.nfc import NFCListenerThread
+
+MQTT_LOCAL_BROKER_URL = environ.get('MQTT_LOCAL_BROKER_URL', None)
+MQTT_REMOTE_BROKER_URL = environ.get('')
 import os
 from bnb import config
 from typing import List
 
 class AppController(QObject):
     
+    nfc: NFCListenerThread
+
     _input: List
     _pattern: List
 
@@ -23,12 +30,22 @@ class AppController(QObject):
         self.stack=None
         self._input = []
         self._pattern = json.loads(os.getenv("BNB_ADMIN_PATTERN"))
+        self.stack = None
+        self.nfc = NFCListenerThread()
 
     @Slot(QObject)
     def set_stack(self, stack):
         self.stack = stack
+        # self.stack.currentChanged.connect(self.onCurrentItemChanged)
         stack.currentIndex = 0 # auto set to welcome screen
 
+    @Slot(QObject)
+    def runNFC(self, current_item: QObject):
+        if(current_item.objectName() == "welcome"):
+            self.nfc.run()
+        else:
+            self.nfc.stop()
+    
     @Slot()
     def startTimer(self):
         QTimer.singleShot(1000, lambda: self.navigate("cart"))

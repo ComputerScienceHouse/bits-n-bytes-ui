@@ -16,6 +16,8 @@ from models import Shelf, Slot, Item
 import time
 import datetime
 import json
+from mqtt import MqttClient
+from os import environ
 
 KNOWN_TARE_WEIGHT_G = 226.0
 
@@ -28,12 +30,17 @@ SHELF_ITEM_MAP = {
 NUM_SLOTS_PER_SHELF = 4
 LOOP_DELAY_MS = 200
 
+SHELF_MQTT_BROKER_URL = environ.get('SHELF_MQTT_BROKER_URL', None)
+SHELF_MQTT_BROKER_PORT = environ.get('SHELF_MQTT_BROKER_PORT', 1883)
+
+
 class ShelfManager:
 
     _signal_end_lock: Lock
     _signal_end: bool
     _last_loop_ms: float
     _mac_to_shelf_map: Dict[str, Shelf]
+    _mqtt_client: MqttClient | None
 
     def __init__(self, add_to_cart_cb = None, remove_from_cart_cb = None):
         self._signal_end_lock = Lock()
@@ -43,8 +50,27 @@ class ShelfManager:
         self.add_to_cart_cb = add_to_cart_cb
         self.remove_from_cart_cb = remove_from_cart_cb
 
+        # Configure MQTT client for the shelves
+        if SHELF_MQTT_BROKER_URL is None:
+            self._mqtt_client = None
+        else:
+            self._mqtt_client = MqttClient(SHELF_MQTT_BROKER_URL, SHELF_MQTT_BROKER_PORT)
+            # Link the shelf data function to trigger when a packet is received on the 'shelf/data' topic
+            self._mqtt_client.add_topic('shelf/data', self.on_shelf_data_cb)
 
-    def on_shelf_data_cb(self, client, userdata, msg):
+        # TODO run main_loop() when it has real contents
+
+
+    def on_shelf_data_cb(self, msg):
+        """
+        Callback for when MQTT data is received on the shelf data topic.
+        :param msg:
+        :return:
+        """
+        print("Received shelf data")
+
+
+    def old_on_shelf_data_cb(self, client, userdata, msg):
         """
         Callback function for there is MQTT data received on the shelf data
         topic. This callback can be provided directly to the paho-mqtt library
@@ -155,7 +181,7 @@ class ShelfManager:
                 if self._signal_end:
                     break
 
-            # TODO thread contents. Watchdog, etc.
+            # TODO add shelf watchdog
 
             # Wait for next iteration
             while time.time() < (self._last_loop_ms + LOOP_DELAY_MS) / 1000:
