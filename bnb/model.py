@@ -7,7 +7,7 @@
 ###############################################################################
 import copy
 from typing import List, Set, Dict
-from shelf_manager import ShelfManager
+from bnb.shelf_manager import ShelfManager
 
 WEIGHT_UNIT = 'g'
 
