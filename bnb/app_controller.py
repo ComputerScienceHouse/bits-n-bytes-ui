@@ -60,6 +60,7 @@ class AppController(QObject):
             return "BNB_ADMIN_PATTERN not implemented in config.py"
         if self._input == self._pattern:
             self.openAdmin.emit()
+            self._input.clear()
             print("Admin screen unlocked!")
         elif len(self._input) == len(self._pattern):
             print("Incorrect pattern, try again.")
@@ -67,7 +68,7 @@ class AppController(QObject):
     @Slot(int)
     def pushInput(self, num):
         self._input.append(num)
-
+        
     @Slot()
     def exit(self):
         QApplication.instance().quit()
