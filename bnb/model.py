@@ -137,7 +137,6 @@ class Cart:
         """
         self._items.clear()
 
-
     def get_subtotal(self) -> float:
         """
         Get the subtotal of the cart.

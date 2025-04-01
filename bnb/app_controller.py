@@ -172,6 +172,10 @@ class AppController(QObject):
     def getName(self):
         return self._model.get_user_name()
 
+    @Slot(result=float)
+    def getSubtotal(self):
+        return self._model._cart.get_subtotal()
+
     @Slot()
     def runNFC(self):
         if self.is_welcome_active:
