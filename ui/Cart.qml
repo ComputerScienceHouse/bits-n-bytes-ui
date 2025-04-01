@@ -1,6 +1,9 @@
-import QtQuick
+import QtQuick 6.8
+import QtQuick.Controls 6.8
 import QtQuick.Controls.Material 6.8
 import Constants
+import QtQuick.Layouts
+import QtQuick.Effects
 
 Rectangle {
     Material.theme: Material.Dark
@@ -24,6 +27,29 @@ Rectangle {
         horizontalAlignment: Text.AlignLeft
         font.family: "IBM Plex Mono"
         font.bold: true
+    }
+
+    ListView {
+        id: cart
+        x: 10; y: 120
+        width: 700; height: 470
+        spacing: 8
+        clip: true
+        focus: true
+        highlightFollowsCurrentItem: true
+        model: controller.cart
+
+        delegate: CartItemDelegate {
+            itemName: model.name
+            itemQuantity: model.quantity
+            itemPrice: model.price
+            itemImage: {
+                if (root.itemImage && root.itemImage.toString().length > 0) {
+                    return "file://" + root.itemImage
+                }
+                return "file://" + Qt.resolvedUrl("../images/placeholder.png")
+            } // Using resource system
+        }
     }
 
     Rectangle {
@@ -83,6 +109,7 @@ Rectangle {
         width: 405
         height: 137
         color: "#ffffff"
+        visible: controller.cart.rowCount === 0
         text: qsTr("Welcome \nYour cart is empty, please grab your snacks\nfrom the cabinet to start. \nWe’ll do the rest")
         elide: Text.ElideNone
         font.pixelSize: 20
@@ -107,5 +134,6 @@ Rectangle {
         font.bold: true
     }
 }
+
 
 

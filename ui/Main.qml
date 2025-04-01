@@ -88,7 +88,7 @@ Window {
     }
 
     Component.onCompleted: {
-            controller.stackView = stack
+            controller.stack = stack
     }
 
     Connections {

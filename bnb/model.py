@@ -41,6 +41,8 @@ class Item:
 
     def __hash__(self):
         return hash(self.item_id)
+    
+    
 
 
 
@@ -101,6 +103,24 @@ class Cart:
                 # If the quantity is 0 or negative, remove the item from the cart
                 self._items.remove(item)
 
+    def get_index(self, item: Item) -> int:
+        '''
+        Get index for specific item in the cart
+        :return: A integer for the index of item
+        '''   
+        if item in self._items:
+            return self._items.index(item)
+        return None
+    
+    def get_quantity(self, item: Item) -> int:
+        '''
+        Get quantity for specific item in the cart
+        :return: A integer for the quantity of item
+        '''   
+        if (index := self.get_index(item)) is not None:
+            return self._items[index].quantity
+        else:
+            return None
 
     def get_all_items(self) -> List[Item]:
         """
@@ -142,8 +162,15 @@ class Model:
         self._cart = Cart()
 
         # Add some sample items for testing
-        self._cart.add_item(Item(1, "Sour Patch Kids", 0, 2.50, 10, 200, 10, '', 'sour_patch'))
-        self._cart.add_item(Item(2, "Brownie Brittle", 0, 2.50, 5, 200, 10, '', 'sour_patch'))
+        self._cart.add_item(Item(1, "Sour Patch Kids", 0, 2.50, 10, 200, 10, "placeholder.png", 'sour_patch'))
+        self._cart.add_item(Item(2, "Brownie Brittle", 0, 2.50, 5, 200, 10, "placeholder.png", 'sour_patch'))
+        self._cart.add_item(Item(3, "Little Bites Chocolate", 0, 2.10, 100, 47, 10, "placeholder.png", 'sour_patch'))
+        self._cart.add_item(Item(4, "Little Bites Party", 0, 2.10, 50, 47, 10, "placeholder.png", 'sour_patch'))
+        self._cart.add_item(Item(5, "Skittles Gummies", 0, 2.40, 75, 164.4, 15, "placeholder.png", 'sour_patch'))
+        self._cart.add_item(Item(6, "Swedish Fish Mini Tropical", 0, 3.50, 120, 226, 10, "placeholder.png", 'sour_patch'))
+        self._cart.add_item(Item(7, "Swedish Fish Original", 0, 19.99, 100, 141, 10, "placeholder.png", 'sour_patch'))
+        self._cart.add_item(Item(8, "Welch's Fruit Snacks", 0, 39.99, 40, 142, 14, "placeholder.png", 'sour_patch'))
+
         self._current_user = User('', 'Sahil Patel', '', 999.99, 'IMAGINE25', 'sahilpatel@gmail.com', '+11111111111')
         # TODO implement shelf manager
 

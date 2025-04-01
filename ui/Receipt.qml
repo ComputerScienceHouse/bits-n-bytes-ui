@@ -193,7 +193,9 @@ Rectangle {
     Component.onCompleted: {
         controller.countdown.startCountdown()
         controller.countdown.finished.connect(() => {
-            stack.replace("Welcome.qml")
+            if (stack) { 
+                stack.replace("Welcome.qml")
+            }
         })
         emailButton.clicked.connect(() => {emailPopup.open()})
         textButton.clicked.connect(() => {textPopup.open()})

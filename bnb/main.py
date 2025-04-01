@@ -31,6 +31,7 @@ def run():
         controller = AppController()
         engine = QQmlApplicationEngine()
         engine.addImportPath(import_path)
+        # engine.addImageProvider("app", ImageProvider())
 
         total = 0
         for font_file in track(os.listdir(font_dir), description="Adding fonts..."):
@@ -63,6 +64,19 @@ def is_raspi():
             return "Raspberry Pi" in f.read()
     except FileNotFoundError:
         pass
+
+
+# class ImageProvider(QQuickImageProvider):
+#     def __init__(self):
+#         super().__init__(QQuickImageProvider.Image)
+        
+#     def requestImage(self, id, size, requestedSize):
+#         image_path = os.path.join("images", id)
+#         if not os.path.exists(image_path):
+#             image_path = "images/placeholder.png"
+#         return QImage(image_path)
+
+# In your main application setup:
 
 if __name__ == "__main__":
     app()
