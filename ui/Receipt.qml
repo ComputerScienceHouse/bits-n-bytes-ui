@@ -124,20 +124,20 @@ Rectangle {
         }
 
         Text {
-
             id: subtotal
             x: 685
             y: 441
             width: 234
             height: 49
             color: "#ffffff"
-            text: qsTr("Subtotal:")
             font.pixelSize: 24
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.Normal
             font.family: "Roboto"
-            font.bold: true
+
+            textFormat: Text.RichText
+            text: `<b>Subtotal:</b> $${controller.getSubtotal().toFixed(2)}`
         }
 
         Text {
@@ -147,13 +147,14 @@ Rectangle {
             width: 234
             height: 49
             color: "#ffffff"
-            text: qsTr("Tax:")
             font.pixelSize: 24
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.Normal
             font.family: "Roboto"
-            font.bold: true
+
+            textFormat: Text.RichText
+            text: `<b>Tax:</b> $0.00`
         }
 
         Text {
@@ -163,32 +164,57 @@ Rectangle {
             width: 234
             height: 49
             color: "#ffffff"
-            text: qsTr("Total:")
             font.pixelSize: 24
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.Normal
             font.family: "Roboto"
-            font.bold: true
+
+            textFormat: Text.RichText
+            text: `<b>Subtotal:</b> $${controller.getSubtotal().toFixed(2)}`
         }
     }
 
-    ColumnLayout {
+    // Reciept items
+    Item {
         id: receipt
         x: 20
         y: 65
-        z: 1
         width: 607
         height: 509
+
         Rectangle {
-            id: rectangle
-            Layout.fillHeight: true
-            Layout.fillWidth: true
+            id: background
+            width: parent.width
+            height: parent.height
             color: "#646c0164"
-            radius: 15
+            radius: 8
+            z: 0 // Background at the lowest layer
+        }
+
+        ListView {
+            id: cart
+            anchors.fill: parent
+            x: background.x
+            y: background.y
+            highlightFollowsCurrentItem: true
+            clip: true
+            model: controller.cart
+            z: 1 // Ensures ListView is on top of the Rectangle
+
+            delegate: CartItemDelegate {
+                itemName: model.name
+                itemQuantity: model.quantity
+                itemPrice: model.price
+                itemImage: {
+                    if (root.itemImage && root.itemImage.toString().length > 0) {
+                        return "file://" + root.itemImage
+                    }
+                    return "file://" + Qt.resolvedUrl("../images/placeholder.png")
+                }
+            }
         }
     }
-
 
     Component.onCompleted: {
         controller.countdown.startCountdown()
@@ -201,6 +227,7 @@ Rectangle {
         textButton.clicked.connect(() => {textPopup.open()})
     }
 
+    // Shadow Overlay for Popups
     Rectangle {
         id: overlay
         anchors.fill: parent
@@ -340,6 +367,7 @@ Rectangle {
         }
     }
 
+    // Keyboard
     InputPanel {
         id: keyboard
         anchors.bottom: parent.bottom
