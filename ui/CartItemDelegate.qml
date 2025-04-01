@@ -51,7 +51,7 @@ ItemDelegate {
                 elide: Text.ElideRight
                 maximumLineCount: 2
                 wrapMode: Text.Wrap
-                font { family: "Roboto"; pixelSize: 16 }
+                font { family: "Roboto"; pixelSize: 20 }
                 text: root.itemName
                 color: "white"
             }
@@ -66,7 +66,7 @@ ItemDelegate {
             Text {
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignRight
-                font { family: "Roboto"; pixelSize: 16 }
+                font { family: "Roboto"; pixelSize: 20 }
                 text: `x${root.itemQuantity}`
                 color: "#a0a0a0"
             }
@@ -75,7 +75,7 @@ ItemDelegate {
             Text {
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignRight
-                font { family: "Roboto"; pixelSize: 16; bold: true }
+                font { family: "Roboto"; pixelSize: 20; bold: true }
                 text: `$${root.itemPrice.toFixed(2)}`
                 color: "#F76902"
             }
