@@ -122,7 +122,7 @@ Rectangle {
 
     Text {
         id: _text2
-        x: 507
+        x: 490
         y: 73
         width: 193
         height: 29
