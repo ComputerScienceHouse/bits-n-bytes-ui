@@ -33,7 +33,15 @@ class MqttClient:
         self._client.connect(broker_url, port)
         self._client.on_message = self._on_message
 
-
+    def post_message(self, topic: str, message: str, qos: int):
+        """
+        :param topic: The name of the topic
+        :param message: The message to send to the client
+        :return: result from posting message
+        """
+        result = self._client.publish(topic, message, qos)
+        return result
+    
     def add_topic(self, topic: str, callback: Callable[[str], None], qos=0) -> None:
         """
         Add a topic this client will listen to.

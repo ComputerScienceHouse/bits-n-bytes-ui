@@ -35,6 +35,7 @@ Rectangle {
         font.family: "Roboto"
         font.weight: Font.Normal
         font.pointSize: 16
+        onClicked: controller.open_doors()
     }
 
     Button {
@@ -59,6 +60,7 @@ Rectangle {
         font.family: "Roboto"
         font.weight: Font.Normal
         font.pointSize: 16
+        onClicked: controller.open_hatch()
     }
 
     Button {

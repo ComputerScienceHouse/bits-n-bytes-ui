@@ -16,9 +16,17 @@ from bnb.nfc import NFCListenerThread
 from bnb.model import Model, Cart
 from bnb import config
 from typing import List
+from bnb.mqtt import MqttClient
+
+open_doors_topic = "aux/control/doors"
+open_hatch_topic = "aux/control/hatch"
+open_doors_and_hatch_msg = "open"
+shelf_data_topic = "shelf/data"
+doors_status_topic = "aux/status/doors"
+
 
 MQTT_LOCAL_BROKER_URL = os.getenv('MQTT_LOCAL_BROKER_URL', None)
-MQTT_REMOTE_BROKER_URL = os.getenv('')
+MQTT_REMOTE_BROKER_URL = os.getenv('', None)
 
 class CartModel(QAbstractListModel):
     def __init__(self, cart: Cart, parent=None):
@@ -145,6 +153,8 @@ class AppController(QObject):
     openAdmin = Signal()
 
     _cartModel: CartModel
+    _mqttRemoteClient: MqttClient
+    _mqttLocalClient: MqttClient
     _countdown: Countdown
     _model: Model
     _nfc: NFCListenerThread
@@ -159,6 +169,19 @@ class AppController(QObject):
         self._model = Model()
         self._countdown = Countdown(self)
         self._cartModel = CartModel(self._model._cart, self)
+        self._mqttLocalClient = MqttClient(MQTT_LOCAL_BROKER_URL, 1883)
+        self._mqttRemoteClient = MqttClient(MQTT_REMOTE_BROKER_URL, 1883)
+        if(MQTT_LOCAL_BROKER_URL is not None):
+            self._mqttLocalClient.add_topic(doors_status_topic, qos=0)
+            self._mqttLocalClient.add_topic(shelf_data_topic, qos=1)
+        if(MQTT_REMOTE_BROKER_URL is not None):
+            self._mqttRemoteClient.add_topic(doors_status_topic, qos=0)
+            self._mqttRemoteClient.add_topic(shelf_data_topic, qos=1)
+
+
+    @Property(QObject, constant=True)
+    def mqtt(self):
+        return self._mqttClient
 
     @Property(QObject, constant=True)
     def cart(self):
@@ -168,6 +191,16 @@ class AppController(QObject):
     def countdown(self):
         return self._countdown
 
+    @Slot()
+    def open_doors(self):
+       result = self._mqttLocalClient.post_message(open_doors_topic, open_doors_and_hatch_msg)
+       return result[0] == 0 
+    
+    @Slot()
+    def open_hatch(self):
+        result = self._mqttLocalClient.post_message(open_hatch_topic, open_doors_and_hatch_msg)
+        return result[0] == 0
+    
     @Slot(result=str)
     def getName(self):
         return self._model.get_user_name()
