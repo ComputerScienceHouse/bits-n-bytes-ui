@@ -33,7 +33,7 @@ class MqttClient:
         self._client.connect(broker_url, port)
         self._client.on_message = self._on_message
 
-    def post_message(self, topic: str, message: str, qos: int):
+    def post_message(self, topic: str, message: str, qos: int = 0):
         """
         :param topic: The name of the topic
         :param message: The message to send to the client
