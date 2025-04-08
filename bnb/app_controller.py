@@ -172,7 +172,7 @@ class AppController(QObject):
         if(MQTT_LOCAL_BROKER_URL is not None):
             self._mqttLocalClient = MqttClient(MQTT_LOCAL_BROKER_URL, 1883)
             self._mqttLocalClient.add_topic(doors_status_topic, lambda x: None, qos=0)
-            self._mqttLocalClient.add_topic(shelf_data_topic, qos=1)
+            self._mqttLocalClient.add_topic(shelf_data_topic, lambda x: None, qos=1)
         if(MQTT_REMOTE_BROKER_URL is not None):
             self._mqttRemoteClient = MqttClient(MQTT_REMOTE_BROKER_URL, 1883)
             self._mqttRemoteClient.add_topic(doors_status_topic, qos=0)
