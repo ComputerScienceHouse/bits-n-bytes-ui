@@ -183,6 +183,8 @@ class ShelfManager:
 
             # TODO add shelf watchdog
 
+            # TODO post what shelves are available on an endpoint somewhere
+
             # Wait for next iteration
             while time.time() < (self._last_loop_ms + LOOP_DELAY_MS) / 1000:
                 pass
