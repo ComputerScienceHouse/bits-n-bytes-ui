@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# File: shelf_manager.py
+# File: old_shelf_manager.py
 #
 # Purpose: Handle all interaction with shelves. The 'main_loop' function should
 # be placed in a separate thread and provides watchdog functionality for
