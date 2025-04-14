@@ -8,17 +8,32 @@
 #
 ###############################################################################
 import time
+from json import JSONDecodeError
 from threading import Lock
 from model import Item
-from typing import List
+from typing import List, Dict
 from scipy.stats import norm
+from pathlib import Path
+import json
+import pickle
+
+SHELF_DATA_FILE_PATH = Path(Path.cwd() / 'tmp' / 'shelf_data')
+SHELF_DISCONNECT_TIMEOUT_MS = 5000
+
 
 class Slot:
 
     _items: List[Item]
 
-    def __init__(self):
-        self._items = list()
+    def __init__(self, items: List[Item] | None):
+        """
+        Create a new slot.
+        :param items: Optional list of items that are already on the shelf.
+        """
+        if self._items is None:
+            self._items = list()
+        else:
+            self._items = items
 
 
     def add_item(self, item: Item) -> None:
