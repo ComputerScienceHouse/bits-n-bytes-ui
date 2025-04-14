@@ -107,9 +107,35 @@ class Shelf:
     _mac_address: str
     _last_ping_ms: float
     _num_slots: int
+    _slots: List[Slot]
 
-    def __init__(self):
-        pass
+    def __init__(self, mac_address: str, num_slots: int | None):
+        self._slots = list()
+
+
+    def update_last_ping_time(self, time_ms):
+        """
+        Update the last time this shelf was pinged.
+        :param time_ms: Ms of ping
+        :return:
+        """
+        self._last_ping_ms = time_ms
+
+
+    def get_last_ping_time(self) -> float:
+        """
+        Get the time this shelf was last pinged.
+        :return: Time in ms
+        """
+        return self._last_ping_ms
+
+
+    def get_mac_address(self) -> str:
+        """
+        Get the mac address of this shelf
+        :return:
+        """
+        return self._mac_address
 
 
 
