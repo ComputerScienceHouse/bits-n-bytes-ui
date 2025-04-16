@@ -15,6 +15,19 @@ Rectangle {
     height: Constants.height
     color: "#292929"
 
+    Notification{
+        id: recieptNotification
+    }
+    Connections {
+        target: controller
+        function onNotifyPhoneInput() {
+            recieptNotification.show("Phone Number recieved!")
+        }
+        function onNotifyEmailInput() {
+            recieptNotification.show("Email Address recieved!")
+        }
+    }
+
     Text {
         id: _text
         x: 15
@@ -292,17 +305,17 @@ Rectangle {
                 Material.accent: "#F76902"
                 inputMethodHints: Qt.ImhEmailCharactersOnly
                 focus: true
-                onAccepted: {
-                    console.log("Email entered:", text)
-                    emailPopup.close()
-                }
+                // onAccepted: {
+                //     controller.getEmail(text)
+                //     emailPopup.close()
+                // }
             }
 
             Button {
                 text: qsTr("Submit")
                 Layout.alignment: Qt.AlignCenter
                 onClicked: {
-                    console.log("Email entered:", emailInput.text)
+                    controller.getEmail(emailInput.text)
                     emailPopup.close()
                 }
                 font.pointSize: 18
@@ -357,17 +370,17 @@ Rectangle {
                 font.pointSize: 18
                 Material.accent: "#F76902"
                 inputMethodHints: Qt.ImhDigitsOnly
-                onAccepted: {
-                    console.log("Phone Number entered:", text)
-                    textPopup.close()
-                }
+                // onAccepted: {
+                //     controller.getPhoneNum(text)
+                //     textPopup.close()
+                // }
             }
 
             Button {
                 text: qsTr("Submit")
                 Layout.alignment: Qt.AlignCenter
                 onClicked: {
-                    console.log("Phone Number entered:", textInput.text)
+                    controller.getPhoneNum(textInput.text)
                     textPopup.close()
                 }
                 font.pointSize: 18

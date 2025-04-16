@@ -11,6 +11,7 @@ Rectangle {
     width: Constants.width
     height: Constants.height
     color: "#292929"
+    property color bgColor: "#454545"
 
     Text {
         id: _text
@@ -27,247 +28,27 @@ Rectangle {
     }
 
     GridLayout {
+        id: tareGrid
         columns: 8
-        rows: 2
+        rows: 3
         columnSpacing: 20
         rowSpacing: 20
         anchors.fill: parent
-        anchors.leftMargin: 18
-        anchors.rightMargin: 18
+        anchors.margins: 18
         anchors.topMargin: 66
         anchors.bottomMargin: 8
 
-        Button {
-            id: button1a
-            x: 38
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("1A")
-            font.family: "Roboto"
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-        }
-
-        Button {
-            id: button1b
-            x: 148
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("1B")
-            font.family: "Roboto"
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-        }
-
-        Button {
-            id: button1c
-            x: 260
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("1C")
-            font.family: "Roboto"
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-        }
-
-        Button {
-            id: button1d
-            x: 372
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("1D")
-            font.family: "Roboto"
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-            Layout.rightMargin: 10
-        }
-
-        Button {
-            id: button2a
-            x: 38
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("2A")
-            font.family: "Roboto"
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-            Layout.leftMargin: 10
-        }
-
-        Button {
-            id: button2b
-            x: 148
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("2B")
-            font.family: "Roboto"
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-        }
-
-        Button {
-            id: button2c
-            x: 260
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("2C")
-            font.family: "Roboto"
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-        }
-
-        Button {
-            id: button2d
-            x: 372
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("2D")
-            font.family: "Roboto"
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-        }
-
-        Button {
-            id: button3a
-            x: 38
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("3A")
-            font.family: "Roboto"
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-        }
-
-        Button {
-            id: button3b
-            x: 148
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("3B")
-            font.family: "Roboto"
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-        }
-
-        Button {
-            id: button3c
-            x: 260
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("3C")
-            font.family: "Roboto"
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-        }
-
-        Button {
-            id: button3d
-            x: 372
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("3D")
-            font.family: "Roboto"
-            font.weight: Font.Normal
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-            Layout.rightMargin: 10
-        }
-
-        Button {
-            id: button4a
-            x: 38
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("4A")
-            font.family: "Roboto"
-            font.weight: Font.Normal
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-            Layout.leftMargin: 10
-        }
-
-        Button {
-            id: button4b
-            x: 148
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("4B")
-            font.family: "Roboto"
-            font.weight: Font.Normal
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-        }
-
-        Button {
-            id: button4c
-            x: 260
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("4C")
-            font.family: "Roboto"
-            font.weight: Font.Normal
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
-        }
-
-        Button {
-            id: button4d
-            x: 372
-            y: 84
-            width: 91
-            height: 211
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            text: qsTr("4D")
-            font.family: "Roboto"
-            font.weight: Font.Normal
-            font.pointSize: 24
-            Material.roundedScale: Material.NotRounded
+        property var buttonLabels: [
+            "1A", "1B", "1C", "1D", "1E", "1F", "1G", "1H",
+            "2A", "2B", "2C", "2D", "2E", "2F", "2G", "2H",
+            "3A", "3B", "3C", "3D", "3E", "3F", "3G", "3H"
+        ]   
+        
+        Repeater {
+            model: tareGrid.buttonLabels.length
+            delegate: TareButton {
+                label: tareGrid.buttonLabels[index]
+            }
         }
     }
 

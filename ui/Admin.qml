@@ -13,6 +13,17 @@ Rectangle {
     height: Constants.height
     color: "#292929"
 
+    Notification{
+        id: adminScreenNotification
+    }
+
+    Connections {
+        target: controller
+        function onNotifyAdminUnlock() {
+            adminScreenNotification.show("Admin Screen Unlocked!")
+        }
+    }
+
     Button {
         id: powerOffButton
         x: 181

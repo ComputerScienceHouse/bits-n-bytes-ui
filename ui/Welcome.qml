@@ -111,12 +111,6 @@ Rectangle {
         }
     }
 
-    // Component.onCompleted: {
-    //     controller.runNFC()
-    // }
-    // Component.onDestruction: {
-    //     controller.stopNFC()
-    // }
 }
 
 

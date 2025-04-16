@@ -17,6 +17,7 @@ from bnb.model import Model, Cart
 from bnb import config
 from typing import List, Callable
 from bnb.mqtt import MqttClient
+from bnb.email.send_email import send_order_confirmation_email
 
 open_doors_topic = "aux/control/doors"
 open_hatch_topic = "aux/control/hatch"
@@ -27,6 +28,11 @@ doors_status_topic = "aux/status/doors"
 
 MQTT_LOCAL_BROKER_URL = os.getenv('MQTT_LOCAL_BROKER_URL', None)
 MQTT_REMOTE_BROKER_URL = os.getenv('', None)
+
+SHELF_1_MAC_ADDRESS = None
+SHELF_2_MAC_ADDRESS = None
+SHELF_3_MAC_ADDRESS = None
+SHELF_4_MAC_ADDRESS = None
 
 class CartModel(QAbstractListModel):
     def __init__(self, cart: Cart, parent=None):
@@ -159,6 +165,9 @@ class Countdown(QObject):
 class AppController(QObject):
     
     openAdmin = Signal()
+    notifyAdminUnlock = Signal()
+    notifyEmailInput = Signal()
+    notifyPhoneInput = Signal()
 
     _cartModel: CartModel
     _mqttRemoteClient: MqttClient
@@ -177,15 +186,16 @@ class AppController(QObject):
         self._model = Model()
         self._countdown = Countdown(self)
         self._cartModel = CartModel(self._model._cart, self)
-        if(MQTT_LOCAL_BROKER_URL is not None):
-            self._mqttLocalClient = MqttClient(MQTT_LOCAL_BROKER_URL, 1883)
-            self._mqttLocalClient.add_topic(doors_status_topic, lambda x: None, qos=0)
-            self._mqttLocalClient.add_topic(shelf_data_topic, lambda x: None, qos=1)
-        if(MQTT_REMOTE_BROKER_URL is not None):
-            self._mqttRemoteClient = MqttClient(MQTT_REMOTE_BROKER_URL, 1883)
-            self._mqttRemoteClient.add_topic(doors_status_topic, qos=0)
-            self._mqttRemoteClient.add_topic(shelf_data_topic, qos=1)
-
+        self._phone_num = str
+        self._email = str
+        # if(MQTT_LOCAL_BROKER_URL is not None):
+        #     self._mqttLocalClient = MqttClient(MQTT_LOCAL_BROKER_URL, 1883)
+        #     self._mqttLocalClient.add_topic(doors_status_topic, lambda x: None, qos=0)
+        #     self._mqttLocalClient.add_topic(shelf_data_topic, lambda x: None, qos=1)
+        # if(MQTT_REMOTE_BROKER_URL is not None):
+        #     self._mqttRemoteClient = MqttClient(MQTT_REMOTE_BROKER_URL, 1883)
+        #     self._mqttRemoteClient.add_topic(doors_status_topic, qos=0)
+        #     self._mqttRemoteClient.add_topic(shelf_data_topic, qos=1)
 
     @Property(QObject, constant=True)
     def mqtt(self):
@@ -199,6 +209,10 @@ class AppController(QObject):
     def countdown(self):
         return self._countdown
 
+    @Property(QObject, constant=True)
+    def shelf_manager(self):
+        return self._model._shelf_manager
+    
     @Slot()
     def open_doors(self):
        result = self._mqttLocalClient.post_message(open_doors_topic, open_doors_and_hatch_msg)
@@ -217,6 +231,27 @@ class AppController(QObject):
     def getSubtotal(self):
         return self._model._cart.get_subtotal()
 
+    @Slot(result=str)
+    def send_email(self):
+        items = list()
+        for item in self._model._cart._items:
+            item_dict = {key: value for key, value in item.__dict__.items() if key in ['name', 'price', 'quantity']}
+            items.append(item_dict)
+        send_order_confirmation_email("sahil.h.patel@gmail.com", items, self._model._cart.get_subtotal())
+    
+    @Slot(str)
+    def getPhoneNum(self, phone_num):
+        self._phone_num = phone_num
+        self.notifyPhoneInput.emit()
+
+    @Slot(str)
+    def getEmail(self, email):
+        self._email = email
+        self.notifyEmailInput.emit()
+
+    def get_user_email(self):
+        return self._email
+    
     @Slot()
     def runNFC(self):
         if self.is_welcome_active:
@@ -234,11 +269,15 @@ class AppController(QObject):
             return "BNB_ADMIN_PATTERN not implemented in config.py"
         if self._input == self._pattern:
             self.openAdmin.emit()
+            self.notifyAdminUnlock.emit()
             self._input.clear()
-            print("Admin screen unlocked!")
         elif len(self._input) == len(self._pattern):
             print("Incorrect pattern, try again.")
-    
+
+    @Slot()
+    def getSlots(self):
+        return self.shelf_manager.get_all_shelves()
+
     @Slot(int)
     def pushInput(self, num):
         self._input.append(num)
@@ -247,6 +286,9 @@ class AppController(QObject):
     def exit(self):
         QApplication.instance().quit()
 
+if __name__ == "__main__":
+    app = AppController()
+    app.send_email()
 
 
 
