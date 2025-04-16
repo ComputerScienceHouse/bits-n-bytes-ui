@@ -127,8 +127,8 @@ class Countdown(QObject):
         self._remaining_time = 10
         self.timer = QTimer(self)
         self.timer.setInterval(1000)
-        self.timer.timeout.connect(self._update_time)
-    
+        self.timer.timeout.connect(self.updateTime)
+
     @Property(int, notify=remainingTimeChanged)
     def remainingTime(self):
         return self._remaining_time
@@ -140,13 +140,21 @@ class Countdown(QObject):
         self.timer.start()
 
     @Slot()
-    def _update_time(self):
+    def updateTime(self):
         if self._remaining_time > 0:
             self._remaining_time -= 1
             self.remainingTimeChanged.emit()
         else:
             self.finished.emit()
             self.timer.stop()
+    
+    @Slot()
+    def stopTime(self):
+        self.timer.stop()
+    
+    @Slot()
+    def resumeTime(self):
+        self.timer.start()
 
 class AppController(QObject):
     

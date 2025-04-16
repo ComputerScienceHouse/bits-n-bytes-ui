@@ -223,10 +223,13 @@ Rectangle {
                 stack.replace("Welcome.qml")
             }
         })
-        emailButton.clicked.connect(() => {emailPopup.open()})
-        textButton.clicked.connect(() => {textPopup.open()})
+        emailButton.clicked.connect(() => {
+            emailPopup.open()
+        })
+        textButton.clicked.connect(() => {
+            textPopup.open()
+        })
     }
-
     // Shadow Overlay for Popups
     Rectangle {
         id: overlay
@@ -259,7 +262,11 @@ Rectangle {
             color: "#333333"
             radius: 10
         }
-        onOpened: emailInput.forceActiveFocus()
+        onOpened: {
+            emailInput.forceActiveFocus()
+            controller.countdown.stopTime()
+        }
+        onClosed: controller.countdown.resumeTime()
         ColumnLayout {
             id: emailContainer
             anchors.centerIn: parent
@@ -322,7 +329,11 @@ Rectangle {
             color: "#333333"
             radius: 10
         }
-        onOpened: textInput.forceActiveFocus()
+        onOpened: {
+            textInput.forceActiveFocus()
+            controller.countdown.stopTime()
+        }
+        onClosed: controller.countdown.resumeTime()       
         ColumnLayout {
             id: textContainer
             anchors.centerIn: parent
