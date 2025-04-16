@@ -18,10 +18,12 @@ from pathlib import Path
 import json
 import pickle
 from filelock import FileLock
+from os import environ
 
 SHELF_DATA_DIR = Path(Path.cwd() / 'tmp')
 SHELF_DISCONNECT_TIMEOUT_MS = 5000
 DEFAULT_NUM_SLOTS_PER_SHELF = 4
+USE_MOCK_DATA = environ.get('USE_MOCK_DATA', False)
 
 # TODO figure out how to import this from model without getting an import error
 class Item:
@@ -55,12 +57,13 @@ class Item:
     def __hash__(self):
         return hash(self.item_id)
 
+MOCK_ITEM = Item(0, "Sour Patch Kids", 1, 3.5, 5, 266, 15, '', 'sour_patch')
 
 class Slot:
 
     _items: List[Item]
 
-    def __init__(self, items: List[Item] | None):
+    def __init__(self, items: List[Item] | None = None):
         """
         Create a new slot.
         :param items: Optional list of items that are already on the shelf.
@@ -145,8 +148,16 @@ class Shelf:
     _num_slots: int
     _slots: List[Slot]
 
-    def __init__(self, mac_address: str, num_slots: int | None):
+    def __init__(self, mac_address: str, num_slots: int):
+        # Set all members
+        self._last_ping_ms = time.time() * 1000
+        self._mac_address = mac_address
+        self._num_slots = num_slots
+
+        # Create all the slots this shelf has
         self._slots = list()
+        for i in range(self._num_slots):
+            self._slots.append(Slot())
 
 
     def update_last_ping_time(self, time_ms):
@@ -185,6 +196,7 @@ class ShelfManager:
     _active_shelves_lock: Lock
     _active_shelves: Dict[str, Shelf]
 
+    # TODO implement shelf data file locks
     _shelf_data_locks: Dict[str, FileLock]
 
     def __init__(self, shelf_data_dir: Path = SHELF_DATA_DIR):
@@ -193,25 +205,18 @@ class ShelfManager:
         self._shelf_data_dir = shelf_data_dir
         self._shelf_data_dir.mkdir(parents=True, exist_ok=True)
 
-        # Get all JSON files in the directory that match the MAC address naming scheme
-        # TODO, do we really need to load all of these on start?
-        for file_path in shelf_data_dir.glob('??:??:??:??:??:??.json'):
-            # Open the file and make sure it is parsable as a JSON
-            with open(file_path, 'r') as file:
-                try:
-                    json_data = json.load(file)
-                except JSONDecodeError:
-                    # Print error, jump to next file
-                    print(f"Shelf Manager: Error loading shelf data from '{file_path}: Invalid JSON format'")
-                    continue
-                # Check that expected data is in JSON
-                if 'macAddress' not in json_data or 'pickle' not in json_data:
-                    print("Shelf Manager: Error: Invalid shelf JSON for")
+        # Instantiate active shelves
+        self._active_shelves_lock = Lock()
+        with self._active_shelves_lock:
+            self._active_shelves = dict()
 
-                # Store MAC address
-                mac_address = json_data['mac_address']
-                # Load shelf object from the json
-                shelf_obj = pickle.loads(json_data['pickle'])
+            # Populate with mock data if environment variables are configured
+            if USE_MOCK_DATA:
+                self._active_shelves = {
+                    "00:00:00:00:00:01": Shelf("00:00:00:00:00:01", 4),
+                    "00:00:00:00:00:02": Shelf("00:00:00:00:00:02", 4),
+                    "00:00:00:00:00:03": Shelf("00:00:00:00:00:03", 4)
+                }
 
 
     def _load_shelf_data(self, mac_address: str) -> Shelf | None:
