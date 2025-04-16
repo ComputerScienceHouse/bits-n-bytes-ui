@@ -5,9 +5,11 @@ from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex
 from typing import List, Any, Tuple
 import copy
 import datetime
+
 WEIGHT_UNIT = "g"
 CERTAINTY_CONSTANT = 2  # number of update iterations before an item is classified as "added" or "removed"
 ITERS_REQD_NO_UPDATE = 0
+EXTRANEOUS_VALUE_LIMIT = 5000
 
 class Item:
     def __init__(
@@ -171,6 +173,9 @@ class Slot:
         if print_debug:
             print(f"Weight diff g: {difference_g}")
             print(f"\tRemainder: {remainder_weight}")
+        if abs(difference_g) > EXTRANEOUS_VALUE_LIMIT:
+            print(f"\tExtraneous value, ignoring.")
+            return []
         quantity_to_modify_cart = 0
         # Check that remainder is within top std_dev or bottom_std of the avg_weight
         if  item.avg_weight - item.std_weight <= remainder_weight or remainder_weight <= item.std_weight:
@@ -263,6 +268,7 @@ class Shelf:
 class Cart:
     def __init__(self):
         self.items = {}
+        self.subtotal = 0.0;
 
     def add(self, item: Item):
         if item in self.items:
@@ -274,14 +280,23 @@ class Cart:
         if item in self.items:
             self.items[item] -= 1
 
+    def update_subtotal(self, caller):
+        from screens.cart_screen import CartScreen
+        if isinstance(caller, CartScreen):
+            for item, quantity in self.items.items():
+                print("Item:", item)
+                print("Quantity:", quantity)
+                self.subtotal += item.price
+            print("Subtotal:", self.subtotal)
+            return self.subtotal
+
     def get_subtotal(self):
-        subtotal = 0.0
-
-        for item, quantity in self.items.items():
-            subtotal += item.price * quantity
-
-        return subtotal
-
+        return self.subtotal
+    
+    def clear(self):
+        print("Clearing cart")
+        self.items = {}
+        self.subtotal = 0.0
 
 class ItemListModel(QAbstractListModel):
     def __init__(self, cart: Cart, parent=None):
@@ -309,7 +324,7 @@ class ItemListModel(QAbstractListModel):
 
         return None
 
-    def addItem(self, item):
+    def addItem(self, item, caller):
         if item not in self.cart.items:
             # Insert a new row if the item is not already in the cart
             position = len(self.cart.items)
@@ -318,8 +333,10 @@ class ItemListModel(QAbstractListModel):
             self.endInsertRows()
         else:
             # Just update the existing item's quantity
+            from screens.cart_screen import CartScreen
             position = list(self.cart.items.keys()).index(item)
-            self.cart.add(item)
+            if isinstance(caller, CartScreen):
+                self.cart.add(item)
             top_left = self.index(position, 0)
             self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole])
 

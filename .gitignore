@@ -1,5 +1,7 @@
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
+.venv
+/venv
 /tmp/
 *~
 *.autosave
@@ -34,7 +36,7 @@ Thumbs.db
 *.rc
 /.qmake.cache
 /.qmake.stash
-.venv
+venv
 
 # qtcreator generated files
 *.pro.user*
@@ -116,3 +118,5 @@ ui_*.h
 
 # Custom
 config.py
+*.qtds
+*.egg-info
