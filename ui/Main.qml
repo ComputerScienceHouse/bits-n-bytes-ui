@@ -89,7 +89,7 @@ Window {
 
     Component.onCompleted: {
             controller.stack = stack
-            controlller.start_shelf_manager()      
+            controller.start_shelf_manager()      
     }
 
     Connections {
