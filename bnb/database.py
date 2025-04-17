@@ -187,9 +187,10 @@ def get_user(user_id=None, nfc_id=None) -> User | None:
         # Check response code
         if response.status_code == 200:
             if nfc_id is not None:
-                UID = response.json['assigned_user']
+                UID = response.json()['assigned_user']
                 print(f"GET /users/{UID}")
-                response = requests.get(API_ENDPOINT + f"/users/{UID}")
+                url = API_ENDPOINT + f"/users/{UID}"
+                response = requests.get(url, headers=REQUEST_HEADERS)
                 user = response.json()
                 return User(
                     user['id'],
