@@ -9,7 +9,7 @@
 ###############################################################################
 import os
 import requests
-from models import Item, User
+from models import Item, User, NFC
 from typing import List
 import config
 
@@ -34,17 +34,13 @@ MOCK_ITEMS = {
 }
 
 MOCK_USERS = {
-    1: User(1, "Tag 1", "258427912599", 20.00, "imagine", "", ""),
-    2: User(1, "Tag 2", "422252369364", 20.00, "imagine", "", ""),
-    3: User(1, "Tag 3", "1015231349004", 20.00, "imagine", "", ""),
-    4: User(1, "Tag 4", "287648699740", 20.00, "imagine", "", ""),
-    5: User(1, "Tag 5", "328036581804", 20.00, "imagine", "", ""),
-    6: User(1, "Tag 6", "78789203372", 20.00, "imagine", "", ""),
-    7: User(1, "Tag 7", "602914488684", 20.00, "imagine", "", ""),
-    8: User(1, "Tag 8", "81490269452", 20.00, "imagine", "", ""),
-    9: User(1, "Tag 9", "150209746236", 20.00, "imagine", "", ""),
-    10: User(1, "Tag 10", "78805980589", 20.00, "imagine", "", ""),
+    # 1: User(1, "Tag 1", "258427912599", 20.00, "imagine", "", ""),
+    1: User(1, "User1", "", 10.00, "test@ema.il", "1234567")
 
+}
+
+MOCK_NFC = {
+    1: NFC(1, 1, "MIFARE")
 }
 
 # Use mock data if USE_MOCK_DATA environment variable is set to 'true'. If it
@@ -143,7 +139,7 @@ def get_item(item_id: int) -> Item | None:
             return None
 
 
-def get_user(user_id=None, user_token=None) -> User | None:
+def get_user(user_id=None, nfc_id=None) -> User | None:
     """
     Get user from either the user id or token
     :param user_id: Optional User ID
@@ -152,13 +148,13 @@ def get_user(user_id=None, user_token=None) -> User | None:
     token) was provided
     """
     if USE_MOCK_DATA:
-        # Check if user token should be used
-        if user_token is not None:
-            # Get user from token
-            print(f"GET /users/{user_token}")
-            for user_number in MOCK_USERS:
-                if MOCK_USERS[user_number].token == user_token:
-                    return MOCK_USERS[user_number]
+        # Check if nfc id should be used
+        if nfc_id is not None:
+            # Get user from nfc id
+            print(f"GET /nfc/{nfc_id}")
+            for nfc in MOCK_NFC:
+                if MOCK_USERS.get(nfc) != None:
+                    return MOCK_USERS[nfc]
             return None
         # Check if user id should be used
         elif user_id is not None:
@@ -172,12 +168,12 @@ def get_user(user_id=None, user_token=None) -> User | None:
         else:
             return None
     else:
-        # Determine whether URL should query based on token or user ID
+        # Determine whether URL should query based on nfc ID or user ID
         url = ""
-        if user_token is not None:
-            # Query based on token
-            print(f"GET /token/{user_token}")
-            url = API_ENDPOINT + f"/token/{user_token}"
+        if nfc_id is not None:
+            # Query based on nfc id
+            print(f"GET /nfc/{nfc_id}")
+            url = API_ENDPOINT + f"/nfc/{nfc_id}"
         elif user_id is not None:
             # Query based on user id
             print(f"GET /users/{user_id}")
@@ -190,16 +186,31 @@ def get_user(user_id=None, user_token=None) -> User | None:
         response = requests.get(url, headers=REQUEST_HEADERS)
         # Check response code
         if response.status_code == 200:
-            user = response.json()
-            return User(
-                user['id'],
-                user['name'],
-                user['token'],
-                user['balance'],
-                user['payment_type'],
-                user['email'],
-                user['phone']
-            )
+            if nfc_id is not None:
+                UID = response.json()['assigned_user']
+                print(f"GET /users/{UID}")
+                url = API_ENDPOINT + f"/users/{UID}"
+                response = requests.get(url, headers=REQUEST_HEADERS)
+                user = response.json()
+                return User(
+                    user['id'],
+                    user['name'],
+                    user['thumb_img'],
+                    user['balance'],
+                    user['email'],
+                    user['phone']
+                )
+                    
+            if user_id is not None:
+                user = response.json()
+                return User(
+                    user['id'],
+                    user['name'],
+                    user['thumb_img'],
+                    user['balance'],
+                    user['email'],
+                    user['phone']
+                )
         else:
             # Something went wrong so print info and return None
             print(f"\tReceived response {response.status_code}")
@@ -225,9 +236,8 @@ def update_user(user: User) -> User | None:
         params = {
             'id': user.uid,
             'name': user.name,
-            'token': user.token,
+            'thumb_img': user.thumb_img,
             'balance': user.balance,
-            'payment_type': user.payment_type,
             'email': user.email,
             'phone': user.phone
         }
