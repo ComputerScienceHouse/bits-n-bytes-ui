@@ -1,4 +1,5 @@
 import smtplib
+import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import os
@@ -102,8 +103,8 @@ TOTAL_HTML_TEMPLATE="""
 """
 
 def send_order_confirmation_email(user_email, items, total):
-    sender_email = "your_email@gmail.com"
-    app_password = "your_app_password"
+    sender_email = os.getenv("BNB_EMAIL")
+    app_password = os.getenv("BNB_EMAIL_PASSWORD")
     recipient_email = user_email
 
     message = MIMEMultipart("alternative")
@@ -132,17 +133,18 @@ def send_order_confirmation_email(user_email, items, total):
 
     html_body = f"""{header_html}{item_rows}{total_html}{footer_html}"""
 
-    # with open('email_template.html', 'w') as f:
-    #     f.write(html_body)
+    with open('email_template.html', 'w') as f:
+        f.write(html_body)
 
     # TODO: Will uncomment this when we get the email from OpComm
-    # html_part = MIMEText(html_body, "html")
-    # message.attach(html_part)
+    html_part = MIMEText(html_body, "html")
+    message.attach(html_part)
 
-    # try:
-    #     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-    #         server.login(sender_email, app_password)
-    #         server.sendmail(sender_email, recipient_email, message.as_string())
-    #         print("HTML receipt sent successfully!")
-    # except Exception as e:
-    #     print(f"Failed to send email: {e}")
+    context = ssl.create_default_context()
+    try:
+        with smtplib.SMTP_SSL("mail.csh.rit.edu", 465, context=context) as server:
+            server.login(sender_email, app_password)
+            server.sendmail(sender_email, recipient_email, message.as_string())
+            print("HTML receipt sent successfully!")
+    except Exception as e:
+        print(f"Failed to send email: {e}")

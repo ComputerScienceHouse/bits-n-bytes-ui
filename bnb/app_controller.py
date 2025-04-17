@@ -237,7 +237,7 @@ class AppController(QObject):
         for item in self._model._cart._items:
             item_dict = {key: value for key, value in item.__dict__.items() if key in ['name', 'price', 'quantity']}
             items.append(item_dict)
-        send_order_confirmation_email("sahil.h.patel@gmail.com", items, self._model._cart.get_subtotal())
+        send_order_confirmation_email("sahil.h.patel@gmail.com", items, self.getSubtotal())
     
     @Slot(str)
     def getPhoneNum(self, phone_num):

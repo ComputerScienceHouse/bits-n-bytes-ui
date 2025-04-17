@@ -29,7 +29,7 @@ Rectangle {
 
     GridLayout {
         id: tareGrid
-        columns: 8
+        columns: 2
         rows: 3
         columnSpacing: 20
         rowSpacing: 20
@@ -39,9 +39,9 @@ Rectangle {
         anchors.bottomMargin: 8
 
         property var buttonLabels: [
-            "1A", "1B", "1C", "1D", "1E", "1F", "1G", "1H",
-            "2A", "2B", "2C", "2D", "2E", "2F", "2G", "2H",
-            "3A", "3B", "3C", "3D", "3E", "3F", "3G", "3H"
+            "1A", "1B", "1C", "1D", "2A", "2B", "2C", "2D",
+            "3A", "3B", "3C", "3D", "4A", "4B", "4C", "4D",
+            "5A", "5B", "5C", "5D", "6A", "6B", "6C", "6D"
         ]   
         
         Repeater {
