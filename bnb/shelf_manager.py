@@ -64,6 +64,9 @@ MOCK_ITEM = Item(0, "Sour Patch Kids", 1, 3.5, 5, 266, 15, '', 'sour_patch')
 class Slot:
 
     _items: List[Item]
+    _current_weight: float
+    _previous_weight: float
+    _conversion_factor: float
 
     def __init__(self, items: List[Item] | None = None):
         """
@@ -74,6 +77,9 @@ class Slot:
             self._items = list()
         else:
             self._items = items
+        self._current_weight = 0
+        self._previous_weight = 0
+        self._conversion_factor = 1
 
 
     def add_item(self, item: Item) -> None:
@@ -142,6 +148,32 @@ class Slot:
         return most_probable_item, max_probability
 
 
+    def update_weight(self, new_weight: float) -> None:
+        """
+        Update the current weight reading of this shelf.
+        :param new_weight:
+        :return:
+        """
+        self._current_weight = new_weight * self._conversion_factor
+
+
+    def tare(self, calibration_weight_g: float) -> bool:
+        """
+        Tare this shelf using a certain calibration weight.
+        :param calibration_weight_g: Weight in grams of the calibration weight being used.
+        :return:
+        """
+        if self._previous_weight == self._current_weight:
+            # Can't divide by zero, print an error
+            print("Shelf Manager: Loaded weight and zero weight are the same, can't compute conversion factor.")
+            return False
+        else:
+            # Calculate conversion factor
+            self._conversion_factor = calibration_weight_g / (self._current_weight - self._previous_weight)
+            # Update previous weight
+            self._previous_weight = self._current_weight
+            return True
+
 
 class Shelf:
 
@@ -185,6 +217,35 @@ class Shelf:
         :return:
         """
         return self._mac_address
+
+
+    def get_num_slots(self) -> int:
+        """
+        Get the number of slots this shelf has.
+        :return: Integer.
+        """
+        return self._num_slots
+
+
+    def get_all_slots(self) -> List[Slot]:
+        """
+        Get all slots from this shelf.
+        :return: A list of Slot.
+        """
+        return self._slots
+
+
+    def tare_slot(self, slot_id: int, calibration_weight_g: float) -> bool:
+        """
+        Tare a slot.
+        :param slot_id: The ID of the slot to tare.
+        :param calibration_weight_g: The known calibration weight being used.
+        :return: Whether the slot was tared successfully.
+        """
+        if slot_id < self._num_slots:
+            return self._slots[slot_id].tare(calibration_weight_g)
+        else:
+            return False
 
 
 
@@ -314,6 +375,24 @@ class ShelfManager:
         return all_shelves
 
 
+    def tare_slot(self, shelf_id: str, slot_id: int, calibration_weight_g: float) -> bool:
+        """
+        Tare a slot on a shelf.
+        :param shelf_id: The mac address of the shelf.
+        :param slot_id: The integer ID of the slot.
+        :param calibration_weight_g: The weight of the calibration weight in grams.
+        :return: True if successful, False otherwise.
+        """
+        with self._active_shelves_lock:
+            # Check if this shelf exists
+            if shelf_id in self._active_shelves:
+                shelf_obj = self._active_shelves[shelf_id]
+                # Tare the slot
+                return shelf_obj.tare_slot(slot_id, calibration_weight_g)
+
+        return False
+
+
     def _shelf_data_received(self, message: str):
         """
         Callback function for when shelf data is received. This is just to keep shelves alive,
@@ -343,7 +422,7 @@ class ShelfManager:
             # Check if this shelf is active
             if mac_address in self._active_shelves:
                 # TODO if item count changed, update the data file
-                pass
+                shelf_obj = self._active_shelves[mac_address]
             else:
                 # Shelf is not active, see if any info exists in storage
                 shelf_obj = self._load_shelf_data(mac_address)
@@ -357,7 +436,19 @@ class ShelfManager:
                 # Add this shelf to active
                 self._active_shelves[mac_address] = shelf_obj
                 print(f"Shelf Manager: New shelf connected with ID '{mac_address}'")
-            self._active_shelves[mac_address].update_last_ping_time(msg_received_ms)
+            # Update the last time shit shelf pinged
+            shelf_obj.update_last_ping_time(msg_received_ms)
+            try:
+                data = json_data['data']
+            except KeyError:
+                print("Shelf Manager: Error: 'data' field not in dictionary")
+                return
+            # Update the weight values for all slots
+            all_slots = shelf_obj.get_all_slots()
+            for i, raw_weight in enumerate(data):
+                if isinstance(raw_weight, float):
+                    if i < len(all_slots):
+                        all_slots[i].update_weight(raw_weight)
 
 
     def _main_loop(self):
