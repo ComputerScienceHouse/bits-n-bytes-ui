@@ -22,6 +22,12 @@ Rectangle {
         function onNotifyAdminUnlock() {
             adminScreenNotification.show("Admin Screen Unlocked!")
         }
+        function onDoorsUnlock() {
+            adminScreenNotification.show("Doors Unlocked!")
+        }
+        function onHatchUnlock() {
+            adminScreenNotification.show("Hatch Unlocked!")
+        }
     }
 
     Button {

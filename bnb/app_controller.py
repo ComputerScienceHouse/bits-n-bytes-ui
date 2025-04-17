@@ -24,7 +24,7 @@ open_hatch_topic = "aux/control/hatch"
 open_doors_and_hatch_msg = "open"
 shelf_data_topic = "shelf/data"
 doors_status_topic = "aux/status/doors"
-
+hatch_status_topic = "aux/status/hatch"
 
 MQTT_LOCAL_BROKER_URL = os.getenv('MQTT_LOCAL_BROKER_URL', None)
 MQTT_REMOTE_BROKER_URL = os.getenv('', None)
@@ -168,6 +168,8 @@ class AppController(QObject):
     notifyAdminUnlock = Signal()
     notifyEmailInput = Signal()
     notifyPhoneInput = Signal()
+    hatchUnlock = Signal()
+    doorsUnlock = Signal()
 
     _cartModel: CartModel
     _mqttRemoteClient: MqttClient
@@ -188,15 +190,17 @@ class AppController(QObject):
         self._cartModel = CartModel(self._model._cart, self)
         self._phone_num = str
         self._email = str
-        # if(MQTT_LOCAL_BROKER_URL is not None):
-        #     self._mqttLocalClient = MqttClient(MQTT_LOCAL_BROKER_URL, 1883)
-        #     self._mqttLocalClient.add_topic(doors_status_topic, lambda x: None, qos=0)
-        #     self._mqttLocalClient.add_topic(shelf_data_topic, lambda x: None, qos=1)
-        # if(MQTT_REMOTE_BROKER_URL is not None):
-        #     self._mqttRemoteClient = MqttClient(MQTT_REMOTE_BROKER_URL, 1883)
-        #     self._mqttRemoteClient.add_topic(doors_status_topic, qos=0)
-        #     self._mqttRemoteClient.add_topic(shelf_data_topic, qos=1)
-
+        if(MQTT_LOCAL_BROKER_URL is not None):
+            self._mqttLocalClient = MqttClient(MQTT_LOCAL_BROKER_URL, 1883)
+            self._mqttLocalClient.add_topic(doors_status_topic, self.notifyDoorUnlock, qos=0)
+            self._mqttLocalClient.add_topic(hatch_status_topic, self.notifyHatchUnlock, qos=1)
+            self._mqttLocalClient.start()
+        if(MQTT_REMOTE_BROKER_URL is not None):
+            self._mqttRemoteClient = MqttClient(MQTT_REMOTE_BROKER_URL, 1883)
+            self._mqttRemoteClient.add_topic(doors_status_topic, self.notifyDoorUnlock, qos=0)
+            self._mqttRemoteClient.add_topic(hatch_status_topic, self.notifyHatchUnlock, qos=1)
+            self._mqttRemoteClient.start()
+    
     @Property(QObject, constant=True)
     def mqtt(self):
         return self._mqttClient
@@ -213,6 +217,18 @@ class AppController(QObject):
     def shelf_manager(self):
         return self._model._shelf_manager
     
+    def notifyDoorUnlock(self, msg: str):
+        if msg == "open":
+            self.doorsUnlock.emit()
+        else:
+            print("Unknown message received: ", msg)
+
+    def notifyHatchUnlock(self, msg: str):
+        if msg == "open":
+            self.hatchUnlock.emit()
+        else:
+            print("Unknown message recieved: ", msg)
+
     @Slot()
     def open_doors(self):
        result = self._mqttLocalClient.post_message(open_doors_topic, open_doors_and_hatch_msg)
