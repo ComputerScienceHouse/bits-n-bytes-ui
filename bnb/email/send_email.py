@@ -103,8 +103,9 @@ TOTAL_HTML_TEMPLATE="""
 """
 
 def send_order_confirmation_email(user_email, items, total):
-    sender_email = os.getenv("BNB_EMAIL")
+    sender_email = os.getenv("BNB_EMAIL_ADDRESS")
     app_password = os.getenv("BNB_EMAIL_PASSWORD")
+    sender = os.getenv("BNB_EMAIL_USER")
     recipient_email = user_email
 
     message = MIMEMultipart("alternative")
@@ -143,7 +144,7 @@ def send_order_confirmation_email(user_email, items, total):
     context = ssl.create_default_context()
     try:
         with smtplib.SMTP_SSL("mail.csh.rit.edu", 465, context=context) as server:
-            server.login(sender_email, app_password)
+            server.login(sender, app_password)
             server.sendmail(sender_email, recipient_email, message.as_string())
             print("HTML receipt sent successfully!")
     except Exception as e:
