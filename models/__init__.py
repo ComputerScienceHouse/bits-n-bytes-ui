@@ -60,7 +60,7 @@ class User:
 class NFC:
     def __init__(self, id, assigned_user, type):
         self.uid = id
-        self.assigned = assigned_user
+        self.assigned_user = assigned_user
         self.type = type
     
     def __str__(self):
