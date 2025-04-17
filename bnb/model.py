@@ -171,7 +171,8 @@ class Model:
         self._cart.add_item(Item(8, "Welch's Fruit Snacks", 0, 39.99, 40, 142, 14, "placeholder.png", 'sour_patch'))
 
         self._current_user = User('', 'Sahil Patel', '', 999.99, 'IMAGINE25', 'sahilpatel@gmail.com', '+11111111111')
-        # TODO implement shelf manager
+
+        self._shelf_manager = ShelfManager()
 
 
     def get_all_items_in_cart(self) -> List[Item]:

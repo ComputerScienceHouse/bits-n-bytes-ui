@@ -7,6 +7,7 @@
 # shelves.
 #
 ###############################################################################
+import os
 import threading
 import time
 from json import JSONDecodeError
@@ -19,6 +20,7 @@ import json
 import pickle
 from filelock import FileLock
 from os import environ
+from mqtt import MqttClient
 
 SHELF_DATA_DIR = Path(Path.cwd() / 'tmp')
 SHELF_DISCONNECT_TIMEOUT_MS = 5000
@@ -68,7 +70,7 @@ class Slot:
         Create a new slot.
         :param items: Optional list of items that are already on the shelf.
         """
-        if self._items is None:
+        if items is None:
             self._items = list()
         else:
             self._items = items
@@ -199,11 +201,29 @@ class ShelfManager:
     # TODO implement shelf data file locks
     _shelf_data_locks: Dict[str, FileLock]
 
+    _mqtt_client: MqttClient | None
+
     def __init__(self, shelf_data_dir: Path = SHELF_DATA_DIR):
+
+
+        broker_url = os.environ.get('MQTT_LOCAL_BROKER_URL', None)
+        if broker_url is not None:
+            self._mqtt_client = MqttClient(broker_url, 1883)
+            self._mqtt_client.add_topic('shelf/data', self._shelf_data_received)
+            self._mqtt_client.start()
+        else:
+            self._mqtt_client = None
 
         # Create shelf data directory if it doesn't exist
         self._shelf_data_dir = shelf_data_dir
         self._shelf_data_dir.mkdir(parents=True, exist_ok=True)
+
+        # Setup signal end system
+        self._signal_end_lock = Lock()
+        self._signal_end = False
+
+        # Setup shelf data locks
+        self._shelf_data_locks = dict()
 
         # Instantiate active shelves
         self._active_shelves_lock = Lock()
@@ -226,27 +246,19 @@ class ShelfManager:
         :return: A Shelf object if the data was loaded successfully, None otherwise.
         """
         # Create path
-        shelf_data_path = Path(self._shelf_data_dir / f"{mac_address}.json")
+        shelf_data_path = Path(self._shelf_data_dir / f"{mac_address}.pickle")
         # Open it, if it exists
         if shelf_data_path.exists():
-            with open(shelf_data_path, 'r') as file:
+            with open(shelf_data_path, 'rb') as file:
                 try:
-                    json_data = json.load(file)
-                except JSONDecodeError:
+                    shelf_obj = pickle.load(file)
+                    if not isinstance(shelf_obj, Shelf):
+                        print("Shelf Manager: Error: Invalid shelf data in file. Expected Shelf object.")
+                        return None
+                except Exception:
                     # Print error, jump to next file
-                    print(f"Shelf Manager: Error loading shelf data from '{shelf_data_path}': Invalid JSON format'.")
+                    print(f"Shelf Manager: Error unpickling file '{shelf_data_path}'.")
                     return None
-                # Check that expected data is in JSON
-                if 'macAddress' not in json_data or 'pickle' not in json_data:
-                    print(f"Shelf Manager: Error: Invalid shelf JSON in '{shelf_data_path}'.")
-                    return None
-                # Load shelf object from the json
-                try:
-                    shelf_obj = pickle.loads(json_data['pickle'])
-                except UnpicklingError:
-                    print(f"Shelf Manager: Error: Unpickling file '{shelf_data_path}'.")
-                    return None
-                # Return object
                 return shelf_obj
         else:
             return None
@@ -259,14 +271,10 @@ class ShelfManager:
         :return: None.
         """
         # Get path for the file
-        shelf_data_path = Path(self._shelf_data_dir / f"{shelf.get_mac_address()}.json")
-        # Write JSOn data to file
-        with open(shelf_data_path, 'w') as file:
-            json_data = {
-                "macAddress": shelf.get_mac_address(),
-                "pickle": pickle.dumps(shelf)
-            }
-            json.dump(json_data, file)
+        shelf_data_path = Path(self._shelf_data_dir / f"{shelf.get_mac_address()}.pickle")
+        # Open file and dump pickle data
+        with open(shelf_data_path, 'wb') as file:
+            pickle.dump(shelf, file)
 
 
     def stop_loop(self) -> None:
@@ -288,10 +296,12 @@ class ShelfManager:
         thread.start()
 
 
-    def get_all_shelves(self) -> List[Shelf]:
+    def get_all_shelves(self) -> List[Shelf | None]:
         """
         Get a list of all shelves that are actively connected.
-        :return: A list of shelves
+        :return: A list that, in each index, contains either a Shelf or None. The indexes of this list
+        represent where the shelf should be on the UI. The UI should have two columns and any number of rows.
+        Index 0 and 1 are on the top row, then 2 and 3 on the 2nd row, then 4 and 5... etc.
         """
         # Compile a list of all shelves that are actively connected
         all_shelves = list()
@@ -322,15 +332,18 @@ class ShelfManager:
             return
 
         # Get mac address from shelf
-        mac_address = json_data['id']
+        try:
+            mac_address = json_data['id']
+        except KeyError:
+            print("Shelf Manager: Error: 'id' field not in dictionary")
+            return
 
         # Update shelves with new data
         with self._active_shelves_lock:
             # Check if this shelf is active
             if mac_address in self._active_shelves:
-                # Update active shelf last heard time
-                self._active_shelves[mac_address].update_last_ping_time(msg_received_ms)
                 # TODO if item count changed, update the data file
+                pass
             else:
                 # Shelf is not active, see if any info exists in storage
                 shelf_obj = self._load_shelf_data(mac_address)
@@ -339,9 +352,12 @@ class ShelfManager:
                     shelf_obj = Shelf(mac_address, 4)
                 else:
                     # Shelf is loaded
+                    print("\tSuccessfully loaded shelf data from file.")
                     pass
                 # Add this shelf to active
                 self._active_shelves[mac_address] = shelf_obj
+                print(f"Shelf Manager: New shelf connected with ID '{mac_address}'")
+            self._active_shelves[mac_address].update_last_ping_time(msg_received_ms)
 
 
     def _main_loop(self):
@@ -350,6 +366,8 @@ class ShelfManager:
         This loop checks whether each shelf is connected, and removes them if they are not.
         :return:
         """
+        print("Shelf Manager: Starting")
+
 
         self._last_loop_ms = time.time() * 1000
 
@@ -361,6 +379,7 @@ class ShelfManager:
                     break
 
             # Shelf watchdog. Remove shelves that haven't sent any data in a certain amount of time.
+            macs_to_remove = list()
             for shelf_mac in self._active_shelves:
                 shelf_obj = self._active_shelves[shelf_mac]
                 if shelf_obj.get_last_ping_time() < current_time_ms - SHELF_DISCONNECT_TIMEOUT_MS:
@@ -368,8 +387,12 @@ class ShelfManager:
                     print(f"Shelf Manager: Shelf '{shelf_mac}' disconnected (timed out).")
                     # Make sure most recent version of this shelf is saved
                     self._save_shelf_data(shelf_obj)
-                    # Remove shelf from active shelves
-                    del self._active_shelves[shelf_mac]
+                    # Add this shelf to the list of shelves to remove
+                    macs_to_remove.append(shelf_mac)
+
+            for mac_address in macs_to_remove:
+                del self._active_shelves[mac_address]
+            macs_to_remove.clear()
 
 
             # TODO post what shelves are available on an endpoint somewhere

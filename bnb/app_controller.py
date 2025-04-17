@@ -18,8 +18,6 @@ from bnb import config
 from typing import List, Callable
 from bnb.mqtt import MqttClient
 from bnb.email.send_email import send_order_confirmation_email
-from twilio.rest import Client
-
 
 open_doors_topic = "aux/control/doors"
 open_hatch_topic = "aux/control/hatch"
@@ -239,12 +237,8 @@ class AppController(QObject):
         for item in self._model._cart._items:
             item_dict = {key: value for key, value in item.__dict__.items() if key in ['name', 'price', 'quantity']}
             items.append(item_dict)
-        send_order_confirmation_email("sahil.h.patel@gmail.com", items, self.getSubtotal())
+        send_order_confirmation_email("sahil.h.patel@gmail.com", items, self._model._cart.get_subtotal())
     
-    @Slot()
-    def send_sms(self):
-        pass
-
     @Slot(str)
     def getPhoneNum(self, phone_num):
         self._phone_num = phone_num
@@ -294,7 +288,7 @@ class AppController(QObject):
 
     @Slot()
     def start_shelf_manager(self):
-        self._model._shelf_manager.start_loop()
+        self.shelf_manager.start_loop()
 
 if __name__ == "__main__":
     app = AppController()
