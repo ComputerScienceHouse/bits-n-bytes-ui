@@ -46,14 +46,25 @@ class Item:
 
     
 class User:
-    def __init__(self, uid, name, token, balance, payment_type, email, phone):
+    def __init__(self, uid, name, thumb_img, balance, email, phone):
         self.uid = uid
         self.name = name
-        self.token = token
+        self.thumb_img = thumb_img
         self.balance = balance
-        self.payment_type = payment_type
         self.email = email
         self.phone = phone
+    
+    def __str__(self):
+        return (f'User[ID: {self.uid}, Name: {self.name}, Balance: {self.balance},\n Email: {self.email}, Phone: {self.phone}]')
+    
+class NFC:
+    def __init__(self, id, assigned_user, type):
+        self.uid = id
+        self.assigned = assigned_user
+        self.type = type
+    
+    def __str__(self):
+        return (f'NFC[ID: {self.id}, UserID: {self.assigned_user}, Type: {self.type}]')
 
 
 
