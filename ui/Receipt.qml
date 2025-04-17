@@ -21,10 +21,10 @@ Rectangle {
     Connections {
         target: controller
         function onNotifyPhoneInput() {
-            recieptNotification.show("Phone Number recieved!")
+            recieptNotification.show("Text receipt sent!")
         }
         function onNotifyEmailInput() {
-            recieptNotification.show("Email Address recieved!")
+            recieptNotification.show("Email receipt sent!")
         }
     }
 
