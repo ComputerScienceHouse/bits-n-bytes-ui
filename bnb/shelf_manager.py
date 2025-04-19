@@ -288,9 +288,6 @@ class ShelfManager:
         self._signal_end_lock = Lock()
         self._signal_end = False
 
-        # Setup shelf data locks
-        self._shelf_data_locks = dict()
-
         # Instantiate active shelves
         self._active_shelves_lock = Lock()
         with self._active_shelves_lock:
@@ -313,21 +310,22 @@ class ShelfManager:
         """
         # Create path
         shelf_data_path = Path(self._shelf_data_dir / f"{mac_address}.pickle")
-        # Open it, if it exists
-        if shelf_data_path.exists():
-            with open(shelf_data_path, 'rb') as file:
-                try:
-                    shelf_obj = pickle.load(file)
-                    if not isinstance(shelf_obj, Shelf):
-                        print("Shelf Manager: Error: Invalid shelf data in file. Expected Shelf object.")
+        with FileLock(Path(self._shelf_data_dir / f"{mac_address}.lock")):
+            # Open it, if it exists
+            if shelf_data_path.exists():
+                with open(shelf_data_path, 'rb') as file:
+                    try:
+                        shelf_obj = pickle.load(file)
+                        if not isinstance(shelf_obj, Shelf):
+                            print("Shelf Manager: Error: Invalid shelf data in file. Expected Shelf object.")
+                            return None
+                    except Exception:
+                        # Print error, jump to next file
+                        print(f"Shelf Manager: Error unpickling file '{shelf_data_path}'.")
                         return None
-                except Exception:
-                    # Print error, jump to next file
-                    print(f"Shelf Manager: Error unpickling file '{shelf_data_path}'.")
-                    return None
-                return shelf_obj
-        else:
-            return None
+                    return shelf_obj
+            else:
+                return None
 
 
     def _save_shelf_data(self, shelf: Shelf) -> None:
@@ -338,9 +336,10 @@ class ShelfManager:
         """
         # Get path for the file
         shelf_data_path = Path(self._shelf_data_dir / f"{shelf.get_mac_address()}.pickle")
-        # Open file and dump pickle data
-        with open(shelf_data_path, 'wb') as file:
-            pickle.dump(shelf, file)
+        with FileLock(Path(self._shelf_data_dir / f"{shelf.get_mac_address()}.lock")):
+            # Open file and dump pickle data
+            with open(shelf_data_path, 'wb') as file:
+                pickle.dump(shelf, file)
 
 
     def stop_loop(self) -> None:
@@ -429,6 +428,7 @@ class ShelfManager:
                 # TODO if item count changed, update the data file
                 shelf_obj = self._active_shelves[mac_address]
             else:
+                print(f"Shelf Manager: New shelf connected with ID '{mac_address}'")
                 # Shelf is not active, see if any info exists in storage
                 shelf_obj = self._load_shelf_data(mac_address)
                 if shelf_obj is None:
@@ -440,7 +440,6 @@ class ShelfManager:
                     pass
                 # Add this shelf to active
                 self._active_shelves[mac_address] = shelf_obj
-                print(f"Shelf Manager: New shelf connected with ID '{mac_address}'")
             # Update the last time shit shelf pinged
             shelf_obj.update_last_ping_time(msg_received_ms)
             try:
