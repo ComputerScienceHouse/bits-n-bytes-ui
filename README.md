@@ -30,10 +30,13 @@ os.environ["TWILIO_ACCOUNT_SID"]=""
 os.environ["TWILIO_AUTH_TOKEN"]=""
 os.environ["TWILIO_FROM_NUMBER"]=""
 
-# 
+# MQTT Setup
 os.environ["MQTT_LOCAL_BROKER_URL"] = "localhost"
 os.environ["MQTT_REMOTE_BROKER_URL"] = ""
 os.environ["MQTT_PORT"] = "1883"
+
+# OPTIONAL Variables (Mainly for debugging)
+os.environ["USE_MOCK_DATA"] = "False" # Set to "True" to use mock data instead of DB.
 
 ```
 
