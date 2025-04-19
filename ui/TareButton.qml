@@ -6,12 +6,13 @@ import QtQuick.Layouts
 Button {
     id: root
     property alias label: root.text
+    highlighted: modelData.selected
 
     font.family: "Roboto"
     font.pointSize: 24
     Material.roundedScale: Material.NotRounded
-    Layout.fillWidth: true
-    Layout.fillHeight: true
+    Layout.preferredWidth: 80
+    Layout.preferredHeight: 80
 
     // Color cycling logic
     property int colorIndex: 0
@@ -20,6 +21,7 @@ Button {
     Material.background: colorList[colorIndex]
 
     onClicked: {
+        modelData.selected = !modelData.selected
         colorIndex = (colorIndex + 1) % colorList.length
         Material.background = colorList[colorIndex]
     }

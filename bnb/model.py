@@ -47,11 +47,12 @@ class Item:
 
 
 class User:
-    def __init__(self, uid, name, thumb_img, balance, email, phone):
+    def __init__(self, uid, name, token, balance, payment_type, email, phone):
         self.uid = uid
         self.name = name
-        self.thumb_img = thumb_img
+        self.token = token
         self.balance = balance
+        self.payment_type = payment_type
         self.email = email
         self.phone = phone
 

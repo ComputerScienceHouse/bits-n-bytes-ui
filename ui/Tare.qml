@@ -13,6 +13,29 @@ Rectangle {
     color: "#292929"
     property color bgColor: "#454545"
 
+    Component.onCompleted: {
+        controller.sort_shelves()
+    }
+
+    Connections {
+        target: controller
+        function onShelvesChanged(){
+            if(!debounceTimer.running){
+                debounceTimer.start();
+            }
+        }
+    }
+
+    Timer {
+        id: debounceTimer
+        interval: 300
+        running: false
+        repeat: false
+        onTriggered: {
+            controller.sort_shelves()
+        }
+    }
+
     Text {
         id: _text
         x: 15
@@ -27,30 +50,42 @@ Rectangle {
         font.bold: true
     }
 
-    GridLayout {
-        id: tareGrid
-        columns: 2
-        rows: 3
-        columnSpacing: 20
-        rowSpacing: 20
+    RowLayout{ 
         anchors.fill: parent
         anchors.margins: 18
-        anchors.topMargin: 66
-        anchors.bottomMargin: 8
-
-        property var buttonLabels: [
-            "1A", "1B", "1C", "1D", "2A", "2B", "2C", "2D",
-            "3A", "3B", "3C", "3D", "4A", "4B", "4C", "4D",
-            "5A", "5B", "5C", "5D", "6A", "6B", "6C", "6D"
-        ]   
+        spacing: 100  // adjust spacing between columns as needed
         
-        Repeater {
-            model: tareGrid.buttonLabels.length
-            delegate: TareButton {
-                label: tareGrid.buttonLabels[index]
+        ColumnLayout {
+        id: leftColumn
+        spacing: 50
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+
+            Repeater {
+                model: controller.left_shelves
+                delegate: Shelf {
+                    required property int index
+                    required property var modelData
+                }
+            }
+        }
+
+        ColumnLayout{
+            id: rightColumn
+            spacing: 50
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            Repeater {
+                model: controller.right_shelves
+                delegate: Shelf {
+                    required property int index
+                    required property var modelData
+                }
             }
         }
     }
+    
 
     Button {
         id: backButton

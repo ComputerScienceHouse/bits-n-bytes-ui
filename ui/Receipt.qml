@@ -380,7 +380,7 @@ Rectangle {
                 text: qsTr("Submit")
                 Layout.alignment: Qt.AlignCenter
                 onClicked: {
-                    controller.getPhoneNum(textInput.text)
+                    controller.send_sms(textInput.text)
                     textPopup.close()
                 }
                 font.pointSize: 18

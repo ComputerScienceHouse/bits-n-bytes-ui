@@ -20,13 +20,12 @@ import json
 import pickle
 from filelock import FileLock
 from os import environ
-from mqtt import MqttClient
+from bnb.mqtt import MqttClient
 
 SHELF_DATA_DIR = Path(Path.cwd() / 'tmp')
 SHELF_DISCONNECT_TIMEOUT_MS = 5000
 DEFAULT_NUM_SLOTS_PER_SHELF = 4
-USE_MOCK_DATA = environ.get('USE_MOCK_DATA', False)
-
+USE_MOCK_DATA = True
 # TODO figure out how to import this from model without getting an import error
 class Item:
 

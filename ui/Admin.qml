@@ -90,7 +90,9 @@ Rectangle {
         font.family: "Roboto"
         font.weight: Font.Normal
         font.pointSize: 16
-        onClicked: stack.push("Tare.qml")
+        onClicked: {
+            stack.push("Tare.qml")
+        }
     }
 
     Text {
