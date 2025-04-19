@@ -25,7 +25,9 @@ from mqtt import MqttClient
 SHELF_DATA_DIR = Path(Path.cwd() / 'tmp')
 SHELF_DISCONNECT_TIMEOUT_MS = 5000
 DEFAULT_NUM_SLOTS_PER_SHELF = 4
-USE_MOCK_DATA = environ.get('USE_MOCK_DATA', False)
+USE_MOCK_DATA = environ.get('USE_MOCK_DATA', False) == "True"
+LOCAL_MQTT_BROKER_URL = os.environ.get('MQTT_LOCAL_BROKER_URL', None)
+REMOTE_MQTT_BROKER_URL = os.environ.get('MQTT_REMOTE_BROKER_URL', None)
 
 # TODO figure out how to import this from model without getting an import error
 class Item:
@@ -259,21 +261,24 @@ class ShelfManager:
     _active_shelves_lock: Lock
     _active_shelves: Dict[str, Shelf]
 
-    # TODO implement shelf data file locks
-    _shelf_data_locks: Dict[str, FileLock]
-
-    _mqtt_client: MqttClient | None
+    _local_mqtt_client: MqttClient | None
 
     def __init__(self, shelf_data_dir: Path = SHELF_DATA_DIR):
 
-
-        broker_url = os.environ.get('MQTT_LOCAL_BROKER_URL', None)
-        if broker_url is not None:
-            self._mqtt_client = MqttClient(broker_url, 1883)
-            self._mqtt_client.add_topic('shelf/data', self._shelf_data_received)
-            self._mqtt_client.start()
+        # Connect to local MQTT broker
+        if not (LOCAL_MQTT_BROKER_URL == "None" or LOCAL_MQTT_BROKER_URL == None or LOCAL_MQTT_BROKER_URL == ""):
+            self._local_mqtt_client = MqttClient(LOCAL_MQTT_BROKER_URL, 1883)
+            self._local_mqtt_client.add_topic('shelf/data', self._shelf_data_received)
+            self._local_mqtt_client.start()
         else:
-            self._mqtt_client = None
+            self._local_mqtt_client = None
+
+        # Connect to remote MQTT broker
+        if not (REMOTE_MQTT_BROKER_URL == "None" or REMOTE_MQTT_BROKER_URL == None or REMOTE_MQTT_BROKER_URL == ""):
+            self._remote_mqtt_client = MqttClient(REMOTE_MQTT_BROKER_URL, 1883)
+            self._remote_mqtt_client.start()
+        else:
+            self._remote_mqtt_client = None
 
         # Create shelf data directory if it doesn't exist
         self._shelf_data_dir = shelf_data_dir
