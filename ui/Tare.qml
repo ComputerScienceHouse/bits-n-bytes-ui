@@ -14,11 +14,11 @@ Rectangle {
     property color bgColor: "#454545"
 
     Component.onCompleted: {
-        controller.sort_shelves()
+        controller.tare.sort_shelves()
     }
 
     Connections {
-        target: controller
+        target: controller.tare
         function onShelvesChanged(){
             if(!debounceTimer.running){
                 debounceTimer.start();
@@ -32,7 +32,7 @@ Rectangle {
         running: false
         repeat: false
         onTriggered: {
-            controller.sort_shelves()
+            controller.tare.sort_shelves()
         }
     }
 
@@ -58,7 +58,7 @@ Rectangle {
         columnSpacing: 100
 
         Repeater {
-            model: controller.shelves
+            model: controller.tare.shelves
             delegate: Shelf {
                 shelfData: modelData
                 Layout.row: Math.floor(index / 2)

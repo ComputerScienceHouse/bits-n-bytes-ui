@@ -40,7 +40,7 @@ Button {
         console.log("Button clicked:", label, "Shelf:", shelfId, "Slot:", slotIndex, "Current State:", tareState);
         // Call the Python controller's slot method
         // The controller will handle the state logic and update the model
-        controller.tare_slot(shelfId, slotIndex, calibrationWeightG);
+        controller.tare.tare_slot(shelfId, slotIndex, calibrationWeightG);
     }
 
     // Optional: Add a tooltip to show the state

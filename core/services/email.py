@@ -20,8 +20,6 @@ def send_order_confirmation_email(user_email, items, total):
     sender = os.getenv("BNB_EMAIL_USER")
     recipient_email = user_email
 
-    print(template_dir)
-
     template = env.get_template('order_confirmation.html')
     html_body = template.render(items=items, total=total)
 

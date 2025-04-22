@@ -18,7 +18,8 @@ Rectangle {
     }
 
     Connections {
-        target: controller
+        id: adminConnections
+        target: controller.admin
         function onNotifyAdminUnlock() {
             adminScreenNotification.show("Admin Screen Unlocked!")
         }
@@ -27,6 +28,16 @@ Rectangle {
         }
         function onHatchUnlock() {
             adminScreenNotification.show("Hatch Unlocked!")
+        }
+    }
+
+    // Remove adminConnection target so app exits w/o errors
+    Connections {
+        target: Qt.application
+        function onAboutToQuit() {
+            if (adminConnections.target) { 
+                 adminConnections.target = null;
+            }
         }
     }
 
@@ -52,7 +63,7 @@ Rectangle {
         font.family: "Roboto"
         font.weight: Font.Normal
         font.pointSize: 16
-        onClicked: controller.open_doors()
+        onClicked: controller.admin.open_doors()
     }
 
     Button {
@@ -77,7 +88,7 @@ Rectangle {
         font.family: "Roboto"
         font.weight: Font.Normal
         font.pointSize: 16
-        onClicked: controller.open_hatch()
+        onClicked: controller.admin.open_hatch()
     }
 
     Button {

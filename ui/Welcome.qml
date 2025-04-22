@@ -70,8 +70,8 @@ Rectangle {
         anchors.top: parent.top
         anchors.right: parent.right
         onClicked: {
-            controller.pushInput(1)
-            controller.checkSeq()
+            controller.admin.pushInput(1)
+            controller.admin.checkSeq()
         }
     }
 
@@ -82,8 +82,8 @@ Rectangle {
         anchors.top: parent.top
         anchors.left: parent.left
         onClicked: {
-            controller.pushInput(2)
-            controller.checkSeq()
+            controller.admin.pushInput(2)
+            controller.admin.checkSeq()
         }
     }
 
@@ -94,8 +94,8 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         onClicked: {
-            controller.pushInput(3)
-            controller.checkSeq()
+            controller.admin.pushInput(3)
+            controller.admin.checkSeq()
         }
     }
 
@@ -106,8 +106,8 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         onClicked: {
-            controller.pushInput(4)
-            controller.checkSeq()
+            controller.admin.pushInput(4)
+            controller.admin.checkSeq()
         }
     }
 
