@@ -164,79 +164,6 @@ class Countdown(QObject):
     def resumeTime(self):
         self.timer.start()
 
-class ShelfData(QObject):
-    indexChanged = Signal()
-    slotsChanged = Signal()
-
-    def __init__(self, index: int, slots: list[str]):
-        super().__init__()
-        self._index = index
-        self._slots = slots
-
-    def get_index(self):
-        return self._index
-
-    def set_index(self, value):
-        if self._index != value:
-            self._index = value
-            self.indexChanged.emit()
-
-    def get_slots(self):
-        return self._slots
-
-    def set_slots(self, value):
-        if self._slots != value:
-            self._slots = value
-            self.slotsChanged.emit()
-
-    @Property(int, constant=True)
-    def index(self):
-        return self._index
-
-    @Property(list)
-    def slots(self):
-        return self._slots
-    
-    index = Property(int, get_index, set_index, notify=indexChanged)
-    slots = Property('QVariantList', get_slots, set_slots, notify=slotsChanged)
-
-class SlotData(QObject):
-    
-    selectedChanged = Signal()
-    
-    def __init__(self, shelf_index, slot_index, value, selected=False):
-        super().__init__()
-        self._shelf_index = shelf_index
-        self._slot_index = slot_index
-        self._selected = selected
-        self._value = value
-
-    @Property(int, constant=True)
-    def shelfIndex(self):
-        return self._shelf_index
-
-    @Property(int, constant=True)
-    def slotIndex(self):
-        return self._slot_index
-
-    @Property(bool)
-    def selected(self):
-        return self._selected
-
-    def set_selected(self, val):
-        if self._selected != val:
-            self._selected = val
-            self.selectedChanged.emit()
-
-    def get_selected(self):
-        return self._selected
-
-    @Property(str, constant=True)
-    def value(self):
-        return self._value
-    
-    selected = Property(bool, get_selected, set_selected, notify=selectedChanged)
-
 class AppController(QObject):
     
     openAdmin = Signal()
@@ -255,8 +182,7 @@ class AppController(QObject):
     _nfc: NFCListenerThread
     _input: list
     _pattern: list
-    _left_shelves: list
-    _right_shelves: list
+    _shelves: dict
 
     def __init__(self):
         super().__init__()
@@ -268,19 +194,20 @@ class AppController(QObject):
         self._cartModel = CartModel(self._model._cart, self)
         self._phone_num = str
         self._email = str
+        self._shelves = dict()
         self._left_shelves = list()
         self._right_shelves = list()
         self._is_sorting = False
-        if(MQTT_LOCAL_BROKER_URL is not None):
-            self._mqttLocalClient = MqttClient(MQTT_LOCAL_BROKER_URL, 1883)
-            self._mqttLocalClient.add_topic(doors_status_topic, self.notifyDoorUnlock, qos=0)
-            self._mqttLocalClient.add_topic(hatch_status_topic, self.notifyHatchUnlock, qos=1)
-            self._mqttLocalClient.start()
-        if(MQTT_REMOTE_BROKER_URL is not None):
-            self._mqttRemoteClient = MqttClient(MQTT_REMOTE_BROKER_URL, 1883)
-            self._mqttRemoteClient.add_topic(doors_status_topic, self.notifyDoorUnlock, qos=0)
-            self._mqttRemoteClient.add_topic(hatch_status_topic, self.notifyHatchUnlock, qos=1)
-            self._mqttRemoteClient.start()
+        # if(MQTT_LOCAL_BROKER_URL is not None):
+        #     self._mqttLocalClient = MqttClient(MQTT_LOCAL_BROKER_URL, 1883)
+        #     self._mqttLocalClient.add_topic(doors_status_topic, self.notifyDoorUnlock, qos=0)
+        #     self._mqttLocalClient.add_topic(hatch_status_topic, self.notifyHatchUnlock, qos=1)
+        #     self._mqttLocalClient.start()
+        # if(MQTT_REMOTE_BROKER_URL is not None):
+        #     self._mqttRemoteClient = MqttClient(MQTT_REMOTE_BROKER_URL, 1883)
+        #     self._mqttRemoteClient.add_topic(doors_status_topic, self.notifyDoorUnlock, qos=0)
+        #     self._mqttRemoteClient.add_topic(hatch_status_topic, self.notifyHatchUnlock, qos=1)
+        #     self._mqttRemoteClient.start()
     
     @Property(QObject, constant=True)
     def nfc(self):
@@ -303,13 +230,9 @@ class AppController(QObject):
         return self._model._shelf_manager
     
     @Property('QVariantList', notify=shelvesChanged)
-    def left_shelves(self):
-        return self._left_shelves
-    
-    @Property('QVariantList', notify=shelvesChanged)
-    def right_shelves(self):
-        return self._right_shelves
-    
+    def shelves(self):
+        return self._shelves
+
     def notifyDoorUnlock(self, msg: str):
         if msg == "open":
             self.doorsUnlock.emit()
@@ -346,7 +269,7 @@ class AppController(QObject):
         for item in self._model._cart._items:
             item_dict = {key: value for key, value in item.__dict__.items() if key in ['name', 'price', 'quantity']}
             items.append(item_dict)
-        send_order_confirmation_email("sahil.h.patel@gmail.com", items, self.getSubtotal())
+        send_order_confirmation_email("me@isaacingram.dev", items, self.getSubtotal())
     
     @Slot(str)
     def send_sms(self, phone_num):
@@ -411,31 +334,33 @@ class AppController(QObject):
 
     @Slot()
     def sort_shelves(self):
-
         if self._is_sorting:
             return
 
         self._is_sorting = True
-        self._left_shelves.clear()
-        self._right_shelves.clear()
-
+        # self._left_shelves.clear()
+        # self._right_shelves.clear()
         shelves = self._model._shelf_manager.get_all_shelves()
-        print("Shelves", shelves)
+        shelf_list = []
         for i, shelf in enumerate(shelves):
             slot_data_list = []
             for j, slot in enumerate(shelf.get_all_slots()):
-                slot_data = SlotData(shelf_index=i+1, slot_index=j, value=slot)
+                slot_data = {
+                    "slot_index": j,
+                    "value": slot
+                }
                 slot_data_list.append(slot_data)
-            shelf_data = ShelfData(index=i+1, slots=slot_data_list)
-            if (i % 2 == 0): 
-                self._left_shelves.append(shelf_data)
-            else:
-                self._right_shelves.append(shelf_data)   
-        print(self._left_shelves)
-        print(self._right_shelves)
-
+            shelf_data = {
+                "index": i + 1,
+                "slots": slot_data_list
+            }
+            shelf_list.append(shelf_data)
+        self._shelves = shelf_list
+            # self._shelves[f"{shelf._mac_address}"] = shelf_data
+        
         self.shelvesChanged.emit()
         self._is_sorting = False 
+        print(self.shelves)
 
     @Slot(int)
     def pushInput(self, num):
@@ -452,8 +377,5 @@ class AppController(QObject):
 
 if __name__ == "__main__":
     app = AppController()
-    app.sort_shelves()
-    print("Left shelves ", app.left_shelves)
-    print("Right shelves ", app.right_shelves)
-
+    app.send_email()
 

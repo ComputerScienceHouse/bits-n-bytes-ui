@@ -50,43 +50,29 @@ Rectangle {
         font.bold: true
     }
 
-    RowLayout{ 
+    GridLayout {
+        id: grid
         anchors.fill: parent
-        anchors.margins: 18
-        spacing: 100  // adjust spacing between columns as needed
-        
-        ColumnLayout {
-        id: leftColumn
-        spacing: 50
-        Layout.fillWidth: true
-        Layout.fillHeight: true
+        columns: 2
+        rowSpacing: 50
+        columnSpacing: 100
 
-            Repeater {
-                model: controller.left_shelves
-                delegate: Shelf {
-                    required property int index
-                    required property var modelData
-                }
-            }
+        Repeater {
+            model: controller.shelves.length
+            delegate: Shelf {
+                required property int index
+
+                property var shelfData: controller.shelves[index]
+
+                Layout.row: Math.floor(index / 2)
+                Layout.column: index % 2
+
+                index: shelfData.index
+                modelData: shelfData
         }
-
-        ColumnLayout{
-            id: rightColumn
-            spacing: 50
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-
-            Repeater {
-                model: controller.right_shelves
-                delegate: Shelf {
-                    required property int index
-                    required property var modelData
-                }
-            }
         }
     }
     
-
     Button {
         id: backButton
         x: 958

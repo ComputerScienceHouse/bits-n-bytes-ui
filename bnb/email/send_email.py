@@ -114,17 +114,13 @@ def send_order_confirmation_email(user_email, items, total):
     message["To"] = recipient_email
 
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    image_folder = os.path.join(script_dir, 'images')
 
     # Replace image paths in header and footer HTML
     with open(os.path.join(script_dir, 'header.html'), 'r') as header_file:
         header_html = header_file.read()
-    header_html = header_html.replace('src="bnblogohoriz.png"', f'src="{os.path.join(image_folder, "bnblogohoriz.png")}"')
-    header_html = header_html.replace('src="okok.gif"', f'src="{os.path.join(image_folder, "okok.gif")}"')
 
     with open(os.path.join(script_dir, 'footer.html'), 'r') as footer_file:
         footer_html = footer_file.read()
-    footer_html = footer_html.replace('src="beefree-logo.png"', f'src="{os.path.join(image_folder, "beefree-logo.png")}"')
 
     item_rows = ""
     for item in items:
@@ -143,7 +139,7 @@ def send_order_confirmation_email(user_email, items, total):
 
     context = ssl.create_default_context()
     try:
-        with smtplib.SMTP_SSL("mail.csh.rit.edu", 465, context=context) as server:
+        with smtplib.SMTP_SSL("thoth.csh.rit.edu", 465, context=context) as server:
             server.login(sender, app_password)
             server.sendmail(sender_email, recipient_email, message.as_string())
             print("HTML receipt sent successfully!")
