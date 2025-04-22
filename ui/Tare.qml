@@ -58,17 +58,11 @@ Rectangle {
         columnSpacing: 100
 
         Repeater {
-            model: controller.shelves.length
+            model: controller.shelves
             delegate: Shelf {
-                required property int index
-
-                property var shelfData: controller.shelves[index]
-
+                shelfData: modelData
                 Layout.row: Math.floor(index / 2)
                 Layout.column: index % 2
-
-                index: shelfData.index
-                modelData: shelfData
         }
         }
     }
