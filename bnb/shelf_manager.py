@@ -21,14 +21,19 @@ import pickle
 from filelock import FileLock
 from os import environ
 from bnb.mqtt import MqttClient
+import pandas as pd
 
 SHELF_DATA_DIR = Path(Path.cwd() / 'tmp')
 SHELF_DISCONNECT_TIMEOUT_MS = 5000
 DEFAULT_NUM_SLOTS_PER_SHELF = 4
 LOCAL_MQTT_BROKER_URL = os.environ.get('MQTT_LOCAL_BROKER_URL', None)
 REMOTE_MQTT_BROKER_URL = os.environ.get('MQTT_REMOTE_BROKER_URL', None)
-USE_MOCK_DATA = True
-# TODO figure out how to import this from model without getting an import error
+USE_MOCK_DATA = False
+MAX_ITEM_REMOVALS_TO_CHECK = 5
+THRESHOLD_WEIGHT_PROBABILITY = 0.01
+
+WEIGHT_UNIT = 'g'
+
 class Item:
 
     def __init__(
@@ -60,7 +65,8 @@ class Item:
     def __hash__(self):
         return hash(self.item_id)
 
-MOCK_ITEM = Item(0, "Sour Patch Kids", 1, 3.5, 5, 266, 15, '', 'sour_patch')
+MOCK_ITEM = Item(0, "Sour Patch Kids", 1, 3.5, 5, 226, 40, '', 'sour_patch')
+
 
 class Slot:
 
@@ -129,33 +135,50 @@ class Slot:
         :return: Tuple: Item, Float; The item that is most likely and the probability of
         it being that item.
         """
-        # TODO support multiple items being removed at once somehow
+        direction = 1
+        if weight_delta < 0:
+            direction = -1
 
-        # Store the most probably item
-        max_probability = 0
-        most_probable_item: Item | None = None
+        # Store probabilities of the various quantities of items being added/removed from the slot
+        probabilities = dict()
         # Iterate through all possible items
         for item in self._items:
-            # Calculate probability using probability density function on bell curve
-            probability = norm.pdf(
-                weight_delta,
-                loc=item.avg_weight,
-                scale=item.std_weight
-            )
-            # Store most likely item so far
-            if probability > max_probability:
-                max_probability = probability
-                most_probable_item = item
-        return most_probable_item, max_probability
+            # Store probabilities
+            probabilities[item.name] = []
+            # Iterate through all possible quantities
+            for potential_quantity in range(1, MAX_ITEM_REMOVALS_TO_CHECK + 1):
+                # Calculate per-item weight at this quantity
+                quantity_weight_delta = abs(weight_delta / potential_quantity)
+                # Calculate probability using probability density function on bell curve
+                probability = norm.pdf(
+                    quantity_weight_delta,
+                    loc=item.avg_weight,
+                    scale=item.std_weight
+                )
+                # Store this probability
+                probabilities[item.name].append(probability)
+        # Convert probabilities to pandas dataframe
+        df = pd.DataFrame(probabilities, index=range(1, MAX_ITEM_REMOVALS_TO_CHECK + 1)).T
+        # Convert to stack to get top n probabilities
+        probability_series = df.stack()
+        top_n = 1
+        top_n_probabilities = probability_series.nlargest(top_n)
+        #print("Top ranked probabilities:")
+        for rank, ((item, quantity), probability) in enumerate(top_n_probabilities.items(), start=1):
+            if probability > THRESHOLD_WEIGHT_PROBABILITY:
+                print(f'{item} -> {direction * quantity} | p={probability}')
 
 
-    def update_weight(self, new_weight: float) -> None:
+    def update_weight(self, raw_value: float) -> None:
         """
         Update the current weight reading of this shelf.
-        :param new_weight:
+        :param raw_value:
         :return:
         """
-        self._current_weight = new_weight * self._conversion_factor
+        new_weight = raw_value * self._conversion_factor
+        weight_delta = new_weight - self._current_weight
+        self.predict_most_likely_item(weight_delta)
+        self._current_weight = new_weight
 
 
     def tare(self, calibration_weight_g: float) -> bool:
@@ -474,19 +497,21 @@ class ShelfManager:
 
             # Shelf watchdog. Remove shelves that haven't sent any data in a certain amount of time.
             macs_to_remove = list()
-            for shelf_mac in self._active_shelves:
-                shelf_obj = self._active_shelves[shelf_mac]
-                if shelf_obj.get_last_ping_time() < current_time_ms - SHELF_DISCONNECT_TIMEOUT_MS:
-                    # Shelf has timed out, needs to be removed
-                    print(f"Shelf Manager: Shelf '{shelf_mac}' disconnected (timed out).")
-                    # Make sure most recent version of this shelf is saved
-                    self._save_shelf_data(shelf_obj)
-                    # Add this shelf to the list of shelves to remove
-                    macs_to_remove.append(shelf_mac)
+            with self._active_shelves_lock:
+                for shelf_mac in self._active_shelves:
+                    shelf_obj = self._active_shelves[shelf_mac]
+                    if shelf_obj.get_last_ping_time() < current_time_ms - SHELF_DISCONNECT_TIMEOUT_MS:
+                        # Shelf has timed out, needs to be removed
+                        print(f"Shelf Manager: Shelf '{shelf_mac}' disconnected (timed out).")
+                        # Make sure most recent version of this shelf is saved
+                        self._save_shelf_data(shelf_obj)
+                        # Add this shelf to the list of shelves to remove
+                        macs_to_remove.append(shelf_mac)
 
-            for mac_address in macs_to_remove:
-                del self._active_shelves[mac_address]
-            macs_to_remove.clear()
+            with self._active_shelves_lock:
+                for mac_address in macs_to_remove:
+                    del self._active_shelves[mac_address]
+                macs_to_remove.clear()
 
 
             # TODO post what shelves are available on an endpoint somewhere
