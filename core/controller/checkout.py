@@ -70,7 +70,7 @@ class CheckoutController(QObject):
             items.append(f"{item.quantity} {product}   ${item.price:.2f}")
         
         items_string = "\n".join(items)
-        msg = f"""Thank you for purchasing from\nBits 'n Bytes.\n\nOrder #1\n{items_string}\nSubtotal: ${self._model._cart.get_subtotal():.2f}\nTOTAL: ${self._model._cart.get_subtotal():.2f}
+        msg = f"""Thank you for purchasing from\nBits 'n Bytes.\n\nOrder #0\n{items_string}\nSubtotal: ${self._model._cart.get_subtotal():.2f}\nImagineRIT Credit: -${self._model._cart.get_subtotal():.2f}\nTOTAL: $0.00
         """
 
         client.messages.create(
