@@ -20,11 +20,15 @@ import json
 import pickle
 from filelock import FileLock
 from os import environ
+<<<<<<< HEAD:bnb/shelf_manager.py
 from bnb.mqtt import MqttClient
 import pandas as pd
+=======
+from core.services.mqtt import MqttClient
+>>>>>>> main:core/services/shelf_manager.py
 
 SHELF_DATA_DIR = Path(Path.cwd() / 'tmp')
-SHELF_DISCONNECT_TIMEOUT_MS = 5000
+SHELF_DISCONNECT_TIMEOUT_MS = 20000
 DEFAULT_NUM_SLOTS_PER_SHELF = 4
 LOCAL_MQTT_BROKER_URL = os.environ.get('MQTT_LOCAL_BROKER_URL', None)
 REMOTE_MQTT_BROKER_URL = os.environ.get('MQTT_REMOTE_BROKER_URL', None)

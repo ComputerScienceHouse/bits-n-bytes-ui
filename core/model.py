@@ -7,7 +7,7 @@
 ###############################################################################
 import copy
 from typing import List, Set, Dict
-from bnb.shelf_manager import ShelfManager
+from core.services.shelf_manager import ShelfManager
 
 WEIGHT_UNIT = 'g'
 
@@ -170,7 +170,7 @@ class Model:
         self._cart.add_item(Item(7, "Swedish Fish Original", 0, 19.99, 100, 141, 10, "placeholder.png", 'sour_patch'))
         self._cart.add_item(Item(8, "Welch's Fruit Snacks", 0, 39.99, 40, 142, 14, "placeholder.png", 'sour_patch'))
 
-        self._current_user = User('', 'Sahil Patel', '', 999.99, '', 'sahilpatel@gmail.com', '+11111111111')
+        self._current_user = User(1, 'Sahil Patel', '', 999.99, 'IMAGINE25', 'sahilpatel@gmail.com', '+11111111111')
 
         self._shelf_manager = ShelfManager()
 

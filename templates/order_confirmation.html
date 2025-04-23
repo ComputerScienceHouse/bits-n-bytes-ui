@@ -1,0 +1,11 @@
+{% include '_header.html' %}
+
+{# Loop through items and include the item row template for each #}
+{% for item in items %}
+  {% include '_item_row.html' %}
+{% endfor %}
+
+{# Include the total section #}
+{% include '_total_row.html' %}
+
+{% include '_footer.html' %}

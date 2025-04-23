@@ -14,11 +14,11 @@ Rectangle {
     property color bgColor: "#454545"
 
     Component.onCompleted: {
-        controller.sort_shelves()
+        controller.tare.sort_shelves()
     }
 
     Connections {
-        target: controller
+        target: controller.tare
         function onShelvesChanged(){
             if(!debounceTimer.running){
                 debounceTimer.start();
@@ -32,7 +32,7 @@ Rectangle {
         running: false
         repeat: false
         onTriggered: {
-            controller.sort_shelves()
+            controller.tare.sort_shelves()
         }
     }
 
@@ -50,43 +50,23 @@ Rectangle {
         font.bold: true
     }
 
-    RowLayout{ 
+    GridLayout {
+        id: grid
         anchors.fill: parent
-        anchors.margins: 18
-        spacing: 100  // adjust spacing between columns as needed
-        
-        ColumnLayout {
-        id: leftColumn
-        spacing: 50
-        Layout.fillWidth: true
-        Layout.fillHeight: true
+        columns: 2
+        rowSpacing: 50
+        columnSpacing: 100
 
-            Repeater {
-                model: controller.left_shelves
-                delegate: Shelf {
-                    required property int index
-                    required property var modelData
-                }
-            }
+        Repeater {
+            model: controller.tare.shelves
+            delegate: Shelf {
+                shelfData: modelData
+                Layout.row: Math.floor(index / 2)
+                Layout.column: index % 2
         }
-
-        ColumnLayout{
-            id: rightColumn
-            spacing: 50
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-
-            Repeater {
-                model: controller.right_shelves
-                delegate: Shelf {
-                    required property int index
-                    required property var modelData
-                }
-            }
         }
     }
     
-
     Button {
         id: backButton
         x: 958

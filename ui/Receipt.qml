@@ -19,7 +19,7 @@ Rectangle {
         id: recieptNotification
     }
     Connections {
-        target: controller
+        target: controller.checkout
         function onNotifyPhoneInput() {
             recieptNotification.show("Text receipt sent!")
         }
@@ -27,7 +27,18 @@ Rectangle {
             recieptNotification.show("Email receipt sent!")
         }
     }
-
+    
+    Countdown {
+        id: recieptCountdown
+        onFinished: {
+            if (stack) { // Ensure 'stack' is accessible here (e.g., id of StackView)
+                stack.replace("Welcome.qml")
+            } else {
+                console.warn("StackView with id 'stack' not found for navigation.")
+            }
+        }
+    }
+ 
     Text {
         id: _text
         x: 15
@@ -50,7 +61,7 @@ Rectangle {
         width: 172
         height: 49
         color: "#ffffff"
-        text: `Timeout: ${controller.countdown.remainingTime}`
+        text: `Timeout: ${recieptCountdown.remainingTime}`
         font.pixelSize: 24
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
@@ -150,7 +161,7 @@ Rectangle {
             font.family: "Roboto"
 
             textFormat: Text.RichText
-            text: `<b>Subtotal:</b> $${controller.getSubtotal().toFixed(2)}`
+            text: `<b>Subtotal:</b> $${controller.cart.getSubtotal().toFixed(2)}`
         }
 
         Text {
@@ -184,7 +195,7 @@ Rectangle {
             font.family: "Roboto"
 
             textFormat: Text.RichText
-            text: `<b>Subtotal:</b> $${controller.getSubtotal().toFixed(2)}`
+            text: `<b>Subtotal:</b> $${controller.cart.getSubtotal().toFixed(2)}`
         }
     }
 
@@ -230,12 +241,7 @@ Rectangle {
     }
 
     Component.onCompleted: {
-        controller.countdown.startCountdown()
-        controller.countdown.finished.connect(() => {
-            if (stack) { 
-                stack.replace("Welcome.qml")
-            }
-        })
+        recieptCountdown.start()
         emailButton.clicked.connect(() => {
             emailPopup.open()
         })
@@ -277,9 +283,12 @@ Rectangle {
         }
         onOpened: {
             emailInput.forceActiveFocus()
-            controller.countdown.stopTime()
+            recieptCountdown.stop()
         }
-        onClosed: controller.countdown.resumeTime()
+        onClosed: {
+            recieptCountdown.resume()
+            controller.checkout.send_email()
+        }       
         ColumnLayout {
             id: emailContainer
             anchors.centerIn: parent
@@ -305,17 +314,13 @@ Rectangle {
                 Material.accent: "#F76902"
                 inputMethodHints: Qt.ImhEmailCharactersOnly
                 focus: true
-                // onAccepted: {
-                //     controller.getEmail(text)
-                //     emailPopup.close()
-                // }
             }
 
             Button {
                 text: qsTr("Submit")
                 Layout.alignment: Qt.AlignCenter
                 onClicked: {
-                    controller.getEmail(emailInput.text)
+                    controller.checkout.setEmail(emailInput.text)
                     emailPopup.close()
                 }
                 font.pointSize: 18
@@ -344,9 +349,12 @@ Rectangle {
         }
         onOpened: {
             textInput.forceActiveFocus()
-            controller.countdown.stopTime()
+            recieptCountdown.stop()
         }
-        onClosed: controller.countdown.resumeTime()       
+        onClosed: {
+            recieptCountdown.resume()
+            controller.checkout.send_sms()       
+        }
         ColumnLayout {
             id: textContainer
             anchors.centerIn: parent
@@ -370,17 +378,13 @@ Rectangle {
                 font.pointSize: 18
                 Material.accent: "#F76902"
                 inputMethodHints: Qt.ImhDigitsOnly
-                // onAccepted: {
-                //     controller.getPhoneNum(text)
-                //     textPopup.close()
-                // }
             }
 
             Button {
                 text: qsTr("Submit")
                 Layout.alignment: Qt.AlignCenter
                 onClicked: {
-                    controller.send_sms(textInput.text)
+                    controller.checkout.setPhoneNum(textInput.text)
                     textPopup.close()
                 }
                 font.pointSize: 18

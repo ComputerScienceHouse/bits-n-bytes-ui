@@ -11,6 +11,28 @@ Window {
     visible: true
     flags: Qt.Window | Qt.FramelessWindowHint
 
+    Component.onCompleted: {
+            controller.stack = stack
+            controller.start_shelf_manager()      
+    }
+
+    // Remove adminPushConnection target so app exits w/o errors
+    Connections {
+        target: Qt.application
+        function onAboutToQuit() {
+            if (adminPushConnection.target) { 
+                 adminPushConnection.target = null;
+            }
+        }
+    }
+
+    Connections {
+        id: adminPushConnection
+        target: controller.admin
+        function onOpenAdmin() {
+            stack.push("Admin.qml")
+        }
+    }
 
     StackView {
         id: stack
@@ -84,19 +106,6 @@ Window {
             //     to: 0.0
             //     duration: 300
             // }
-        }
-    }
-
-    Component.onCompleted: {
-            controller.stack = stack
-            controller.start_shelf_manager()      
-    }
-
-    Connections {
-        target: controller
-        
-        function onOpenAdmin() {
-            stack.push("Admin.qml")
         }
     }
 }
