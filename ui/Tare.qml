@@ -13,27 +13,22 @@ Rectangle {
     color: "#292929"
     property color bgColor: "#454545"
 
-    Component.onCompleted: {
-        controller.tare.sort_shelves()
-    }
-
     Connections {
         target: controller.tare
-        function onShelvesChanged(){
-            if(!debounceTimer.running){
-                debounceTimer.start();
-            }
+        function onShelvesChanged() {
+            controller.tare.update_shelves
         }
     }
 
-    Timer {
-        id: debounceTimer
-        interval: 300
-        running: false
-        repeat: false
-        onTriggered: {
-            controller.tare.sort_shelves()
-        }
+    Component.onCompleted: {
+        controller.tare.get_new_shelves()
+        controller.tare.start_real_time_updates()
+        console.log("Real-time updates enabled")
+    }
+
+    Component.onDestruction: {
+        controller.tare.stop_real_time_updates()
+        console.log("Real-time updates disabled")
     }
 
     Text {
@@ -50,21 +45,52 @@ Rectangle {
         font.bold: true
     }
 
+    Rectangle {
+        id: contentArea
+        anchors {
+            top: _text.bottom
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+            margins: 30  // Uniform margin around all edges
+            topMargin: 20  // Smaller top margin
+        }
+        color: "transparent"
     GridLayout {
         id: grid
         anchors.fill: parent
         columns: 2
-        rowSpacing: 50
-        columnSpacing: 100
+        rowSpacing: 15
+        columnSpacing: 15
+
+        Text {
+            visible: controller.tare.shelves.length === 0
+            text: "No shelves connected"
+            color: Material.foreground
+            font.pointSize: 30
+            font.family: "Roboto"
+            font.weight: Font.Normal
+            Layout.row: 0
+            Layout.column: 0
+            Layout.columnSpan: 2  // Span both columns
+            Layout.rowSpan: 1
+            Layout.alignment: Qt.AlignCenter
+        }
 
         Repeater {
-            model: controller.tare.shelves
+            model: controller.tare.shelves.length > 0 ? controller.tare.shelves : null
             delegate: Shelf {
-                shelfData: modelData
-                Layout.row: Math.floor(index / 2)
+                // Bind model properties explicitly
+                // Pass the properties to the Shelf component
+                required property var modelData
+                Layout.row: index
                 Layout.column: index % 2
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.maximumWidth: grid.width / 2 - grid.columnSpacing / 2
+            }
         }
-        }
+    }
     }
     
     Button {

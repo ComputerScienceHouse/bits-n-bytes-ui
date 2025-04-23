@@ -43,9 +43,6 @@ class Item:
         return hash(self.item_id)
     
     
-
-
-
 class User:
     def __init__(self, uid, name, token, balance, payment_type, email, phone):
         self.uid = uid
@@ -56,6 +53,14 @@ class User:
         self.email = email
         self.phone = phone
 
+class NFC:
+    def __init__(self, id, assigned_user, type):
+        self.uid = id
+        self.assigned_user = assigned_user
+        self.type = type
+    
+    def __str__(self):
+        return (f'NFC[ID: {self.id}, UserID: {self.assigned_user}, Type: {self.type}]')
 
 
 class Cart:

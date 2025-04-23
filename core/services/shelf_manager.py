@@ -22,7 +22,7 @@ from filelock import FileLock
 from os import environ
 from core.services.mqtt import MqttClient
 
-SHELF_DATA_DIR = Path(Path.cwd() / 'tmp')
+SHELF_DATA_DIR = Path(Path.cwd().parent.parent / 'tmp')
 SHELF_DISCONNECT_TIMEOUT_MS = 20000
 DEFAULT_NUM_SLOTS_PER_SHELF = 4
 LOCAL_MQTT_BROKER_URL = os.environ.get('MQTT_LOCAL_BROKER_URL', None)

@@ -9,7 +9,7 @@
 ###############################################################################
 import os
 import requests
-from models import Item, User, NFC
+from model import Item, User, NFC
 from typing import List
 import config
 
@@ -35,7 +35,7 @@ MOCK_ITEMS = {
 
 MOCK_USERS = {
     # 1: User(1, "Tag 1", "258427912599", 20.00, "imagine", "", ""),
-    1: User(1, "User1", "", 10.00, "test@ema.il", "1234567")
+    1: User(1, "User1", "IMAGINE25", 10.00, "IMAGINE25", "test@ema.il", "1234567")
 
 }
 
