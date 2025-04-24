@@ -47,7 +47,7 @@ Rectangle {
         width: 168
         height: 49
         color: "#ffffff"
-        text: qsTr("reciept")
+        text: qsTr("Receipt")
         font.pixelSize: 40
         horizontalAlignment: Text.AlignHCenter
         font.weight: Font.DemiBold
@@ -84,7 +84,7 @@ Rectangle {
             width: 269
             height: 65
             color: "#ffffff"
-            text: qsTr("Would you like your reciept?")
+            text: qsTr("Would you like your receipt?")
             font.pixelSize: 24
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -139,7 +139,7 @@ Rectangle {
                     Layout.preferredWidth: 235
                     Layout.preferredHeight: 75
                     visible: true
-                    text: qsTr("No reciept")
+                    text: qsTr("No receipt")
                     font.family: "Roboto"
                     font.weight: Font.Normal
                     font.pointSize: 20
@@ -273,6 +273,7 @@ Rectangle {
         }
         onOpened: {
             recieptCountdown.stop()
+            forceActiveFocus()
         }
         onClosed: {
             recieptCountdown.resume()
@@ -308,6 +309,7 @@ Rectangle {
             }
 
             Button {
+                z: 30
                 text: qsTr("Submit")
                 Layout.alignment: Qt.AlignCenter
                 onClicked: {
@@ -350,6 +352,7 @@ Rectangle {
         }
         onOpened: {
             recieptCountdown.stop()
+            forceActiveFocus()
         }
         onClosed: {
             recieptCountdown.resume()
@@ -384,6 +387,7 @@ Rectangle {
             }
 
             Button {
+                z: 30
                 text: qsTr("Submit")
                 Layout.alignment: Qt.AlignCenter
                 onClicked: {
@@ -411,7 +415,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width
         height: 300
-        z: 30 
+        z: 30
         y: visible ? parent.height - height : parent.height
         visible: emailInput.activeFocus || textInput.activeFocus
         

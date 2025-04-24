@@ -49,15 +49,9 @@ Window {
                 duration: 300
                 easing.type: Easing.OutQuad
             }
-            // PropertyAnimation {
-            //     property: "opacity"
-            //     from: 0.0
-            //     to: 1.0
-            //     duration: 300
-            // }
         }
 
-        // Define animation for view being covered during push (current view exits downward)
+        // // Define animation for view being covered during push (current view exits downward)
         pushExit: Transition {
             PropertyAnimation {
                 property: "y"
@@ -66,12 +60,6 @@ Window {
                 duration: 300
                 easing.type: Easing.OutQuad
             }
-            // PropertyAnimation {
-            //     property: "opacity"
-            //     from: 1.0
-            //     to: 0.0
-            //     duration: 300
-            // }
         }
 
         // Define animation for popping (returning) to previous view (swipe up)
@@ -83,15 +71,9 @@ Window {
                 duration: 300
                 easing.type: Easing.OutQuad
             }
-            // PropertyAnimation {
-            //     property: "opacity"
-            //     from: 0.0
-            //     to: 1.0
-            //     duration: 300
-            // }
         }
 
-        // Define animation for view being removed during pop (current view exits upward)
+        // // Define animation for view being removed during pop (current view exits upward)
         popExit: Transition {
             PropertyAnimation {
                 property: "y"
@@ -100,12 +82,6 @@ Window {
                 duration: 300
                 easing.type: Easing.OutQuad
             }
-            // PropertyAnimation {
-            //     property: "opacity"
-            //     from: 1.0
-            //     to: 0.0
-            //     duration: 300
-            // }
         }
     }
 }
