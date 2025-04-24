@@ -15,8 +15,6 @@ MQTT_LOCAL_BROKER_URL = os.getenv('MQTT_LOCAL_BROKER_URL', None)
 MQTT_REMOTE_BROKER_URL = os.getenv('', None)
 
 class DeviceController(QObject):
-    openAdmin = Signal()
-    notifyAdminUnlock = Signal()
     hatchUnlock = Signal()
     doorsUnlock = Signal()
 

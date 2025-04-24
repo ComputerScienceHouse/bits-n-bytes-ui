@@ -15,7 +15,6 @@ from . import CartController, CheckoutController, AdminController, TareControlle
 from core import database
 
 class Controller(QObject):
-    _nfc_id: str
     _model: Model
     _cart: Cart
     _nfc: NFCListenerThread
@@ -52,15 +51,12 @@ class Controller(QObject):
     def cart(self):
         return self._cart_controller
 
+    @Property(QObject, constant=True)
     def device(self):
         return self._device_controller
-
-    def setUser(self):
-        self._model._current_user  = get_user(self._nfc_id)
         
     @Slot(result=str)
     def getName(self):
-        # return self._user.name
         return self._model._current_user.name
     
     @Slot()
@@ -69,10 +65,6 @@ class Controller(QObject):
             self._nfc.run()
         else:
             self.stopNFC()
-    
-    @Slot()
-    def stopNFC(self):
-        self._nfc.stop()
 
     @Slot()
     def start_shelf_manager(self):
@@ -106,12 +98,3 @@ class Controller(QObject):
             self._nfc_signal.emit(msg)
             self._nfc.stop()
             self._nfc = NFCListenerThread()
-        
-        
-
-        
-
-if __name__ == "__main__":
-    app = Controller()
-    app.send_email()
-
