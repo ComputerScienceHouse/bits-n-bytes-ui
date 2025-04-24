@@ -22,6 +22,8 @@ from filelock import FileLock
 from os import environ
 import pandas as pd
 from core.services.mqtt import MqttClient
+from ..data_classes import *
+import core.database as db
 
 SHELF_DATA_DIR = Path(Path.cwd().parent.parent / 'tmp')
 SHELF_DISCONNECT_TIMEOUT_MS = 20000
@@ -31,41 +33,7 @@ REMOTE_MQTT_BROKER_URL = os.environ.get('MQTT_REMOTE_BROKER_URL', None)
 USE_MOCK_DATA = False
 MAX_ITEM_REMOVALS_TO_CHECK = 5
 THRESHOLD_WEIGHT_PROBABILITY = 0.01
-
-WEIGHT_UNIT = 'g'
-
-class Item:
-
-    def __init__(
-            self, item_id, name, upc, price, quantity, avg_weight, std_weight,
-            thumbnail_url, vision_class
-    ):
-        self.item_id = item_id
-        self.name = name
-        self.upc = upc
-        self.price = price
-        self.quantity = quantity
-        self.avg_weight = avg_weight
-        self.std_weight = std_weight
-        self.thumbnail_url = thumbnail_url
-        self.vision_class = vision_class
-
-    def __str__(self):
-        return (f'Item[{self.item_id},{self.name},UPC:{self.upc},${self.price},'
-                f'{self.units}units,{self.avg_weight}{WEIGHT_UNIT},'
-                f'{self.std_weight}{WEIGHT_UNIT},{self.thumbnail_url},'
-                f'{self.vision_class}]')
-
-    def __eq__(self, other):
-        if isinstance(other, Item):
-            return self.item_id == other.item_id
-        else:
-            return False
-
-    def __hash__(self):
-        return hash(self.item_id)
-
-MOCK_ITEM = Item(0, "Sour Patch Kids", 1, 3.5, 5, 226, 40, '', 'sour_patch')
+MAX_WEIGHT_PREDICTIONS = 3
 
 
 class Slot:
