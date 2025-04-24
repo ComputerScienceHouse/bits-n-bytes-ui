@@ -33,9 +33,67 @@ MOCK_ITEMS = {
     14: Item(14, "Little Bites Blueberry", "123456789012", 2.10, 100, 47, 10, "images/item_placeholder.png", "pouch"),
 }
 
+# [
+#     {
+#         "id": 1,
+#         "name": "Jolt Soda",
+#         "price": 1.5,
+#         "quantity": 1,
+#         "thumb_img": "http://placehold.jp/150x150.png",
+#         "upc": "1000000000",
+#         "vision_class": "",
+#         "weight_avg": 1.0,
+#         "weight_std": 1.0
+#     },
+#     {
+#         "id": 2,
+#         "name": "Sour Patch Kids",
+#         "price": 2.5,
+#         "quantity": 1,
+#         "thumb_img": "http://placehold.jp/150x150.png",
+#         "upc": "070462035964",
+#         "vision_class": "",
+#         "weight_avg": 226.0,
+#         "weight_std": 10.0
+#     },
+#     {
+#         "id": 3,
+#         "name": "Brownie Brittle",
+#         "price": 2.5,
+#         "quantity": 1,
+#         "thumb_img": "http://placehold.jp/150x150.png",
+#         "upc": "711747011128",
+#         "vision_class": "",
+#         "weight_avg": 78.0,
+#         "weight_std": 10.0
+#     },
+#     {
+#         "id": 4,
+#         "name": "Little Bites Blueberry",
+#         "price": 2.1,
+#         "quantity": 1,
+#         "thumb_img": "http://placehold.jp/150x150.png",
+#         "upc": "072030013398",
+#         "vision_class": "",
+#         "weight_avg": 47.0,
+#         "weight_std": 10.0
+#     },
+#     {
+#         "id": 5,
+#         "name": "Pepsi Wild Cherry 12 Pack",
+#         "price": 8.8,
+#         "quantity": 1,
+#         "thumb_img": "http://placehold.jp/150x150.png",
+#         "upc": "012000809996",
+#         "vision_class": "",
+#         "weight_avg": 4082.33,
+#         "weight_std": 20.0
+#     }
+# ]
+
 MOCK_USERS = {
     # 1: User(1, "Tag 1", "258427912599", 20.00, "imagine", "", ""),
-    1: User(1, "User1", "IMAGINE25", 10.00, "IMAGINE25", "test@ema.il", "1234567")
+    1: User(1, "User1", "", 10.00, "test@ema.il", "1234567")
 
 }
 
@@ -173,7 +231,7 @@ def get_user(user_id=None, nfc_id=None) -> User | None:
         # Check if nfc id should be used
         if nfc_id is not None:
             # Get user from nfc id
-            print(f"GET /nfc/{nfc_id}")
+            print(f"MOCK GET /nfc/{nfc_id}")
             for nfc in MOCK_NFC:
                 if MOCK_USERS.get(nfc) != None:
                     return MOCK_USERS[nfc]
@@ -181,7 +239,7 @@ def get_user(user_id=None, nfc_id=None) -> User | None:
         # Check if user id should be used
         elif user_id is not None:
             # Get user from ID
-            print(f"GET /users/{user_id}")
+            print(f"MOCK GET /users/{user_id}")
             if user_id in MOCK_USERS:
                 return MOCK_USERS[user_id]
             else:

@@ -13,6 +13,7 @@ import core.database as db
 
 WEIGHT_UNIT = 'g'
 
+
 class Model:
 
     _cart: Cart
@@ -28,7 +29,6 @@ class Model:
         self._current_user = User(-1, 'Bilson McDade', '', 999.99, 'IMAGINE25', '', '')
 
         self._shelf_manager = ShelfManager(add_cart_item_cb=self.add_item_to_cart_cb, remove_cart_item_cb=self.remove_item_from_cart_cb)
-
 
     def get_all_items_in_cart(self) -> List[Item]:
         """
