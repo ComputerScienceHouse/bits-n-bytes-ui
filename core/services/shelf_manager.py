@@ -566,9 +566,13 @@ class ShelfManager:
 
         while True:
             current_time_ms = time.time() * 1000
+
             # Break out of loop if flag was set
             with self._signal_end_lock:
                 if self._signal_end:
+                    with self._active_shelves_lock:
+                        for shelf_mac in self._active_shelves:
+                            self._save_shelf_data(self._active_shelves[shelf_mac])
                     break
 
             # Shelf watchdog. Remove shelves that haven't sent any data in a certain amount of time.
