@@ -13,28 +13,24 @@ import time
 from json import JSONDecodeError
 from queue import Queue
 from threading import Lock
-from typing import List, Dict, Callable
+from typing import List, Dict, Any, Callable
 from scipy.stats import norm
 from pathlib import Path
 import json
-import pickle
 from filelock import FileLock
-from os import environ
 import pandas as pd
 from core.services.mqtt import MqttClient
-from ..data_classes import *
+from core.data_classes import *
 import core.database as db
 
-SHELF_DATA_DIR = Path(Path.cwd().parent.parent / 'tmp')
-SHELF_DISCONNECT_TIMEOUT_MS = 20000
+SHELF_DATA_DIR = Path(Path.cwd() / 'tmp')
+SHELF_DISCONNECT_TIMEOUT_MS = 5000
 DEFAULT_NUM_SLOTS_PER_SHELF = 4
 LOCAL_MQTT_BROKER_URL = os.environ.get('MQTT_LOCAL_BROKER_URL', None)
 REMOTE_MQTT_BROKER_URL = os.environ.get('MQTT_REMOTE_BROKER_URL', None)
-USE_MOCK_DATA = False
+USE_MOCK_DATA = os.environ.get('USE_MOCK_DATA', False) == 'True'
 MAX_ITEM_REMOVALS_TO_CHECK = 5
 THRESHOLD_WEIGHT_PROBABILITY = 0.01
-MAX_WEIGHT_PREDICTIONS = 3
-
 
 class Slot:
 
@@ -95,18 +91,17 @@ class Slot:
             pass
 
 
-    def predict_most_likely_items(self, weight_delta: float) -> List[Item]:
+    def predict_most_likely_item(self, weight_delta: float) -> (Item, float):
         """
         Given a change in weight, predict the most likely item that could have
         been added/removed from this scale.
         :param weight_delta: Float weight change in grams
-        :return: List[Item]: A list of the items that are predicted to be added/removed from the slot based
-        on this weight change. Negative quantities indicate removal from the slot and positive quantities
-        indicate addition to the slot.
+        :return: Tuple: Item, Float; The item that is most likely and the probability of
+        it being that item.
         """
-        direction = 0
+        direction = 1
         if weight_delta < 0:
-            direction = 1
+            direction = -1
 
         # Store probabilities of the various quantities of items being added/removed from the slot
         probabilities = dict()
@@ -125,68 +120,29 @@ class Slot:
                     scale=item.std_weight
                 )
                 # Store this probability
-                probabilities[item.item_id].append(probability)
-
+                probabilities[item.name].append(probability)
         # Convert probabilities to pandas dataframe
         df = pd.DataFrame(probabilities, index=range(1, MAX_ITEM_REMOVALS_TO_CHECK + 1)).T
         # Convert to stack to get top n probabilities
         probability_series = df.stack()
-        top_n_probabilities = probability_series.nlargest(MAX_WEIGHT_PREDICTIONS)
-
-        items: List[Item] = list()
-        item_ids_and_quantities = dict()
-
-        # Iterate through the top probabilities in decreasing order
-        for rank, ((item_id, quantity), probability) in enumerate(top_n_probabilities.items(), start=1):
-            if probability < THRESHOLD_WEIGHT_PROBABILITY:
-                # If this probability is less than the threshold, all others will be too so return early
-                break
-            else:
-                # Probability is above the threshold, add this item/quantity combination as something that
-                # probably happened.
-                if item_id in item_ids_and_quantities:
-                    # Item id already exists, increase quantity
-                    item_ids_and_quantities[item_id] += (direction * quantity)
-                else:
-                    # Item id does not already exist, add this quantity
-                    item_ids_and_quantities[item_id] = (direction * quantity)
-
-        # Create item objects that represent each of the changes
-        for item_id in item_ids_and_quantities:
-            # Get the quantity for this item
-            quantity = item_ids_and_quantities[item_id]
-            # Get the existing item object
-            existing_item_obj = db.get_item(item_id)
-            # Create a new item object with this quantity, and add it to the list of items to be
-            # returned
-            items.append(
-                Item(
-                    item_id,
-                    existing_item_obj.name,
-                    existing_item_obj.upc,
-                    existing_item_obj.price,
-                    quantity,
-                    existing_item_obj.avg_weight,
-                    existing_item_obj.std_weight,
-                    existing_item_obj.thumbnail_url,
-                    existing_item_obj.vision_class
-                )
-            )
-        # Return resulting items, where the quantity matches the number predicted to be added/removed from the scale.
-        return items
+        top_n = 1
+        top_n_probabilities = probability_series.nlargest(top_n)
+        #print("Top ranked probabilities:")
+        for rank, ((item, quantity), probability) in enumerate(top_n_probabilities.items(), start=1):
+            if probability > THRESHOLD_WEIGHT_PROBABILITY:
+                print(f'{item} -> {direction * quantity} | p={probability}')
 
 
-    def update_weight(self, raw_value: float) -> List[Item]:
+    def update_weight(self, raw_value: float) -> None:
         """
         Update the current weight reading of this shelf.
-        :param raw_value: Raw weight value (will be scaled automatically using hte most recent tare weight data).
+        :param raw_value:
         :return:
         """
         new_weight = raw_value * self._conversion_factor
         weight_delta = new_weight - self._current_weight
-        item_changes = self.predict_most_likely_items(weight_delta)
+        self.predict_most_likely_item(weight_delta)
         self._current_weight = new_weight
-        return item_changes
 
 
     def tare(self, calibration_weight_g: float) -> bool:
@@ -207,23 +163,42 @@ class Slot:
             return True
 
 
+    def get_json(self) -> Dict:
+        """
+        Get the JSON representation of this slot.
+        :return: Any
+        """
+        # Store a list of all items
+        items_json = list()
+        for item in self._items:
+            items_json.append({
+                'id': item.item_id,
+                'name': item.name,
+                'quantity': item.quantity,
+            })
+        # Create slot data
+        json_data = {
+            'conversionFactor': self._conversion_factor,
+            'items': items_json
+        }
+        return json_data
+
+
 class Shelf:
 
     _mac_address: str
     _last_ping_ms: float
-    _num_slots: int
     _slots: List[Slot]
 
-    def __init__(self, mac_address: str, num_slots: int):
+    def __init__(self, mac_address: str, slots_list: List[Slot] | None = None) -> None:
         # Set all members
         self._last_ping_ms = time.time() * 1000
         self._mac_address = mac_address
-        self._num_slots = num_slots
 
-        # Create all the slots this shelf has
-        self._slots = list()
-        for i in range(self._num_slots):
-            self._slots.append(Slot())
+        if slots_list is None:
+            self._slots = list()
+        else:
+            self._slots = slots_list
 
 
     def update_last_ping_time(self, time_ms):
@@ -256,7 +231,7 @@ class Shelf:
         Get the number of slots this shelf has.
         :return: Integer.
         """
-        return self._num_slots
+        return len(self._slots)
 
 
     def get_all_slots(self) -> List[Slot]:
@@ -274,10 +249,22 @@ class Shelf:
         :param calibration_weight_g: The known calibration weight being used.
         :return: Whether the slot was tared successfully.
         """
-        if slot_id < self._num_slots:
+        if slot_id < len(self._slots):
             return self._slots[slot_id].tare(calibration_weight_g)
         else:
             return False
+
+
+    def get_json(self) -> Any:
+        """
+        Get JSON representation of this shelf.
+        :return: Any
+        """
+        json_data = {
+            'macAddress': self._mac_address,
+            'slots': [slot.get_json() for slot in self._slots],
+        }
+        return json_data
 
 
 
@@ -305,20 +292,10 @@ class ShelfManager:
             remove_cart_item_cb: Callable[[Item], None] | None = None
     ) -> None:
 
-        # Connect to local MQTT broker
-        if not (LOCAL_MQTT_BROKER_URL == "None" or LOCAL_MQTT_BROKER_URL == None or LOCAL_MQTT_BROKER_URL == ""):
-            self._local_mqtt_client = MqttClient(LOCAL_MQTT_BROKER_URL, 1883)
-            self._local_mqtt_client.add_topic('shelf/data', self._shelf_data_received)
-            self._local_mqtt_client.start()
-        else:
-            self._local_mqtt_client = None
-
-        # Connect to remote MQTT broker
-        if not (REMOTE_MQTT_BROKER_URL == "None" or REMOTE_MQTT_BROKER_URL == None or REMOTE_MQTT_BROKER_URL == ""):
-            self._remote_mqtt_client = MqttClient(REMOTE_MQTT_BROKER_URL, 1883)
-            self._remote_mqtt_client.start()
-        else:
-            self._remote_mqtt_client = None
+        # Instantiate active shelves
+        self._active_shelves_lock = Lock()
+        with self._active_shelves_lock:
+            self._active_shelves = dict()
 
         # Create shelf data directory if it doesn't exist
         self._shelf_data_dir = shelf_data_dir
@@ -335,18 +312,22 @@ class ShelfManager:
         self._add_cart_item_cb = add_cart_item_cb
         self._remove_cart_item_cb = remove_cart_item_cb
 
-        # Instantiate active shelves
-        self._active_shelves_lock = Lock()
-        with self._active_shelves_lock:
-            self._active_shelves = dict()
+        # Connect to local MQTT broker
+        if not (LOCAL_MQTT_BROKER_URL == "None" or LOCAL_MQTT_BROKER_URL == None or LOCAL_MQTT_BROKER_URL == ""):
+            print("local mqtt broker found")
+            self._local_mqtt_client = MqttClient(LOCAL_MQTT_BROKER_URL, 1883)
+            self._local_mqtt_client.add_topic('shelf/data', self._shelf_data_received)
+            self._local_mqtt_client.start()
+        else:
+            self._local_mqtt_client = None
 
-            # Populate with mock data if environment variables are configured
-            if USE_MOCK_DATA:
-                self._active_shelves = {
-                    "00:00:00:00:00:01": Shelf("00:00:00:00:00:01", 4),
-                    "00:00:00:00:00:02": Shelf("00:00:00:00:00:02", 4),
-                    "00:00:00:00:00:03": Shelf("00:00:00:00:00:03", 4)
-                }
+        # Connect to remote MQTT broker
+        if not (REMOTE_MQTT_BROKER_URL == "None" or REMOTE_MQTT_BROKER_URL == None or REMOTE_MQTT_BROKER_URL == ""):
+            self._remote_mqtt_client = MqttClient(REMOTE_MQTT_BROKER_URL, 1883)
+            self._remote_mqtt_client.start()
+        else:
+            self._remote_mqtt_client = None
+
 
 
     def _load_shelf_data(self, mac_address: str) -> Shelf | None:
@@ -356,19 +337,46 @@ class ShelfManager:
         :return: A Shelf object if the data was loaded successfully, None otherwise.
         """
         # Create path
-        shelf_data_path = Path(self._shelf_data_dir / f"{mac_address}.pickle")
+        shelf_data_path = Path(self._shelf_data_dir / f"{mac_address}.json")
         with FileLock(Path(self._shelf_data_dir / f"{mac_address}.lock")):
             # Open it, if it exists
             if shelf_data_path.exists():
                 with open(shelf_data_path, 'rb') as file:
                     try:
-                        shelf_obj = pickle.load(file)
-                        if not isinstance(shelf_obj, Shelf):
-                            print("Shelf Manager: Error: Invalid shelf data in file. Expected Shelf object.")
-                            return None
+                        # Load the JSON
+                        json_data = json.load(file)
+                        mac_address = json_data["macAddress"]
+                        slots = list()
+                        # Load all slots
+                        slots_list = list()
+                        for slot_json in json_data["slots"]:
+                            conversion_factor = slot_json["conversionFactor"]
+                            # Load all items
+                            items_list = list()
+                            for item_json in slot_json["items"]:
+                                # Get most recent version of item by ID
+                                item_id = item_json["id"]
+                                quantity = item_json["quantity"]
+                                # Make a copy of the item and modify the quantity
+                                item_to_copy = db.get_item(item_id)
+                                item_obj = Item(
+                                    item_to_copy.item_id,
+                                    item_to_copy.name,
+                                    item_to_copy.upc,
+                                    item_to_copy.price,
+                                    quantity,
+                                    item_to_copy.avg_weight,
+                                    item_to_copy.std_weight,
+                                    item_to_copy.thumbnail_url,
+                                    item_to_copy.vision_class
+                                )
+                                items_list.append(item_obj)
+                            slot_obj = Slot(items_list)
+                            slots_list.append(slot_obj)
+                        shelf_obj = Shelf(mac_address, slots_list)
                     except Exception:
                         # Print error, jump to next file
-                        print(f"Shelf Manager: Error unpickling file '{shelf_data_path}'.")
+                        print(f"Shelf Manager: Error json decoding file '{shelf_data_path}'.")
                         return None
                     return shelf_obj
             else:
@@ -382,11 +390,11 @@ class ShelfManager:
         :return: None.
         """
         # Get path for the file
-        shelf_data_path = Path(self._shelf_data_dir / f"{shelf.get_mac_address()}.pickle")
+        shelf_data_path = Path(self._shelf_data_dir / f"{shelf.get_mac_address()}.json")
         with FileLock(Path(self._shelf_data_dir / f"{shelf.get_mac_address()}.lock")):
             # Open file and dump pickle data
-            with open(shelf_data_path, 'wb') as file:
-                pickle.dump(shelf, file)
+            with open(shelf_data_path, 'w') as file:
+                json.dump(shelf.get_json(), file)
 
 
     def stop_loop(self) -> None:
@@ -451,7 +459,6 @@ class ShelfManager:
         and sends those back to the shelf manager.
         :return:
         """
-
         msg_received_ms = time.time() * 1000
 
         # Convert message to JSON
@@ -480,7 +487,7 @@ class ShelfManager:
                 shelf_obj = self._load_shelf_data(mac_address)
                 if shelf_obj is None:
                     # Shelf not loaded, create a new one
-                    shelf_obj = Shelf(mac_address, 4)
+                    shelf_obj = Shelf(mac_address, [Slot(), Slot(), Slot(), Slot()])
                 else:
                     # Shelf is loaded
                     print("\tSuccessfully loaded shelf data from file.")
@@ -499,9 +506,7 @@ class ShelfManager:
             for i, raw_weight in enumerate(data):
                 if isinstance(raw_weight, float):
                     if i < len(all_slots):
-                        item_updates = all_slots[i].update_weight(raw_weight)
-                        for item in item_updates:
-                            self._weight_updates_queue.put(item)
+                        all_slots[i].update_weight(raw_weight)
 
 
     def _main_loop(self):
@@ -534,6 +539,7 @@ class ShelfManager:
                         self._save_shelf_data(shelf_obj)
                         # Add this shelf to the list of shelves to remove
                         macs_to_remove.append(shelf_mac)
+
             with self._active_shelves_lock:
                 for mac_address in macs_to_remove:
                     del self._active_shelves[mac_address]
