@@ -5,6 +5,8 @@ from core.services.mqtt import MqttClient
 from PySide6.QtCore import QObject, Signal, Slot
 
 class AdminController(QObject):
+    openAdmin = Signal()
+    notifyAdminUnlock = Signal()
     _input = list
     _pattern = list
 
