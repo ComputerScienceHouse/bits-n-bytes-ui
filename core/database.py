@@ -155,7 +155,7 @@ def get_items() -> List[Item]:
                 # Cache items by ID
                 cached_items_by_id = dict()
                 for item in result:
-                    cached_items_by_id[item.id] = item
+                    cached_items_by_id[item.item_id] = item
                 return result
             else:
                 # Something went wrong so print info and return empty list
