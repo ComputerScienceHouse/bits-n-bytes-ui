@@ -9,9 +9,9 @@
 ###############################################################################
 import os
 import requests
-from model import Item, User, NFC
 from typing import List
 import config
+from core.data_classes import *
 
 API_ENDPOINT = os.getenv("BNB_API_ENDPOINT", '')
 AUTHORIZATION_KEY = os.getenv("BNB_AUTHORIZATION_KEY", '')

@@ -11,9 +11,9 @@ import os
 import threading
 import time
 from json import JSONDecodeError
-from pickle import UnpicklingError
+from queue import Queue
 from threading import Lock
-from typing import List, Dict
+from typing import List, Dict, Callable
 from scipy.stats import norm
 from pathlib import Path
 import json
@@ -95,17 +95,18 @@ class Slot:
             pass
 
 
-    def predict_most_likely_item(self, weight_delta: float) -> (Item, float):
+    def predict_most_likely_items(self, weight_delta: float) -> List[Item]:
         """
         Given a change in weight, predict the most likely item that could have
         been added/removed from this scale.
         :param weight_delta: Float weight change in grams
-        :return: Tuple: Item, Float; The item that is most likely and the probability of
-        it being that item.
+        :return: List[Item]: A list of the items that are predicted to be added/removed from the slot based
+        on this weight change. Negative quantities indicate removal from the slot and positive quantities
+        indicate addition to the slot.
         """
-        direction = 1
+        direction = 0
         if weight_delta < 0:
-            direction = -1
+            direction = 1
 
         # Store probabilities of the various quantities of items being added/removed from the slot
         probabilities = dict()
@@ -124,29 +125,68 @@ class Slot:
                     scale=item.std_weight
                 )
                 # Store this probability
-                probabilities[item.name].append(probability)
+                probabilities[item.item_id].append(probability)
+
         # Convert probabilities to pandas dataframe
         df = pd.DataFrame(probabilities, index=range(1, MAX_ITEM_REMOVALS_TO_CHECK + 1)).T
         # Convert to stack to get top n probabilities
         probability_series = df.stack()
-        top_n = 1
-        top_n_probabilities = probability_series.nlargest(top_n)
-        #print("Top ranked probabilities:")
-        for rank, ((item, quantity), probability) in enumerate(top_n_probabilities.items(), start=1):
-            if probability > THRESHOLD_WEIGHT_PROBABILITY:
-                print(f'{item} -> {direction * quantity} | p={probability}')
+        top_n_probabilities = probability_series.nlargest(MAX_WEIGHT_PREDICTIONS)
+
+        items: List[Item] = list()
+        item_ids_and_quantities = dict()
+
+        # Iterate through the top probabilities in decreasing order
+        for rank, ((item_id, quantity), probability) in enumerate(top_n_probabilities.items(), start=1):
+            if probability < THRESHOLD_WEIGHT_PROBABILITY:
+                # If this probability is less than the threshold, all others will be too so return early
+                break
+            else:
+                # Probability is above the threshold, add this item/quantity combination as something that
+                # probably happened.
+                if item_id in item_ids_and_quantities:
+                    # Item id already exists, increase quantity
+                    item_ids_and_quantities[item_id] += (direction * quantity)
+                else:
+                    # Item id does not already exist, add this quantity
+                    item_ids_and_quantities[item_id] = (direction * quantity)
+
+        # Create item objects that represent each of the changes
+        for item_id in item_ids_and_quantities:
+            # Get the quantity for this item
+            quantity = item_ids_and_quantities[item_id]
+            # Get the existing item object
+            existing_item_obj = db.get_item(item_id)
+            # Create a new item object with this quantity, and add it to the list of items to be
+            # returned
+            items.append(
+                Item(
+                    item_id,
+                    existing_item_obj.name,
+                    existing_item_obj.upc,
+                    existing_item_obj.price,
+                    quantity,
+                    existing_item_obj.avg_weight,
+                    existing_item_obj.std_weight,
+                    existing_item_obj.thumbnail_url,
+                    existing_item_obj.vision_class
+                )
+            )
+        # Return resulting items, where the quantity matches the number predicted to be added/removed from the scale.
+        return items
 
 
-    def update_weight(self, raw_value: float) -> None:
+    def update_weight(self, raw_value: float) -> List[Item]:
         """
         Update the current weight reading of this shelf.
-        :param raw_value:
+        :param raw_value: Raw weight value (will be scaled automatically using hte most recent tare weight data).
         :return:
         """
         new_weight = raw_value * self._conversion_factor
         weight_delta = new_weight - self._current_weight
-        self.predict_most_likely_item(weight_delta)
+        item_changes = self.predict_most_likely_items(weight_delta)
         self._current_weight = new_weight
+        return item_changes
 
 
     def tare(self, calibration_weight_g: float) -> bool:
@@ -253,7 +293,17 @@ class ShelfManager:
 
     _local_mqtt_client: MqttClient | None
 
-    def __init__(self, shelf_data_dir: Path = SHELF_DATA_DIR):
+    _weight_updates_queue: Queue
+
+    _add_cart_item_cb: Callable[[Item], None] | None
+    _remove_cart_item_cb: Callable[[Item], None] | None
+
+    def __init__(
+            self,
+            shelf_data_dir: Path = SHELF_DATA_DIR,
+            add_cart_item_cb: Callable[[Item], None] | None = None,
+            remove_cart_item_cb: Callable[[Item], None] | None = None
+    ) -> None:
 
         # Connect to local MQTT broker
         if not (LOCAL_MQTT_BROKER_URL == "None" or LOCAL_MQTT_BROKER_URL == None or LOCAL_MQTT_BROKER_URL == ""):
@@ -277,6 +327,13 @@ class ShelfManager:
         # Setup signal end system
         self._signal_end_lock = Lock()
         self._signal_end = False
+
+        # Set up weight queue system
+        self._weight_updates_queue = Queue()
+
+        # Setup add/remove cart item callbacks
+        self._add_cart_item_cb = add_cart_item_cb
+        self._remove_cart_item_cb = remove_cart_item_cb
 
         # Instantiate active shelves
         self._active_shelves_lock = Lock()
@@ -442,7 +499,9 @@ class ShelfManager:
             for i, raw_weight in enumerate(data):
                 if isinstance(raw_weight, float):
                     if i < len(all_slots):
-                        all_slots[i].update_weight(raw_weight)
+                        item_updates = all_slots[i].update_weight(raw_weight)
+                        for item in item_updates:
+                            self._weight_updates_queue.put(item)
 
 
     def _main_loop(self):
@@ -475,11 +534,24 @@ class ShelfManager:
                         self._save_shelf_data(shelf_obj)
                         # Add this shelf to the list of shelves to remove
                         macs_to_remove.append(shelf_mac)
-
             with self._active_shelves_lock:
                 for mac_address in macs_to_remove:
                     del self._active_shelves[mac_address]
                 macs_to_remove.clear()
+
+            # Process item updates from queue
+            while not self._weight_updates_queue.empty():
+                # Get next update to process
+                item_to_update: Item = self._weight_updates_queue.get()
+                if item_to_update.quantity < 0:
+                    # Add to cart
+                    item_to_update.quantity *= -1
+                    if self._add_cart_item_cb is not None:
+                        self._add_cart_item_cb(item_to_update)
+                elif item_to_update.quantity > 0:
+                    # Remove from cart
+                    if self._remove_cart_item_cb is not None:
+                        self._remove_cart_item_cb(item_to_update)
 
 
             # TODO post what shelves are available on an endpoint somewhere

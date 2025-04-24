@@ -25,7 +25,7 @@ class Model:
 
         self._current_user = User(-1, 'Bilson McDade', '', 999.99, 'IMAGINE25', '', '')
 
-        self._shelf_manager = ShelfManager()
+        self._shelf_manager = ShelfManager(add_cart_item_cb=self.add_item_to_cart_cb, remove_cart_item_cb=self.remove_item_from_cart_cb)
 
 
     def get_all_items_in_cart(self) -> List[Item]:
@@ -121,4 +121,12 @@ class Model:
         if self._current_user is not None:
             self._current_user.phone = new_phone_number
             # TODO update database
+
+
+    def add_item_to_cart_cb(self, item: Item) -> None:
+        self._cart.add_item(item)
+
+
+    def remove_item_from_cart_cb(self, item: Item) -> None:
+        self._cart.remove_item(item)
 
