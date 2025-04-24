@@ -6,11 +6,12 @@
 # will be used to interface with the model.
 #
 ###############################################################################
-from PySide6.QtCore import QObject, Slot, Property
+from PySide6.QtCore import QObject, Slot, Property, Signal
 from PySide6.QtWidgets import QApplication
 from core.services.nfc import NFCListenerThread
-from core.model import Model, Cart
+from core.model import Model, Cart, User
 from . import CartController, CheckoutController, AdminController, TareController
+from core import database
 
 class Controller(QObject):
     _model: Model
@@ -20,6 +21,7 @@ class Controller(QObject):
     _cart_controller: CartController
     _checkout_controller: CheckoutController
     _tare_controller: TareController
+    _nfc_signal = Signal(str)
 
     def __init__(self):
         super().__init__()
@@ -71,6 +73,33 @@ class Controller(QObject):
         self._model._shelf_manager.stop_loop()
         QApplication.instance().quit()
 
+    @Slot()
+    def wait_for_nfc(self):
+        print("loaded nfc slot")
+        self._nfc.token_detected.connect(self.emit_nfc)
+        self._nfc.start()
+
+    @Slot(str)
+    def emit_nfc(self, msg):
+        # print("recieved emitter: ", msg)
+        user = database.get_user(nfc_id=msg)
+        # print("User: ", user)
+        if(user == None):
+            print("NO USER FOUND")
+            self._model._current_user = None
+            self._nfc.stop()
+            self._nfc_signal.emit("")
+            self._nfc = NFCListenerThread()
+            self.wait_for_nfc()
+        else:
+            self._model._current_user = user
+            self._nfc_signal.emit(msg)
+            self._nfc.stop()
+            self._nfc = NFCListenerThread()
+        
+        
+
+        
 
 if __name__ == "__main__":
     app = Controller()

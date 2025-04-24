@@ -9,7 +9,7 @@
 ###############################################################################
 import os
 import requests
-from model import Item, User, NFC
+from core.model import Item, User, NFC
 from typing import List
 import config
 
@@ -35,7 +35,7 @@ MOCK_ITEMS = {
 
 MOCK_USERS = {
     # 1: User(1, "Tag 1", "258427912599", 20.00, "imagine", "", ""),
-    1: User(1, "User1", "IMAGINE25", 10.00, "IMAGINE25", "test@ema.il", "1234567")
+    1: User(1, "User1", "", 10.00, "test@ema.il", "1234567")
 
 }
 
@@ -151,7 +151,7 @@ def get_user(user_id=None, nfc_id=None) -> User | None:
         # Check if nfc id should be used
         if nfc_id is not None:
             # Get user from nfc id
-            print(f"GET /nfc/{nfc_id}")
+            print(f"MOCK GET /nfc/{nfc_id}")
             for nfc in MOCK_NFC:
                 if MOCK_USERS.get(nfc) != None:
                     return MOCK_USERS[nfc]
@@ -159,7 +159,7 @@ def get_user(user_id=None, nfc_id=None) -> User | None:
         # Check if user id should be used
         elif user_id is not None:
             # Get user from ID
-            print(f"GET /users/{user_id}")
+            print(f"MOCK GET /users/{user_id}")
             if user_id in MOCK_USERS:
                 return MOCK_USERS[user_id]
             else:

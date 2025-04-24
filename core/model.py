@@ -44,14 +44,16 @@ class Item:
     
     
 class User:
-    def __init__(self, uid, name, token, balance, payment_type, email, phone):
-        self.uid = uid
+    def __init__(self, id, name, thumb_img, balance, email, phone):
+        self.id = id
         self.name = name
-        self.token = token
+        self.thumb_img = thumb_img
         self.balance = balance
-        self.payment_type = payment_type
         self.email = email
         self.phone = phone
+    
+    def __str__(self):
+       return (f'User[Name: {self.name}, UserID: {self.id}, Balance: {self.balance}]')
 
 class NFC:
     def __init__(self, id, assigned_user, type):
@@ -175,7 +177,7 @@ class Model:
         self._cart.add_item(Item(7, "Swedish Fish Original", 0, 19.99, 100, 141, 10, "placeholder.png", 'sour_patch'))
         self._cart.add_item(Item(8, "Welch's Fruit Snacks", 0, 39.99, 40, 142, 14, "placeholder.png", 'sour_patch'))
 
-        self._current_user = User(1, 'Sahil Patel', '', 999.99, 'IMAGINE25', 'sahilpatel@gmail.com', '+11111111111')
+        self._current_user = User(1, 'Sahil Patel', '', 999.99, 'sahilpatel@gmail.com', '+11111111111')
 
         self._shelf_manager = ShelfManager()
 
