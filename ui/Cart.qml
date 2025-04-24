@@ -15,6 +15,13 @@ Rectangle {
     z: 0
     property alias button: button
 
+    Connections {
+        target: controller.device
+        function onNotifyDoorsClosed() {
+            stack.push("Receipt.qml")
+        }
+    }
+
     Text {
         id: _text
         x: 15

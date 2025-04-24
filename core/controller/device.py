@@ -17,6 +17,7 @@ MQTT_REMOTE_BROKER_URL = os.getenv('', None)
 class DeviceController(QObject):
     hatchUnlock = Signal()
     doorsUnlock = Signal()
+    doorsClosed = Signal()
 
     _mqttRemoteClient: MqttClient
     _mqttLocalClient: MqttClient
@@ -45,6 +46,8 @@ class DeviceController(QObject):
     def notifyDoorUnlock(self, msg: str):
         if msg == "open":
             self.doorsUnlock.emit()
+        if msg == "closed":
+            self.doorsClosed.emit()
         else:
             print("Unknown message received: ", msg)
 
