@@ -52,15 +52,15 @@ Window {
         }
 
         // // Define animation for view being covered during push (current view exits downward)
-        // pushExit: Transition {
-        //     PropertyAnimation {
-        //         property: "y"
-        //         from: 0
-        //         to: stack.height
-        //         duration: 300
-        //         easing.type: Easing.OutQuad
-        //     }
-        // }
+        pushExit: Transition {
+            PropertyAnimation {
+                property: "y"
+                from: 0
+                to: stack.height
+                duration: 300
+                easing.type: Easing.OutQuad
+            }
+        }
 
         // Define animation for popping (returning) to previous view (swipe up)
         popEnter: Transition {
@@ -74,14 +74,14 @@ Window {
         }
 
         // // Define animation for view being removed during pop (current view exits upward)
-        // popExit: Transition {
-        //     PropertyAnimation {
-        //         property: "y"
-        //         from: 0
-        //         to: -stack.height
-        //         duration: 300
-        //         easing.type: Easing.OutQuad
-        //     }
-        // }
+        popExit: Transition {
+            PropertyAnimation {
+                property: "y"
+                from: 0
+                to: -stack.height
+                duration: 300
+                easing.type: Easing.OutQuad
+            }
+        }
     }
 }
