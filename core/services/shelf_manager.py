@@ -30,7 +30,7 @@ LOCAL_MQTT_BROKER_URL = os.environ.get('MQTT_LOCAL_BROKER_URL', None)
 REMOTE_MQTT_BROKER_URL = os.environ.get('MQTT_REMOTE_BROKER_URL', None)
 USE_MOCK_DATA = os.environ.get('USE_MOCK_DATA', False) == 'True'
 MAX_ITEM_REMOVALS_TO_CHECK = 5
-THRESHOLD_WEIGHT_PROBABILITY = 0.01
+THRESHOLD_WEIGHT_PROBABILITY = 0.35
 
 class Slot:
 
@@ -39,7 +39,7 @@ class Slot:
     _previous_weight: float
     _conversion_factor: float
 
-    def __init__(self, items: List[Item] | None = None):
+    def __init__(self, items: List[Item] | None = None, conversion_factor: float = 1):
         """
         Create a new slot.
         :param items: Optional list of items that are already on the shelf.
@@ -50,7 +50,7 @@ class Slot:
             self._items = items
         self._current_weight = 0
         self._previous_weight = 0
-        self._conversion_factor = 1
+        self._conversion_factor = conversion_factor
 
 
     def add_item(self, item: Item) -> None:
@@ -111,14 +111,21 @@ class Slot:
             probabilities[item.name] = []
             # Iterate through all possible quantities
             for potential_quantity in range(1, MAX_ITEM_REMOVALS_TO_CHECK + 1):
-                # Calculate per-item weight at this quantity
-                quantity_weight_delta = abs(weight_delta / potential_quantity)
-                # Calculate probability using probability density function on bell curve
-                probability = norm.pdf(
-                    quantity_weight_delta,
-                    loc=item.avg_weight,
-                    scale=item.std_weight
-                )
+                expected_weight = item.avg_weight * potential_quantity
+                scaled_std = item.std_weight * (potential_quantity ** 0.5)
+                z_score = (abs(weight_delta) - expected_weight) / scaled_std
+                probability = (1 - abs(0.5 - norm.cdf(z_score)) * 2)
+
+
+
+                # # Calculate per-item weight at this quantity
+                # quantity_weight_delta = abs(weight_delta / potential_quantity)
+                # # Calculate probability using probability density function on bell curve
+                # probability = norm.pdf(
+                #     quantity_weight_delta,
+                #     loc=item.avg_weight,
+                #     scale=item.std_weight
+                # )
                 # Store this probability
                 probabilities[item.name].append(probability)
         # Convert probabilities to pandas dataframe
@@ -371,7 +378,7 @@ class ShelfManager:
                                     item_to_copy.vision_class
                                 )
                                 items_list.append(item_obj)
-                            slot_obj = Slot(items_list)
+                            slot_obj = Slot(items_list, conversion_factor)
                             slots_list.append(slot_obj)
                         shelf_obj = Shelf(mac_address, slots_list)
                     except Exception:
