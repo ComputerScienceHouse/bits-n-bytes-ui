@@ -21,8 +21,8 @@ class TareController(QObject):
         self.refresh_timer.timeout.connect(self._refresh_shelves)
         
         # Connect to MQTT updates if available
-        if hasattr(shelf_manager, '_local_mqtt_client'):
-            shelf_manager._local_mqtt_client.add_topic('shelf/data', self._handle_mqtt_update)
+        # if hasattr(shelf_manager, '_local_mqtt_client'):
+        #     shelf_manager._local_mqtt_client.add_topic('shelf/data', self._handle_mqtt_update)
 
     @Property('QVariantList', notify=shelvesChanged)
     def shelves(self):
