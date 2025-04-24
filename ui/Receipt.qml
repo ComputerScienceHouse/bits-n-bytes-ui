@@ -258,7 +258,7 @@ Rectangle {
         height: 250
         modal: true
         dim: true
-        z: 30
+        z: 20
         closePolicy: Popup.CloseOnPressOutside
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2 - (keyboard.visible ? keyboard.height / 2 : 0)
@@ -309,6 +309,7 @@ Rectangle {
             }
 
             Button {
+                z: 30
                 text: qsTr("Submit")
                 Layout.alignment: Qt.AlignCenter
                 onClicked: {
@@ -339,7 +340,7 @@ Rectangle {
         closePolicy: Popup.CloseOnPressOutside
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2 - (keyboard.visible ? keyboard.height / 2 : 0)
-        z: 30
+        z: 20
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -386,6 +387,7 @@ Rectangle {
             }
 
             Button {
+                z: 30
                 text: qsTr("Submit")
                 Layout.alignment: Qt.AlignCenter
                 onClicked: {
@@ -413,7 +415,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width
         height: 300
-        z: 25 
+        z: 30
         y: visible ? parent.height - height : parent.height
         visible: emailInput.activeFocus || textInput.activeFocus
         
