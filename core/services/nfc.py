@@ -69,7 +69,8 @@ class NFCListenerThread(QThread):
 					self.token_detected.emit(token)  # Emit token when detected
 					self.running = False
 			except Exception as e:
-				print(f"Error in NFCListenerThread: {e}")
+				pass
+				# print(f"Error in NFCListenerThread: {e}")
 
 	def stop(self):
 		self.running = False  # Set the flag to stop the loop

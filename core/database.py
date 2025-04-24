@@ -17,20 +17,8 @@ API_ENDPOINT = os.getenv("BNB_API_ENDPOINT", '')
 AUTHORIZATION_KEY = os.getenv("BNB_AUTHORIZATION_KEY", '')
 
 MOCK_ITEMS = {
-    1: Item(1, "Little Bites Chocolate", "123456789012", 2.10, 100, 47, 10, "images/item_placeholder.png", "pouch"),
-    2: Item(2, "Little Bites Party", "234567890123", 2.10, 50, 47, 10, "images/item_placeholder.png", "pouch"),
-    3: Item(3, "Skittles Gummies", "345678901234", 2.40, 75, 164.4, 15, "images/item_placeholder.png", "bottle"),
-    4: Item(4, "Swedish Fish Mini Tropical", "456789012345", 3.50, 120, 226, 10, "images/item_placeholder.png", "pouch"),
-    5: Item(5, "Sour Patch Peach", "567890123456", 3.50, 90, 228, 15, "images/item_placeholder.png", "cylinder"),
-    6: Item(6, "Brownie Brittle Chocolate Chip", "678901234567", 34.99, 60, 78, 10, "images/item_placeholder.png", "rectangle"),
-    7: Item(7, "Swedish Fish Original", "789012345678", 19.99, 100, 141, 10, "images/item_placeholder.png", "pouch"),
-    8: Item(8, "Welch's Fruit Snacks", "890123456789", 39.99, 40, 142, 14, "images/item_placeholder.png", "rectangle"),
-    9: Item(9, "Sour Patch Kids", "", 3.50, 100, 226, 20, "images/item_placeholder.png", "sour-patch"),
-    10: Item(10, "12 Pack Wild Cherry Pepsi", "", 5.50, 100, 4000, 500, "images/item_placeholder.png", "pepsi-box"),
-    11: Item(11, "12 Pack Loganberry", "", 5.50, 100, 4000, 500, "images/item_placeholder.png", "loganberry-box"),
-    12: Item(12, "EMPTY", "", 0, 100, 10000000, 0, "images/item_placeholder.png", ""),
-    13: Item(13, "Wild Cherry Pepsi Can", "", 2.50, 100, 200, 20, "images/item_placeholder.png", ""),
-    14: Item(14, "Little Bites Blueberry", "123456789012", 2.10, 100, 47, 10, "images/item_placeholder.png", "pouch"),
+    2: Item(2, "Sour Patch Kids", "567890123456", 3.50, 90, 226, 15, "images/item_placeholder.png", ""),
+    3: Item(3, "Brownie Brittle", "", 3.00, 90, 78, 10, "images/item_placeholder.png", ""),
 }
 
 # [
@@ -93,7 +81,7 @@ MOCK_ITEMS = {
 
 MOCK_USERS = {
     # 1: User(1, "Tag 1", "258427912599", 20.00, "imagine", "", ""),
-    1: User(1, "User1", "", 10.00, "test@ema.il", "1234567")
+    1: User(1, "User1", "", 10.00, 'imagine', "test@ema.il", "1234567")
 
 }
 

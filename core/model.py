@@ -126,9 +126,11 @@ class Model:
 
 
     def add_item_to_cart_cb(self, item: Item) -> None:
+        print("added to cart")
         self._cart.add_item(item)
 
 
     def remove_item_from_cart_cb(self, item: Item) -> None:
+        print("removed from cart")
         self._cart.remove_item(item)
 

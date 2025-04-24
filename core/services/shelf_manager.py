@@ -30,7 +30,7 @@ LOCAL_MQTT_BROKER_URL = os.environ.get('MQTT_LOCAL_BROKER_URL', None)
 REMOTE_MQTT_BROKER_URL = os.environ.get('MQTT_REMOTE_BROKER_URL', None)
 USE_MOCK_DATA = os.environ.get('USE_MOCK_DATA', False) == 'True'
 MAX_ITEM_REMOVALS_TO_CHECK = 5
-THRESHOLD_WEIGHT_PROBABILITY = 0.35
+THRESHOLD_WEIGHT_PROBABILITY = 0.1
 
 class Slot:
 
@@ -91,7 +91,7 @@ class Slot:
             pass
 
 
-    def predict_most_likely_item(self, weight_delta: float) -> (Item, float):
+    def predict_most_likely_item(self, weight_delta: float) -> List[Item]:
         """
         Given a change in weight, predict the most likely item that could have
         been added/removed from this scale.
@@ -108,15 +108,13 @@ class Slot:
         # Iterate through all possible items
         for item in self._items:
             # Store probabilities
-            probabilities[item.name] = []
+            probabilities[item.item_id] = []
             # Iterate through all possible quantities
             for potential_quantity in range(1, MAX_ITEM_REMOVALS_TO_CHECK + 1):
                 expected_weight = item.avg_weight * potential_quantity
                 scaled_std = item.std_weight * (potential_quantity ** 0.5)
                 z_score = (abs(weight_delta) - expected_weight) / scaled_std
                 probability = (1 - abs(0.5 - norm.cdf(z_score)) * 2)
-
-
 
                 # # Calculate per-item weight at this quantity
                 # quantity_weight_delta = abs(weight_delta / potential_quantity)
@@ -127,20 +125,57 @@ class Slot:
                 #     scale=item.std_weight
                 # )
                 # Store this probability
-                probabilities[item.name].append(probability)
+                probabilities[item.item_id].append(probability)
         # Convert probabilities to pandas dataframe
         df = pd.DataFrame(probabilities, index=range(1, MAX_ITEM_REMOVALS_TO_CHECK + 1)).T
         # Convert to stack to get top n probabilities
         probability_series = df.stack()
         top_n = 1
         top_n_probabilities = probability_series.nlargest(top_n)
-        #print("Top ranked probabilities:")
-        for rank, ((item, quantity), probability) in enumerate(top_n_probabilities.items(), start=1):
-            if probability > THRESHOLD_WEIGHT_PROBABILITY:
-                print(f'{item} -> {direction * quantity} | p={probability}')
+        items: List[Item] = list()
+        item_ids_and_quantities = dict()
+
+        # Iterate through the top probabilities in decreasing order
+        for rank, ((item_id, quantity), probability) in enumerate(top_n_probabilities.items(), start=1):
+            if probability < THRESHOLD_WEIGHT_PROBABILITY:
+                # If this probability is less than the threshold, all others will be too so return early
+                break
+            else:
+                # Probability is above the threshold, add this item/quantity combination as something that
+                # probably happened.
+                if item_id in item_ids_and_quantities:
+                    # Item id already exists, increase quantity
+                    item_ids_and_quantities[item_id] += (direction * quantity)
+                else:
+                    # Item id does not already exist, add this quantity
+                    item_ids_and_quantities[item_id] = (direction * quantity)
+
+        # Create item objects that represent each of the changes
+        for item_id in item_ids_and_quantities:
+            # Get the quantity for this item
+            quantity = item_ids_and_quantities[item_id]
+            # Get the existing item object
+            existing_item_obj = db.get_item(item_id)
+            # Create a new item object with this quantity, and add it to the list of items to be
+            # returned
+            items.append(
+                Item(
+                    item_id,
+                    existing_item_obj.name,
+                    existing_item_obj.upc,
+                    existing_item_obj.price,
+                    quantity,
+                    existing_item_obj.avg_weight,
+                    existing_item_obj.std_weight,
+                    existing_item_obj.thumbnail_url,
+                    existing_item_obj.vision_class
+                )
+            )
+        # Return resulting items, where the quantity matches the number predicted to be added/removed from the scale.
+        return items
 
 
-    def update_weight(self, raw_value: float) -> None:
+    def update_weight(self, raw_value: float) -> List[Item]:
         """
         Update the current weight reading of this shelf.
         :param raw_value:
@@ -148,8 +183,9 @@ class Slot:
         """
         new_weight = raw_value * self._conversion_factor
         weight_delta = new_weight - self._current_weight
-        self.predict_most_likely_item(weight_delta)
+        item_changes = self.predict_most_likely_item(weight_delta)
         self._current_weight = new_weight
+        return item_changes
 
 
     def tare(self, calibration_weight_g: float) -> bool:
@@ -513,7 +549,9 @@ class ShelfManager:
             for i, raw_weight in enumerate(data):
                 if isinstance(raw_weight, float):
                     if i < len(all_slots):
-                        all_slots[i].update_weight(raw_weight)
+                        item_updates = all_slots[i].update_weight(raw_weight)
+                        for item in item_updates:
+                            self._weight_updates_queue.put(item)
 
 
     def _main_loop(self):
