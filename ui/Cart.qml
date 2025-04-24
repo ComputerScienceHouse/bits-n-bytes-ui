@@ -17,7 +17,7 @@ Rectangle {
 
     Connections {
         target: controller.device
-        function onNotifyDoorsClosed() {
+        function onDoorsClosed() {
             stack.push("Receipt.qml")
         }
     }

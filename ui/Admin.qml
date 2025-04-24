@@ -23,6 +23,10 @@ Rectangle {
         function onNotifyAdminUnlock() {
             adminScreenNotification.show("Admin Screen Unlocked!")
         }
+    }
+
+    Connections {
+        target: controller.device
         function onDoorsUnlock() {
             adminScreenNotification.show("Doors Unlocked!")
         }
