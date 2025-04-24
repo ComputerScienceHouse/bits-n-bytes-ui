@@ -9,6 +9,7 @@ import copy
 from typing import List, Set, Dict
 from core.services.shelf_manager import ShelfManager
 from core.data_classes import *
+import core.database as db
 
 WEIGHT_UNIT = 'g'
 
@@ -20,6 +21,7 @@ class Model:
     _shelf_manager: ShelfManager
 
     def __init__(self):
+        db.get_items()
         self._current_user = None
         self._cart = Cart()
 
