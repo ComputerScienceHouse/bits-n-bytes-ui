@@ -34,6 +34,7 @@ Rectangle {
         repeat: false
         onTriggered: {
             stack.replace("Cart.qml")
+            controller.device.open_doors()
         }
     }
 

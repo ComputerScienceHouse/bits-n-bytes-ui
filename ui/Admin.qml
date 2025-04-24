@@ -63,7 +63,7 @@ Rectangle {
         font.family: "Roboto"
         font.weight: Font.Normal
         font.pointSize: 16
-        onClicked: controller.admin.open_doors()
+        onClicked: controller.device.open_doors()
     }
 
     Button {
@@ -88,7 +88,7 @@ Rectangle {
         font.family: "Roboto"
         font.weight: Font.Normal
         font.pointSize: 16
-        onClicked: controller.admin.open_hatch()
+        onClicked: controller.device.open_hatch()
     }
 
     Button {

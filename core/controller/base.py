@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QApplication
 from core.services.nfc import NFCListenerThread
 from core.model import Model, Cart, User
 from core.database import get_user
-from . import CartController, CheckoutController, AdminController, TareController
+from . import CartController, CheckoutController, AdminController, TareController, DeviceController
 from core import database
 
 class Controller(QObject):
@@ -34,6 +34,7 @@ class Controller(QObject):
         self._checkout_controller = CheckoutController(self._model)
         self._tare_controller = TareController(self._model._shelf_manager)
         self._admin_controller = AdminController()
+        self._device_controller = DeviceController()
 
     @Property(QObject, constant=True)
     def admin(self):
@@ -50,6 +51,9 @@ class Controller(QObject):
     @Property(QObject, constant=True)
     def cart(self):
         return self._cart_controller
+
+    def device(self):
+        return self._device_controller
 
     def setUser(self):
         self._model._current_user  = get_user(self._nfc_id)
