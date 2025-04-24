@@ -9,6 +9,7 @@ Rectangle {
     Material.theme: Material.Dark
     id: welcomeScreen
     color: "#292929"
+    property string nfc_id: ""
 
     Text {
         id: welcome
@@ -52,7 +53,7 @@ Rectangle {
         width: 441
         height: 75
         icon.source: "images/tap.png"
-        text: qsTr("Tap Card to Continue")
+        text:  welcomeScreen.nfc_id // qsTr("Tap Card to Continue")
         font.bold: false
         font.pointSize: 20
         font.family: "Roboto"
@@ -109,6 +110,26 @@ Rectangle {
             controller.admin.pushInput(4)
             controller.admin.checkSeq()
         }
+    }
+
+    Component.onCompleted: {
+        controller.wait_for_nfc()
+    }
+
+    Connections {
+        target: controller
+        function on_Nfc_signal(msg) {
+            if(msg == "") {
+                userNotFoundNotification.show("User not Found!", "#D91E1E")
+            } else {
+                stack.replace("Name.qml")
+            }
+        }
+    }
+
+    Notification{
+        id: userNotFoundNotification
+
     }
 
 }
