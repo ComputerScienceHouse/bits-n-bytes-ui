@@ -273,14 +273,14 @@ Rectangle {
         }
         onOpened: {
             recieptCountdown.stop()
-            forceActiveFocus()
         }
         onClosed: {
             recieptCountdown.resume()
             if (emailInput.text) {
                 controller.checkout.send_email()
             }
-            emailInput.focus = false
+            textInput.focus = false
+            // keyboard.visible = false
         }       
         ColumnLayout {
             id: emailContainer
@@ -309,10 +309,10 @@ Rectangle {
             }
 
             Button {
-                z: 30
                 text: qsTr("Submit")
                 Layout.alignment: Qt.AlignCenter
                 onClicked: {
+                    console.log("Clicked Submit Button")
                     controller.checkout.setEmail(emailInput.text)
                     emailPopup.close()
                 }
@@ -346,13 +346,12 @@ Rectangle {
             radius: 10
         }
         Overlay.modal: Rectangle {
-            z: 10
+            z: 1
             color: "#464646"
             opacity: 0.4        
         }
         onOpened: {
             recieptCountdown.stop()
-            forceActiveFocus()
         }
         onClosed: {
             recieptCountdown.resume()
@@ -360,6 +359,7 @@ Rectangle {
                 controller.checkout.send_sms()       
             }
             textInput.focus = false
+            // keyboard.visible = false
         }
         ColumnLayout {
             id: textContainer
@@ -387,11 +387,17 @@ Rectangle {
             }
 
             Button {
-                z: 30
+                z: 20
                 text: qsTr("Submit")
                 Layout.alignment: Qt.AlignCenter
                 onClicked: {
-                    controller.checkout.setPhoneNum(textInput.text)
+                    console.log("Clicked Submit Button")
+                    if (keyboard.visible) {
+                        keyboard.visible = false
+                        Qt.callLater(controller.checkout.setPhoneNum(textInput.text))  // Delay submission until after keyboard hides
+                    } else {
+                        controller.checkout.setPhoneNum(textInput.text)                    
+                    }
                     textPopup.close()
                 }
                 font.pointSize: 18
@@ -414,8 +420,8 @@ Rectangle {
         id: keyboard
         anchors.bottom: parent.bottom
         width: parent.width
-        height: 300
-        z: 30
+        height: 200
+        z: 2
         y: visible ? parent.height - height : parent.height
         visible: emailInput.activeFocus || textInput.activeFocus
         
