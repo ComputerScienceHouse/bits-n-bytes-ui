@@ -10,10 +10,12 @@ from PySide6.QtCore import QObject, Slot, Property, Signal
 from PySide6.QtWidgets import QApplication
 from core.services.nfc import NFCListenerThread
 from core.model import Model, Cart, User
+from core.database import get_user
 from . import CartController, CheckoutController, AdminController, TareController
 from core import database
 
 class Controller(QObject):
+    _nfc_id: str
     _model: Model
     _cart: Cart
     _nfc: NFCListenerThread
@@ -49,9 +51,13 @@ class Controller(QObject):
     def cart(self):
         return self._cart_controller
 
+    def setUser(self):
+        self._model._current_user  = get_user(self._nfc_id)
+        
     @Slot(result=str)
     def getName(self):
-        return self._model.get_user_name() 
+        # return self._user.name
+        return self._model._current_user.name
     
     @Slot()
     def runNFC(self):

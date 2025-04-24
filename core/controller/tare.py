@@ -17,7 +17,7 @@ class TareController(QObject):
         
         # Set up refresh timer (300ms interval)
         self.refresh_timer = QTimer(self)
-        self.refresh_timer.setInterval(500)
+        self.refresh_timer.setInterval(5000)
         self.refresh_timer.timeout.connect(self._refresh_shelves)
         
         # Connect to MQTT updates if available
@@ -97,6 +97,7 @@ class TareController(QObject):
     #                     (s for s in self._shelves if s["mac_addr"] == shelf._mac_address),
     #                     None
     #                 )
+
     #                 if existing_shelf and j < len(existing_shelf["slots"]):
     #                     existing_state = existing_shelf["slots"][j].get("tare_state", 0)
                     
@@ -122,8 +123,63 @@ class TareController(QObject):
     #     finally:
     #         self._is_updating = False
     
+    # def _refresh_shelves(self):
+    #     """Optimized shelf refresh that only updates changed items"""
+    #     if self._is_updating:
+    #         return
+            
+    #     self._is_updating = True
+    #     try:
+    #         current_shelves = self._shelf_manager.get_all_shelves()
+    #         updated = False
+            
+    #         # Create lookup of existing shelves by mac address
+    #         existing_shelves = {s['mac_addr']: s for s in self._shelves}
+    #         # Check for removed shelves
+    #         current_macs = {shelf._mac_address for shelf in current_shelves}
+    #         for mac in list(existing_shelves.keys()):
+    #             if mac not in current_macs:
+    #                 self._shelves = [s for s in self._shelves if s['mac_addr'] != mac]
+    #                 updated = True
+            
+    #         # Update or add shelves
+    #         for i, shelf in enumerate(current_shelves):
+    #             mac = shelf._mac_address
+    #             existing_shelf = existing_shelves.get(mac)
+                
+    #             if not existing_shelf:
+    #                 # New shelf - add it
+    #                 self._add_new_shelf(shelf)
+    #                 updated = True
+    #                 continue
+                    
+    #             # Update existing shelf
+    #             existing_shelf['index'] = i + 1  # Update position if needed
+                
+    #             # Update slots
+    #             for j, slot in enumerate(shelf.get_all_slots()):
+    #                 if j >= len(existing_shelf['slots']):
+    #                     # New slot
+    #                     existing_shelf['slots'].append({
+    #                         'slot_index': j,
+    #                         'tare_state': 0,
+    #                         'value': slot
+    #                     })
+    #                     updated = True
+    #                 else:
+    #                     # Update existing slot value while preserving state
+    #                     existing_shelf['slots'][j]['value'] = slot
+            
+    #         if updated:
+    #             self.shelvesChanged.emit()
+                
+    #     except Exception as e:
+    #         print(f"Refresh error: {e}")
+    #     finally:
+    #         self._is_updating = False
+
     def _refresh_shelves(self):
-        """Optimized shelf refresh that only updates changed items"""
+        """Optimized shelf refresh that properly updates self._shelves"""
         if self._is_updating:
             return
             
@@ -133,42 +189,54 @@ class TareController(QObject):
             updated = False
             
             # Create lookup of existing shelves by mac address
-            existing_shelves = {s['mac_addr']: s for s in self._shelves}
-            
-            # Check for removed shelves
+            existing_lookup = {s['mac_addr']: s for s in self._shelves}
             current_macs = {shelf._mac_address for shelf in current_shelves}
-            for mac in list(existing_shelves.keys()):
-                if mac not in current_macs:
-                    self._shelves = [s for s in self._shelves if s['mac_addr'] != mac]
-                    updated = True
+            
+            # Process removed shelves - modify self._shelves directly
+            new_shelves = [s for s in self._shelves if s['mac_addr'] in current_macs]
+            if len(new_shelves) != len(self._shelves):
+                self._shelves = new_shelves
+                updated = True
+                # Rebuild lookup after modification
+                existing_lookup = {s['mac_addr']: s for s in self._shelves}
             
             # Update or add shelves
             for i, shelf in enumerate(current_shelves):
                 mac = shelf._mac_address
-                existing_shelf = existing_shelves.get(mac)
+                existing_shelf = existing_lookup.get(mac)
                 
                 if not existing_shelf:
-                    # New shelf - add it
-                    self._add_new_shelf(shelf)
-                    updated = True
-                    continue
-                    
-                # Update existing shelf
-                existing_shelf['index'] = i + 1  # Update position if needed
-                
-                # Update slots
-                for j, slot in enumerate(shelf.get_all_slots()):
-                    if j >= len(existing_shelf['slots']):
-                        # New slot
-                        existing_shelf['slots'].append({
+                    # New shelf - add it directly to self._shelves
+                    new_shelf = {
+                        'mac_addr': mac,
+                        'index': i + 1,
+                        'slots': [{
                             'slot_index': j,
                             'tare_state': 0,
                             'value': slot
-                        })
+                        } for j, slot in enumerate(shelf.get_all_slots())]
+                    }
+                    self._shelves.append(new_shelf)
+                    updated = True
+                else:
+                    # Update existing shelf in self._shelves
+                    if existing_shelf['index'] != i + 1:
+                        existing_shelf['index'] = i + 1
                         updated = True
-                    else:
-                        # Update existing slot value while preserving state
-                        existing_shelf['slots'][j]['value'] = slot
+                    
+                    # Update slots
+                    for j, slot in enumerate(shelf.get_all_slots()):
+                        if j >= len(existing_shelf['slots']):
+                            existing_shelf['slots'].append({
+                                'slot_index': j,
+                                'tare_state': 0,
+                                'value': slot
+                            })
+                            updated = True
+                        else:
+                            if existing_shelf['slots'][j]['value'] != slot:
+                                existing_shelf['slots'][j]['value'] = slot
+                                updated = True
             
             if updated:
                 self.shelvesChanged.emit()
@@ -177,23 +245,23 @@ class TareController(QObject):
             print(f"Refresh error: {e}")
         finally:
             self._is_updating = False
-
-    def _add_new_shelf(self, shelf):
-        """Helper to add a new shelf to our model"""
-        slot_data = [
-            {
-                "slot_index": i,
-                "tare_state": 0,  # Default state
-                "value": slot
-            }
-            for i, slot in enumerate(shelf.get_all_slots())
-        ]
-        
-        self._shelves.append({
-            "mac_addr": shelf._mac_address,
-            "index": len(self._shelves) + 1,
-            "slots": slot_data
-        })
+            
+        def _add_new_shelf(self, shelf):
+            """Helper to add a new shelf to our model"""
+            slot_data = [
+                {
+                    "slot_index": i,
+                    "tare_state": 0,  # Default state
+                    "value": slot
+                }
+                for i, slot in enumerate(shelf.get_all_slots())
+            ]
+            
+            self._shelves.append({
+                "mac_addr": shelf._mac_address,
+                "index": len(self._shelves) + 1,
+                "slots": slot_data
+            })
 
     @Slot()
     def get_new_shelves(self):

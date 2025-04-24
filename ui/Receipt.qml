@@ -1,15 +1,16 @@
 import QtQuick 6.8
 import QtQuick.Controls 6.8
+import QtQuick.Controls.impl 6.8
 import QtQuick.Controls.Material 6.8
+import QtQuick.VirtualKeyboard 2.15
+import QtQuick.VirtualKeyboard.Styles 2.15
 import Constants
-import QtQuick.VirtualKeyboard 2.8
-import QtQuick.VirtualKeyboard.Styles
 import QtQuick.Layouts
 import QtQuick.Effects
 
 Rectangle {
     Material.theme: Material.Dark
-    id: receiptScreen
+    id: recieptScreen
     visible: true
     width: Constants.width
     height: Constants.height
@@ -21,10 +22,10 @@ Rectangle {
     Connections {
         target: controller.checkout
         function onNotifyPhoneInput() {
-            recieptNotification.show("Text receipt sent!")
+            recieptNotification.show("Text reciept sent!")
         }
         function onNotifyEmailInput() {
-            recieptNotification.show("Email receipt sent!")
+            recieptNotification.show("Email reciept sent!")
         }
     }
     
@@ -46,7 +47,7 @@ Rectangle {
         width: 168
         height: 49
         color: "#ffffff"
-        text: qsTr("Receipt")
+        text: qsTr("reciept")
         font.pixelSize: 40
         horizontalAlignment: Text.AlignHCenter
         font.weight: Font.DemiBold
@@ -83,7 +84,7 @@ Rectangle {
             width: 269
             height: 65
             color: "#ffffff"
-            text: qsTr("Would you like your receipt?")
+            text: qsTr("Would you like your reciept?")
             font.pixelSize: 24
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -132,13 +133,13 @@ Rectangle {
 
                 Button {
                     Layout.alignment: Qt.AlignCenter
-                    id: noReceiptButton
+                    id: norecieptButton
                     x: 685
                     y: 354
                     Layout.preferredWidth: 235
                     Layout.preferredHeight: 75
                     visible: true
-                    text: qsTr("No Receipt")
+                    text: qsTr("No reciept")
                     font.family: "Roboto"
                     font.weight: Font.Normal
                     font.pointSize: 20
@@ -201,7 +202,7 @@ Rectangle {
 
     // Reciept items
     Item {
-        id: receipt
+        id: reciept
         x: 20
         y: 65
         width: 607
@@ -249,45 +250,36 @@ Rectangle {
             textPopup.open()
         })
     }
-    // Shadow Overlay for Popups
-    Rectangle {
-        id: overlay
-        anchors.fill: parent
-        color: "#000000"
-        opacity: 0.35
-        visible: emailPopup.opened || textPopup.opened
-        z: 10  // Lower than popup and keyboard
-
-        // Block interaction with background while popup is open
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {}  // Prevent clicks from reaching background
-        }
-    }
-
+   
     // Email Popup
     Popup {
         id: emailPopup
         width: 400
         height: 250
-        focus: true
-        modal: false
-        dim: false
-        closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
-        x: parent.width / 2 - (width / 2)
-        y: parent.height / 14 - (height / 14)
+        modal: true
+        dim: true
         z: 20
+        closePolicy: Popup.CloseOnPressOutside
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2 - (keyboard.visible ? keyboard.height / 2 : 0)
         background: Rectangle {
             color: "#333333"
             radius: 10
         }
+        Overlay.modal: Rectangle {
+            z: 10
+            color: "#464646"
+            opacity: 0.4        
+        }
         onOpened: {
-            emailInput.forceActiveFocus()
             recieptCountdown.stop()
         }
         onClosed: {
             recieptCountdown.resume()
-            controller.checkout.send_email()
+            if (emailInput.text) {
+                controller.checkout.send_email()
+            }
+            emailInput.focus = false
         }       
         ColumnLayout {
             id: emailContainer
@@ -313,7 +305,6 @@ Rectangle {
                 font.pointSize: 18
                 Material.accent: "#F76902"
                 inputMethodHints: Qt.ImhEmailCharactersOnly
-                focus: true
             }
 
             Button {
@@ -329,6 +320,12 @@ Rectangle {
                 Material.roundedScale: Material.MediumScale
             }
         }
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
     }
 
     // Phone Number Popup
@@ -336,24 +333,30 @@ Rectangle {
         id: textPopup
         width: 400
         height: 250
-        focus: true
-        modal: false
-        dim: false
-        closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
-        x: parent.width / 2 - (width / 2)
-        y: parent.height / 14 - (height / 14)
+        modal: true
+        dim: true
+        closePolicy: Popup.CloseOnPressOutside
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2 - (keyboard.visible ? keyboard.height / 2 : 0)
         z: 20
         background: Rectangle {
             color: "#333333"
             radius: 10
         }
+        Overlay.modal: Rectangle {
+            z: 10
+            color: "#464646"
+            opacity: 0.4        
+        }
         onOpened: {
-            textInput.forceActiveFocus()
             recieptCountdown.stop()
         }
         onClosed: {
             recieptCountdown.resume()
-            controller.checkout.send_sms()       
+            if (textInput.text) {
+                controller.checkout.send_sms()       
+            }
+            textInput.focus = false
         }
         ColumnLayout {
             id: textContainer
@@ -393,53 +396,30 @@ Rectangle {
                 Material.roundedScale: Material.MediumScale
             }
         }
-    }
-
-    // Keyboard
-    InputPanel {
-        id: keyboard
-        anchors.bottom: parent.bottom
-        width: parent.width
-        height: 200
-        z: 30
-        visible: (emailPopup.opened && emailInput.activeFocus) || (textPopup.opened && textInput.activeFocus)
-        
-
         Behavior on y {
             NumberAnimation {
                 duration: 200
                 easing.type: Easing.OutQuad
             }
         }
+    }
 
-        onVisibleChanged: {
-            if (visible) {
-                y = parent.height - height  // Slide up
-            } else {
-                y = parent.height  // Slide down
-            }
-        }
-
-        states: State {
-            name: "visible"
-            when: keyboard.active
-            PropertyChanges {
-                target: keyboard
-                y: receiptScreen.height - receiptScreen.height
-            }
-        }
-        transitions: Transition {
-            from: ""
-            to: "visible"
-            reversible: true
-            ParallelAnimation {
-                NumberAnimation {
-                    properties: "y"
-                    duration: 250
-                    easing.type: Easing.InOutQuad
-                }
+    // Keyboard
+    InputPanel {
+        parent: Overlay.overlay
+        id: keyboard
+        anchors.bottom: parent.bottom
+        width: parent.width
+        height: 300
+        z: 30 
+        y: visible ? parent.height - height : parent.height
+        visible: emailInput.activeFocus || textInput.activeFocus
+        
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.OutQuad
             }
         }
     }
 }
-

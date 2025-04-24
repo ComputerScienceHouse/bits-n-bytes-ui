@@ -166,14 +166,14 @@ Rectangle {
         });
     }
 
-    Rectangle {
-        id: overlay
-        anchors.fill: parent
-        color: "#000000"
-        opacity: 0.35
-        visible: exitPopup.opened
-        z: 10  // Lower than popup and keyboard
-    }
+    // Rectangle {
+    //     id: overlay
+    //     anchors.fill: parent
+    //     color: "#000000"
+    //     opacity: 0.35
+    //     visible: exitPopup.opened
+    //     z: 10  // Lower than popup and keyboard
+    // }
 
     Popup {
         id: exitPopup
@@ -181,8 +181,7 @@ Rectangle {
         height: 300
         focus: true
         modal: true
-        dim: false
-        closePolicy: Popup.NoAutoClose  // Prevents closing when clicking outside
+        closePolicy: Popup.CloseOnPressOutside  // Prevents closing when clicking outside
         x: parent.width / 2 - (width / 2)
         y: parent.height / 2 - (height / 2)
         z: 20
