@@ -18,7 +18,7 @@ Rectangle {
     Connections {
         target: controller.device
         function onDoorsClosed() {
-            stack.push("Receipt.qml")
+            stack.replace("Receipt.qml")
         }
     }
 
