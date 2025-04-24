@@ -1,15 +1,44 @@
 import QtQuick 6.8
 import QtQuick.Controls 6.8
+import QtQuick.Controls.impl 6.8
 import QtQuick.Controls.Material 6.8
+import QtQuick.VirtualKeyboard 2.15
+import QtQuick.VirtualKeyboard.Styles 2.15
 import Constants
+import QtQuick.Layouts
+import QtQuick.Effects
 
 Rectangle {
     width: Constants.width
     height: Constants.height
+    visible: true
     Material.theme: Material.Dark
     id: welcomeScreen
     color: "#292929"
+
+    property real startY: 0
+    property bool swipeInProgress: false
+    property real swipeDistance: 0
     property string nfc_id: ""
+
+    Component.onCompleted: {
+        controller.wait_for_nfc()
+    }
+
+    Notification{
+        id: userNotFoundNotification
+    }
+    
+    Connections {
+        target: controller
+        function on_Nfc_signal(msg) {
+            if(msg == "") {
+                userNotFoundNotification.show("User not Found!", "#D91E1E")
+            } else {
+                stack.replace("Name.qml")
+            }
+        }
+    }
 
     Text {
         id: welcome
@@ -50,10 +79,11 @@ Rectangle {
         id: tapButton
         x: 292
         y: 461
+        z: 0
         width: 441
         height: 75
         icon.source: "images/tap.png"
-        text:  welcomeScreen.nfc_id // qsTr("Tap Card to Continue")
+        text:  qsTr("Tap Card to Continue") // welcomeScreen.nfc_id
         font.bold: false
         font.pointSize: 20
         font.family: "Roboto"
@@ -111,27 +141,6 @@ Rectangle {
             controller.admin.checkSeq()
         }
     }
-
-    Component.onCompleted: {
-        controller.wait_for_nfc()
-    }
-
-    Connections {
-        target: controller
-        function on_Nfc_signal(msg) {
-            if(msg == "") {
-                userNotFoundNotification.show("User not Found!", "#D91E1E")
-            } else {
-                stack.replace("Name.qml")
-            }
-        }
-    }
-
-    Notification{
-        id: userNotFoundNotification
-
-    }
-
 }
 
 
