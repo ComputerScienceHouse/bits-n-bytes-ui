@@ -46,7 +46,7 @@ MOCK_NFC = {
 # Use mock data if USE_MOCK_DATA environment variable is set to 'true'. If it
 # isn't set to 'true' (including not being set at all), it this defaults to
 # False.
-USE_MOCK_DATA = os.getenv("USE_MOCK_DATA", 'false').lower() == 'true'
+USE_MOCK_DB_DATA = os.getenv("USE_MOCK_DB_DATA", 'false').lower() == 'true'
 
 REQUEST_HEADERS = {"Authorization": AUTHORIZATION_KEY}
 
@@ -60,7 +60,7 @@ def is_reachable() -> bool:
     Check if the database is reachable
     :return: True if the database is reachable, False otherwise
     """
-    if USE_MOCK_DATA:
+    if USE_MOCK_DB_DATA:
         return True
     else:
         print("Check If Reachable (GET)")
@@ -80,7 +80,7 @@ def get_items() -> List[Item]:
     global cached_items, cached_items_by_id
 
     print("GET /items")
-    if USE_MOCK_DATA:
+    if USE_MOCK_DB_DATA:
         return list(MOCK_ITEMS.values())
     else:
         # Fetch data only if there is no cache
@@ -127,7 +127,7 @@ def get_item(item_id: int) -> Item | None:
     """
     global cached_items_by_id
     print(f"GET /items/{item_id}")
-    if USE_MOCK_DATA:
+    if USE_MOCK_DB_DATA:
         if item_id in MOCK_ITEMS:
             return MOCK_ITEMS[item_id]
         else:
@@ -169,7 +169,7 @@ def get_user(user_id=None, nfc_id=None) -> User | None:
     :return: A User or None if the User does not exist or no identifier (ID or
     token) was provided
     """
-    if USE_MOCK_DATA:
+    if USE_MOCK_DB_DATA:
         # Check if nfc id should be used
         if nfc_id is not None:
             # Get user from nfc id
@@ -247,7 +247,7 @@ def update_user(user: User) -> User | None:
     :return: The new User if the update was successful, otherwise None
     """
     print(f"PUT /users/{user.uid}")
-    if USE_MOCK_DATA:
+    if USE_MOCK_DB_DATA:
         if user.uid in MOCK_USERS:
             MOCK_USERS[user.uid] = user
             return user
