@@ -3,7 +3,6 @@ aiohttp==3.11.16
 aiohttp-retry==2.9.1
 aiosignal==1.3.2
 attrs==25.3.0
--e git+https://github.com/domesticchores/bits-n-bytes-ui.git@732372fe80369e8f2392c944c479847cbd9a6a4a#egg=bnb
 boto3==1.34.131
 botocore==1.34.162
 certifi==2025.1.31
