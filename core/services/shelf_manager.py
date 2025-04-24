@@ -357,7 +357,6 @@ class ShelfManager:
 
         # Connect to local MQTT broker
         if not (LOCAL_MQTT_BROKER_URL == "None" or LOCAL_MQTT_BROKER_URL == None or LOCAL_MQTT_BROKER_URL == ""):
-            print("local mqtt broker found")
             self._local_mqtt_client = MqttClient(LOCAL_MQTT_BROKER_URL, 1883)
             self._local_mqtt_client.add_topic('shelf/data', self._shelf_data_received)
             self._local_mqtt_client.start()
