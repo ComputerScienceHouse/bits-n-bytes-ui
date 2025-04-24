@@ -258,7 +258,7 @@ Rectangle {
         height: 250
         modal: true
         dim: true
-        z: 20
+        z: 30
         closePolicy: Popup.CloseOnPressOutside
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2 - (keyboard.visible ? keyboard.height / 2 : 0)
@@ -273,6 +273,7 @@ Rectangle {
         }
         onOpened: {
             recieptCountdown.stop()
+            forceActiveFocus()
         }
         onClosed: {
             recieptCountdown.resume()
@@ -338,7 +339,7 @@ Rectangle {
         closePolicy: Popup.CloseOnPressOutside
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2 - (keyboard.visible ? keyboard.height / 2 : 0)
-        z: 20
+        z: 30
         background: Rectangle {
             color: "#333333"
             radius: 10
@@ -350,6 +351,7 @@ Rectangle {
         }
         onOpened: {
             recieptCountdown.stop()
+            forceActiveFocus()
         }
         onClosed: {
             recieptCountdown.resume()
@@ -411,7 +413,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width
         height: 300
-        z: 30 
+        z: 25 
         y: visible ? parent.height - height : parent.height
         visible: emailInput.activeFocus || textInput.activeFocus
         
