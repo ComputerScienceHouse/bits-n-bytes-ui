@@ -384,42 +384,37 @@ class ShelfManager:
             # Open it, if it exists
             if shelf_data_path.exists():
                 with open(shelf_data_path, 'r') as file:
-                    try:
-                        # Load the JSON
-                        json_data = json.load(file)
-                        mac_address = json_data["macAddress"]
-                        slots = list()
-                        # Load all slots
-                        slots_list = list()
-                        for slot_json in json_data["slots"]:
-                            conversion_factor = slot_json["conversionFactor"]
-                            # Load all items
-                            items_list = list()
-                            for item_json in slot_json["items"]:
-                                # Get most recent version of item by ID
-                                item_id = item_json["id"]
-                                quantity = item_json["quantity"]
-                                # Make a copy of the item and modify the quantity
-                                item_to_copy = db.get_item(item_id)
-                                item_obj = Item(
-                                    item_to_copy.item_id,
-                                    item_to_copy.name,
-                                    item_to_copy.upc,
-                                    item_to_copy.price,
-                                    quantity,
-                                    item_to_copy.avg_weight,
-                                    item_to_copy.std_weight,
-                                    item_to_copy.thumbnail_url,
-                                    item_to_copy.vision_class
-                                )
-                                items_list.append(item_obj)
-                            slot_obj = Slot(items_list, conversion_factor)
-                            slots_list.append(slot_obj)
-                        shelf_obj = Shelf(mac_address, slots_list)
-                    except Exception:
-                        # Print error, jump to next file
-                        print(f"Shelf Manager: Error json decoding file '{shelf_data_path}'.")
-                        return None
+                    # Load the JSON
+                    json_data = json.load(file)
+                    mac_address = json_data["macAddress"]
+                    slots = list()
+                    # Load all slots
+                    slots_list = list()
+                    for slot_json in json_data["slots"]:
+                        conversion_factor = slot_json["conversionFactor"]
+                        # Load all items
+                        items_list = list()
+                        for item_json in slot_json["items"]:
+                            # Get most recent version of item by ID
+                            item_id = item_json["id"]
+                            quantity = item_json["quantity"]
+                            # Make a copy of the item and modify the quantity
+                            item_to_copy = db.get_item(item_id)
+                            item_obj = Item(
+                                item_to_copy.item_id,
+                                item_to_copy.name,
+                                item_to_copy.upc,
+                                item_to_copy.price,
+                                quantity,
+                                item_to_copy.avg_weight,
+                                item_to_copy.std_weight,
+                                item_to_copy.thumbnail_url,
+                                item_to_copy.vision_class
+                            )
+                            items_list.append(item_obj)
+                        slot_obj = Slot(items_list, conversion_factor)
+                        slots_list.append(slot_obj)
+                    shelf_obj = Shelf(mac_address, slots_list)
                     return shelf_obj
             else:
                 return None
