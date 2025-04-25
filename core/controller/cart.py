@@ -61,26 +61,25 @@ class CartController(QAbstractListModel):
     def addItem(self, item):
         if item not in self.cart.get_all_items():
             # Insert a new row if the item is not already in the cart
-            print(item.thumbnail_url)
-            position = len(self.cart)
+            position = self.cart.get_length()
             self.beginInsertRows(QModelIndex(), position, position)
             self.cart.add_item(item)
             self.endInsertRows()
         else:
             # Just update the existing item's quantity
             position = self.cart.get_index(item)
-            self.cart.add_items(item)
+            self.cart.add_item(item)
             top_left = self.index(position, 0)
             self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole])
 
     def removeItem(self, item):
-        if item in self.cart.items:
-            position = list(self.cart.items.keys()).index(item)
+        if item in self.cart._items:
+            position = self.cart.get_index(item)
             self.cart.remove_item(item)
             if self.cart.get_quantity(item) <= 0:
                 # Remove the row if quantity reaches 0
                 self.beginRemoveRows(QModelIndex(), position, position)
-                del self.cart.items[item]
+                del self.cart._items[item]
                 self.endRemoveRows()
             else:
                 # Just update the quantity

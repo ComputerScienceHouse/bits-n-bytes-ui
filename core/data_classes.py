@@ -115,7 +115,7 @@ class Cart:
         if (index := self.get_index(item)) is not None:
             return self._items[index].quantity
         else:
-            return None
+            return 0
 
     def get_all_items(self) -> List[Item]:
         """
@@ -140,3 +140,13 @@ class Cart:
         for item in self._items:
             subtotal += (item.price * item.quantity)
         return subtotal
+
+
+    def get_length(self) -> int:
+        """
+        Get the length of the cart.
+        :return:
+        """
+        return len(self._items)
+
+
