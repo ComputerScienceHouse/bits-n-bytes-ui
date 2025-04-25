@@ -383,7 +383,7 @@ class ShelfManager:
         with FileLock(Path(self._shelf_data_dir / f"{mac_address}.lock")):
             # Open it, if it exists
             if shelf_data_path.exists():
-                with open(shelf_data_path, 'rb') as file:
+                with open(shelf_data_path, 'r') as file:
                     try:
                         # Load the JSON
                         json_data = json.load(file)
