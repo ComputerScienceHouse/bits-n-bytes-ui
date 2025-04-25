@@ -22,6 +22,14 @@ class CheckoutController(QObject):
     def subtotal(self):
         return self._model._cart.get_subtotal()
 
+    @Slot(result=str)
+    def getPhoneNum(self):
+        return self._model.get_user_phone_number()
+    
+    @Slot(result=str)
+    def getEmail(self):
+        return self._model.get_user_email()
+
     @Slot(str)
     def setPhoneNum(self, phone_num):
         self._phone_num = phone_num
@@ -65,7 +73,7 @@ class CheckoutController(QObject):
         client = Client(account_sid, auth_token)
 
         items = list()
-        for item in self._model._cart._items:
+        for item in self._model.get_all_items_in_cart():
             product = shorten_string(item.name, 16)
             items.append(f"{item.quantity} {product}   ${item.price:.2f}")
         

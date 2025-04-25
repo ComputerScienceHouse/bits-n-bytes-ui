@@ -3,7 +3,10 @@ import QtQuick.Controls 6.8
 import QtQuick.Controls.Material 6.8
 import QtQuick.Layouts
 
+
 Item {
+
+    
     id: responseInput
     width: parent ? parent.width: 0
     height: parent ? parent.width/6: 0
@@ -15,6 +18,13 @@ Item {
 
     signal submitRequested(string text)
     signal pauseCountdown(bool pause)
+
+    Component.onCompleted: {
+    internalTextField.text = 
+        inputType === "email" 
+            ? controller.checkout.getEmail() 
+            : controller.checkout.getPhoneNum()
+    }
 
     MouseArea {
         anchors.fill: parent
@@ -30,6 +40,9 @@ Item {
         Label {
             id: responseLabel
             Layout.alignment: Qt.AlignLeft
+            font.pointSize: 15
+            font.family: "Roboto"
+            color: "white"
         }
         RowLayout {
             id: textFieldRow
@@ -41,9 +54,14 @@ Item {
                 color: "white"
                 font.family: "Roboto"
                 font.weight: Font.Normal
-                font.pointSize: 18
+                font.pointSize: 15
                 Material.accent: "#F76902"
-
+                // text: {
+                //     if (inputType === "email") 
+                //         return controller.checkout.getEmail()
+                //     else 
+                //         return controller.checkout.getPhoneNum()
+                //     }
                 inputMethodHints: inputType === "email" ? 
                     Qt.ImhEmailCharactersOnly | Qt.ImhNoPredictiveText :
                     Qt.ImhDialableCharactersOnly | Qt.ImhPreferNumbers
@@ -67,13 +85,13 @@ Item {
                 onClicked: {
                     console.log("Clicked Submit Button")
                     if (internalTextField.text.length > 0) {
-                        submit(textField.text)
+                        submitRequested(internalTextField.text)
                         internalTextField.focus = false
                         pauseCountdown(false)                        
                         Qt.inputMethod.hide()
                     }
                 }
-                font.pointSize: 18
+                font.pointSize: 15
                 font.family: "Roboto"
                 font.weight: Font.Normal
                 Material.roundedScale: Material.MediumScale
