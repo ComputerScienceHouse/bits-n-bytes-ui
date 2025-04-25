@@ -156,6 +156,7 @@ def get_items() -> List[Item]:
                 cached_items_by_id = dict()
                 for item in result:
                     cached_items_by_id[item.item_id] = item
+                    print(f"stored item {item.item_id} in cache")
                 return result
             else:
                 # Something went wrong so print info and return empty list
