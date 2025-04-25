@@ -29,11 +29,17 @@ Rectangle {
         }
     }
     
+    Component.onCompleted: {
+        receiptCountdown.start()
+    }
+
     Countdown {
-        id: recieptCountdown
+        id: receiptCountdown
         onFinished: {
             if (stack) { // Ensure 'stack' is accessible here (e.g., id of StackView)
                 stack.replace("Welcome.qml")
+                textResponseInput.textField.text = ""
+                emailResponseInput.textField.text = ""
             } else {
                 console.warn("StackView with id 'stack' not found for navigation.")
             }
@@ -62,7 +68,7 @@ Rectangle {
         width: 172
         height: 49
         color: "#ffffff"
-        text: `Timeout: ${recieptCountdown.remainingTime}`
+        text: `Timeout: ${receiptCountdown.remainingTime}`
         font.pixelSize: 24
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
@@ -74,9 +80,11 @@ Rectangle {
     ColumnLayout {
         id: contact
         x: 662
-        y: 95
+        y: 65
         width: 341
         height: 449
+        spacing: 20
+
         Text {
             Layout.alignment: Qt.AlignCenter
             x: 668
@@ -93,58 +101,54 @@ Rectangle {
             font.bold: true
         }
 
-        Item {
-            id: buttonContainer
-            // The container's size will be driven by the ColumnLayout's children.
-            // (Assuming the ColumnLayout’s children are added as normal QML children.)
-            width: buttons.childrenRect.width
-            height: buttons.childrenRect.height
+        ColumnLayout {
+            id: responseOptions
+            width: parent.width * 0.9
             Layout.alignment: Qt.AlignCenter
-            ColumnLayout {
-                id: buttons
-                spacing: 5
-                Button {
-                    Layout.alignment: Qt.AlignCenter
-                    id: textButton
-                    Layout.preferredWidth: 235
-                    Layout.preferredHeight: 75
-                    x: 685
-                    y: 238
-                    text: qsTr("Text")
-                    font.family: "Roboto"
-                    font.weight: Font.Normal
-                    font.pointSize: 20
+            spacing: 50
+            ResponseInput {
+                id: textResponseInput
+                inputType: "phone"
+                label: "Text"
+                placeholderText: "Phone Number"
+                onPauseCountdown: (pause) => {
+                    if (pause) receiptCountdown.stop()
+                    else receiptCountdown.resume()
                 }
+                onSubmitRequested: (text) => {
+                    controller.checkout.setPhoneNum(text)
+                    controller.checkout.send_sms()
+                }
+            }
 
-                Button {
-                    checked: false
-                    Layout.alignment: Qt.AlignCenter
-                    id: emailButton
-                    x: 685
-                    y: 296
-                    Layout.preferredWidth: 235
-                    Layout.preferredHeight: 75
-                    visible: true
-                    text: qsTr("Email")
-                    font.family: "Roboto"
-                    font.weight: Font.Normal
-                    font.pointSize: 20
+            ResponseInput {
+                id: emailResponseInput
+                inputType: "email"
+                label: "Email"
+                placeholderText: "Email Address"
+                onPauseCountdown: (pause) => {
+                    if (pause) receiptCountdown.stop()
+                    else receiptCountdown.resume()
                 }
+                onSubmitRequested: (text) => {
+                    controller.checkout.setEmail(text)
+                    controller.checkout.send_email()
+                }
+            }
 
-                Button {
-                    Layout.alignment: Qt.AlignCenter
-                    id: norecieptButton
-                    x: 685
-                    y: 354
-                    Layout.preferredWidth: 235
-                    Layout.preferredHeight: 75
-                    visible: true
-                    text: qsTr("No receipt")
-                    font.family: "Roboto"
-                    font.weight: Font.Normal
-                    font.pointSize: 20
-                    onClicked: stack.replace("Welcome.qml")
-                }
+            Button {
+                Layout.alignment: Qt.AlignCenter
+                id: norecieptButton
+                x: 685
+                y: 354
+                Layout.preferredWidth: 235
+                Layout.preferredHeight: 75
+                visible: true
+                text: qsTr("No receipt")
+                font.family: "Roboto"
+                font.weight: Font.Normal
+                font.pointSize: 20
+                onClicked: stack.replace("Welcome.qml")
             }
         }
 
@@ -241,176 +245,14 @@ Rectangle {
         }
     }
 
-    Component.onCompleted: {
-        recieptCountdown.start()
-        emailButton.clicked.connect(() => {
-            emailPopup.open()
-        })
-        textButton.clicked.connect(() => {
-            textPopup.open()
-        })
-    }
-   
-    // Email Popup
-    Popup {
-        id: emailPopup
-        width: 400
-        height: 250
-        modal: true
-        dim: true
-        z: 20
-        closePolicy: Popup.CloseOnPressOutside
-        x: (parent.width - width) / 2
-        y: (parent.height - height) / 2 - (keyboard.visible ? keyboard.height / 2 : 0)
-        background: Rectangle {
-            color: "#333333"
-            radius: 10
-        }
-        Overlay.modal: Rectangle {
-            z: 10
-            color: "#464646"
-            opacity: 0.4        
-        }
-        onOpened: {
-            recieptCountdown.stop()
-        }
-        onClosed: {
-            recieptCountdown.resume()
-            if (emailInput.text) {
-                controller.checkout.send_email()
-            }
-            textInput.focus = false
-            // keyboard.visible = false
-        }       
-        ColumnLayout {
-            id: emailContainer
-            anchors.centerIn: parent
-            spacing: 15
-
-            Text {
-                text: qsTr("Enter your email:")
-                font.family: "Roboto"
-                font.weight: Font.Normal
-                color: "white"
-                font.pixelSize: 24
-                Layout.alignment: Qt.AlignHCenter
-            }
-
-            TextField {
-                id: emailInput
-                Layout.preferredWidth: emailPopup.width - (emailPopup.width/4)
-                placeholderText: qsTr("Email Address")
-                color: "white"
-                font.family: "Roboto"
-                font.weight: Font.Normal
-                font.pointSize: 18
-                Material.accent: "#F76902"
-                inputMethodHints: Qt.ImhEmailCharactersOnly
-            }
-
-            Button {
-                text: qsTr("Submit")
-                Layout.alignment: Qt.AlignCenter
-                onClicked: {
-                    console.log("Clicked Submit Button")
-                    controller.checkout.setEmail(emailInput.text)
-                    emailPopup.close()
-                }
-                font.pointSize: 18
-                font.family: "Roboto"
-                font.weight: Font.Normal
-                Material.roundedScale: Material.MediumScale
-            }
-        }
-        Behavior on y {
-            NumberAnimation {
-                duration: 200
-                easing.type: Easing.InOutQuad
-            }
-        }
-    }
-
-    // Phone Number Popup
-    Popup {
-        id: textPopup
-        width: 400
-        height: 250
-        modal: true
-        dim: true
-        closePolicy: Popup.CloseOnPressOutside
-        x: (parent.width - width) / 2
-        y: (parent.height - height) / 2 - (keyboard.visible ? keyboard.height / 2 : 0)
-        z: 20
-        background: Rectangle {
-            color: "#333333"
-            radius: 10
-        }
-        Overlay.modal: Rectangle {
-            z: 1
-            color: "#464646"
-            opacity: 0.4        
-        }
-        onOpened: {
-            recieptCountdown.stop()
-        }
-        onClosed: {
-            recieptCountdown.resume()
-            if (textInput.text) {
-                controller.checkout.send_sms()       
-            }
-            textInput.focus = false
-            // keyboard.visible = false
-        }
-        ColumnLayout {
-            id: textContainer
-            anchors.centerIn: parent
-            spacing: 15
-            Text {
-                text: qsTr("Enter your phone number:")
-                color: "white"
-                font.pixelSize: 24
-                font.family: "Roboto"
-                font.weight: Font.Normal
-                Layout.alignment: Qt.AlignHCenter
-            }
-
-            TextField {
-                id: textInput
-                Layout.preferredWidth: textPopup.width - (textPopup.width/4)
-                placeholderText: qsTr("Phone Number")
-                color: "white"
-                font.family: "Roboto"
-                font.weight: Font.Normal
-                font.pointSize: 18
-                Material.accent: "#F76902"
-                inputMethodHints: Qt.ImhDigitsOnly
-            }
-
-            Button {
-                z: 20
-                text: qsTr("Submit")
-                Layout.alignment: Qt.AlignCenter
-                onClicked: {
-                    console.log("Clicked Submit Button")
-                    if (keyboard.visible) {
-                        keyboard.visible = false
-                        Qt.callLater(controller.checkout.setPhoneNum(textInput.text))  // Delay submission until after keyboard hides
-                    } else {
-                        controller.checkout.setPhoneNum(textInput.text)                    
-                    }
-                    textPopup.close()
-                }
-                font.pointSize: 18
-                font.family: "Roboto"
-                font.weight: Font.Normal
-                Material.roundedScale: Material.MediumScale
-            }
-        }
-        Behavior on y {
-            NumberAnimation {
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
+    MouseArea {
+        anchors.fill: parent
+        enabled: keyboard.visible
+        onClicked: {
+            textResponseInput.textField.focus = false
+            emailResponseInput.textField.focus = false
+            receiptCountdown.resume()
+            Qt.inputMethod.hide()
         }
     }
 
@@ -421,10 +263,10 @@ Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width
         height: 200
-        z: 2
+        z: 20
         y: visible ? parent.height - height : parent.height
-        visible: emailInput.activeFocus || textInput.activeFocus
-        
+        visible: Qt.inputMethod.visible
+
         Behavior on y {
             NumberAnimation {
                 duration: 200
