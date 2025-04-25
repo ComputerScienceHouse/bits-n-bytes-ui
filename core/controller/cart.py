@@ -79,7 +79,6 @@ class CartController(QAbstractListModel):
             if self.cart.get_quantity(item) <= 0:
                 # Remove the row if quantity reaches 0
                 self.beginRemoveRows(QModelIndex(), position, position)
-                del self.cart._items[item]
                 self.endRemoveRows()
             else:
                 # Just update the quantity
