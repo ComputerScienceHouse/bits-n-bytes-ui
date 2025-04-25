@@ -366,6 +366,7 @@ class ShelfManager:
         # Connect to remote MQTT broker
         if not (REMOTE_MQTT_BROKER_URL == "None" or REMOTE_MQTT_BROKER_URL == None or REMOTE_MQTT_BROKER_URL == ""):
             self._remote_mqtt_client = MqttClient(REMOTE_MQTT_BROKER_URL, 1883)
+            self._remote_mqtt_client.add_topic('shelf/tare', self._shelf_tare_received, qos=1)
             self._remote_mqtt_client.start()
         else:
             self._remote_mqtt_client = None
@@ -473,7 +474,7 @@ class ShelfManager:
 
     def tare_slot(self, shelf_id: str, slot_id: int, calibration_weight_g: float) -> bool:
         """
-        Tare a slot on a shelf.
+        Tare a slot on a shelf. Note that this function is thread safe,
         :param shelf_id: The mac address of the shelf.
         :param slot_id: The integer ID of the slot.
         :param calibration_weight_g: The weight of the calibration weight in grams.
@@ -546,6 +547,31 @@ class ShelfManager:
                         item_updates = all_slots[i].update_weight(raw_weight)
                         for item in item_updates:
                             self._weight_updates_queue.put(item)
+
+
+    def _shelf_tare_received(self, message: str):
+
+        # Convert message to JSON
+        try:
+            json_data = json.loads(message)
+        except JSONDecodeError:
+            print("Shelf Manager: Error: Unable to decode shelf data message as JSON.")
+            return
+
+        slots_to_tare = list()
+        # Get data from shelf
+        try:
+            calibration_weight_g = json_data['calibrationWeight']
+            shelves_json = json_data['shelves']
+            for shelf_mac in shelves_json:
+                slot_list = shelves_json[shelf_mac]['slots']
+                for slot_id in slot_list:
+                    self.tare_slot(shelf_mac, slot_id, calibration_weight_g=calibration_weight_g)
+
+        except KeyError:
+            print("Shelf Manager: Error: Invalid tare message received.")
+            return
+        print("tared shelves")
 
 
     def _main_loop(self):
