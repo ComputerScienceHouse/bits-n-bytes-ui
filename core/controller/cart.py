@@ -85,6 +85,7 @@ class CartController(QAbstractListModel):
                 top_left = self.index(position, 0)
                 self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole, Qt.UserRole + 3])
 
+    @Slot()
     def clear(self):
         self.beginResetModel()
         self.cart.clear_cart()

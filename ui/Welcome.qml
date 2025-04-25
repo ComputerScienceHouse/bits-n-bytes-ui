@@ -22,6 +22,9 @@ Rectangle {
     property string nfc_id: ""
 
     Component.onCompleted: {
+        if (controller.cart) {
+            controller.cart.clear()
+        }
         controller.wait_for_nfc()
     }
 
