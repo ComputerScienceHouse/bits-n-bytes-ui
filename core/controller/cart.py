@@ -11,9 +11,9 @@ class CartController(QAbstractListModel):
         self._image_cache = {}  # Cache for image paths
         self._cart = cart
 
-        cart.itemAdded.connect(self.addItem)
-        cart.itemRemoved.connect(self.removeItem)
-        cart.cartCleared.connect(self.clear)
+        cart.add_item.connect(self.addItem)
+        cart.remove_item.connect(self.removeItem)
+        cart.clear_cart.connect(self.clear)
 
     def roleNames(self):
         return {
@@ -81,11 +81,11 @@ class CartController(QAbstractListModel):
     def removeItem(self, item):
         if item in self._cart.items:
             position = list(self._cart.items.keys()).index(item)
-            self.cart.remove_item(item)
+            # self.cart.remove_item(item)
             if self.cart.get_quantity(item) <= 0:
                 # Remove the row if quantity reaches 0
                 self.beginRemoveRows(QModelIndex(), position, position)
-                del self.cart.items[item]
+                # del self.cart.items[item]
                 self.endRemoveRows()
             else:
                 # Just update the quantity
