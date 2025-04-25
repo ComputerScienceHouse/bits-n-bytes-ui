@@ -19,8 +19,8 @@ class DeviceController(QObject):
     doorsUnlock = Signal()
     doorsClosed = Signal()
 
-    _mqttRemoteClient: MqttClient
-    _mqttLocalClient: MqttClient
+    _mqttRemoteClient: MqttClient | None
+    _mqttLocalClient: MqttClient | None
 
     def __init__(self):
         super().__init__()
@@ -32,16 +32,20 @@ class DeviceController(QObject):
             print("Warning: Invalid BNB_ADMIN_PATTERN environment variable.")
             self._pattern = [] # Default to empty if invalid
 
-        if(MQTT_LOCAL_BROKER_URL is not None):
+        if MQTT_LOCAL_BROKER_URL is not None and MQTT_LOCAL_BROKER_URL != '':
             self._mqttLocalClient = MqttClient(MQTT_LOCAL_BROKER_URL, 1883)
             self._mqttLocalClient.add_topic(doors_status_topic, self.notifyDoorUnlock, qos=0)
             self._mqttLocalClient.add_topic(hatch_status_topic, self.notifyHatchUnlock, qos=1)
             self._mqttLocalClient.start()
-        if(MQTT_REMOTE_BROKER_URL is not None):
+        else:
+            self._mqttLocalClient = None
+        if MQTT_REMOTE_BROKER_URL is not None and MQTT_REMOTE_BROKER_URL != '':
             self._mqttRemoteClient = MqttClient(MQTT_REMOTE_BROKER_URL, 1883)
             self._mqttRemoteClient.add_topic(doors_status_topic, self.notifyDoorUnlock, qos=0)
             self._mqttRemoteClient.add_topic(hatch_status_topic, self.notifyHatchUnlock, qos=1)
             self._mqttRemoteClient.start()
+        else:
+            self._mqttRemoteClient = None
 
     def notifyDoorUnlock(self, msg: str):
         if msg == "open":
@@ -59,10 +63,16 @@ class DeviceController(QObject):
 
     @Slot(result=bool)
     def open_doors(self):
-        result = self._mqttLocalClient.post_message(open_doors_topic, open_doors_and_hatch_msg)
-        return result[0] == 0 
+        if self._mqttLocalClient is not None:
+            result = self._mqttLocalClient.post_message(open_doors_topic, open_doors_and_hatch_msg)
+            return result[0] == 0
+        else:
+            return False
 
     @Slot(result=bool)
     def open_hatch(self):
-        result = self._mqttLocalClient.post_message(open_hatch_topic, open_doors_and_hatch_msg)
-        return result[0] == 0
+        if self._mqttLocalClient is not None:
+            result = self._mqttLocalClient.post_message(open_hatch_topic, open_doors_and_hatch_msg)
+            return result[0] == 0
+        else:
+            return False
