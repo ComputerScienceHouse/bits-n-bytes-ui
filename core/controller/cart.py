@@ -1,12 +1,19 @@
 import os
-from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex, Slot
+from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex, Slot, Signal
 from core.model import Cart
 
 class CartController(QAbstractListModel):
+    dataChanged = Signal()
+    _cart: Cart
+
     def __init__(self, cart: Cart):
         super().__init__()
-        self.cart = cart
         self._image_cache = {}  # Cache for image paths
+        self._cart = cart
+
+        cart.itemAdded.connect(self.addItem)
+        cart.itemRemoved.connect(self.removeItem)
+        cart.cartCleared.connect(self.clear)
 
     def roleNames(self):
         return {
@@ -21,8 +28,8 @@ class CartController(QAbstractListModel):
         if not index.isValid() or index.row() >= len(self.cart.get_all_items()):
             return None
             
-        item = self.cart.get_all_items()[index.row()]
-        quantity = self.cart.get_quantity(item)
+        item = self._cart.get_all_items()[index.row()]
+        quantity = self._cart.get_quantity(item)
         
         if role == Qt.DisplayRole:
             return f"{item.name} (x{quantity})"
@@ -56,10 +63,10 @@ class CartController(QAbstractListModel):
         return item_image if os.path.exists(item_image) else placeholder
 
     def rowCount(self, parent=QModelIndex()):
-        return len(self.cart.get_all_items())
+        return len(self._cart.get_all_items())
 
     def addItem(self, item):
-        if item not in self.cart.get_all_items():
+        if item not in self._cart.get_all_items():
             # Insert a new row if the item is not already in the cart
             print(item.thumbnail_url)
             position = len(self.cart)
@@ -72,8 +79,8 @@ class CartController(QAbstractListModel):
             self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole])
 
     def removeItem(self, item):
-        if item in self.cart.items:
-            position = list(self.cart.items.keys()).index(item)
+        if item in self._cart.items:
+            position = list(self._cart.items.keys()).index(item)
             self.cart.remove_item(item)
             if self.cart.get_quantity(item) <= 0:
                 # Remove the row if quantity reaches 0

@@ -28,12 +28,12 @@ class Controller(QObject):
         super().__init__()
         self._nfc = NFCListenerThread()
         self._cart = Cart()
+        self._model = Model()
         self._cart_controller = CartController(self._model._cart)
         self._checkout_controller = CheckoutController(self._model)
         self._tare_controller = TareController(self._model._shelf_manager)
         self._admin_controller = AdminController()
         self._device_controller = DeviceController()
-        self._model = Model(self._cart_controller)
 
     @Property(QObject, constant=True)
     def admin(self):
