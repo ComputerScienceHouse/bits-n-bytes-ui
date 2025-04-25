@@ -58,18 +58,16 @@ class CartController(QAbstractListModel):
     def rowCount(self, parent=QModelIndex()):
         return len(self.cart.get_all_items())
 
-    def addItem(self, item, caller):
+    def addItem(self, item):
         if item not in self.cart.get_all_items():
             # Insert a new row if the item is not already in the cart
             print(item.thumbnail_url)
             position = len(self.cart)
             self.beginInsertRows(QModelIndex(), position, position)
-            self.cart.add_item(item)
             self.endInsertRows()
         else:
             # Just update the existing item's quantity
             position = self.cart.get_index(item)
-            self.cart.add_items(item)
             top_left = self.index(position, 0)
             self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole])
 

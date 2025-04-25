@@ -10,6 +10,7 @@ from typing import List, Set, Dict
 from core.services.shelf_manager import ShelfManager
 from core.data_classes import *
 import core.database as db
+from core.controller.cart import CartController
 
 WEIGHT_UNIT = 'g'
 
@@ -20,14 +21,15 @@ class Model:
     _enable_cart_update: bool
     _current_user: User | None
     _shelf_manager: ShelfManager
+    _cart_controller: CartController
 
-    def __init__(self):
+    def __init__(self, cart_controller: CartController):
         db.get_items()
         self._current_user = None
         self._cart = Cart()
 
         self._current_user = User(-1, 'Bilson McDade', '', 999.99, 'IMAGINE25', '', '')
-
+        self._cart_controller = cart_controller
         self._shelf_manager = ShelfManager(add_cart_item_cb=self.add_item_to_cart_cb, remove_cart_item_cb=self.remove_item_from_cart_cb)
 
     def get_all_items_in_cart(self) -> List[Item]:
@@ -128,9 +130,11 @@ class Model:
     def add_item_to_cart_cb(self, item: Item) -> None:
         print("added to cart")
         self._cart.add_item(item)
+        self._cart_controller.addItem(item)
 
 
     def remove_item_from_cart_cb(self, item: Item) -> None:
         print("removed from cart")
         self._cart.remove_item(item)
+        self._cart_controller.removeItem(item)
 
