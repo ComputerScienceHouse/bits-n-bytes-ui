@@ -192,10 +192,10 @@ def get_item(item_id: int) -> Item | None:
                     item['name'],
                     item['upc'],
                     item['price'],
-                    item['units'],
-                    item['avg_weight'],
-                    item['std_weight'],
-                    item['thumbnail'],
+                    item['quantity'],
+                    item['weight_avg'],
+                    item['weight_std'],
+                    item['thumb_img'],
                     item['vision_class']
                 )
             else:
