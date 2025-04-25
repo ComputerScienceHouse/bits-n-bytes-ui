@@ -168,6 +168,9 @@ Rectangle {
         exitAppButton.clicked.connect(() => {
             exitPopup.open();
         });
+        powerOffButton.clicked.connect(() => {
+            powerOffPopup.open();
+        })
     }
 
     // Rectangle {
@@ -194,7 +197,7 @@ Rectangle {
             radius: 10
         }
         ColumnLayout {
-            id: emailContainer
+            id: exitContainer
             anchors.centerIn: parent
             spacing: 10
 
@@ -208,7 +211,7 @@ Rectangle {
             }
 
             RowLayout {
-                id: buttonLayout
+                id: exitButtonLayout
                 width: parent.width
                 Button {
                     text: qsTr("Yes")
@@ -227,6 +230,65 @@ Rectangle {
                     Layout.fillWidth: true
                     onClicked: {
                         exitPopup.close()
+                    }
+                    font.family: "Roboto"
+                    font.weight: Font.Normal
+                    font.pixelSize: 24
+                    Material.roundedScale: Material.MediumScale
+                }
+
+            }
+        }
+    }
+
+    Popup {
+        id: powerOffPopup
+        width: 450
+        height: 300
+        focus: true
+        modal: true
+        closePolicy: Popup.CloseOnPressOutside  // Prevents closing when clicking outside
+        x: parent.width / 2 - (width / 2)
+        y: parent.height / 2 - (height / 2)
+        z: 20
+        background: Rectangle {
+            color: "#333333"
+            radius: 10
+        }
+        ColumnLayout {
+            id: powerOffContainer
+            anchors.centerIn: parent
+            spacing: 10
+
+            Text {
+                text: qsTr("Are you sure you want to power off?")
+                color: "white"
+                font.family: "Roboto"
+                font.weight: Font.Normal
+                font.pixelSize: 24
+                Layout.alignment: Qt.AlignHCenter
+            }
+
+            RowLayout {
+                id: powerOffButtonLayout
+                width: parent.width
+                Button {
+                    text: qsTr("Yes")
+                    Layout.fillWidth: true
+                    onClicked: {
+                        controller.power_off_machine()
+                    }
+                    font.family: "Roboto"
+                    font.weight: Font.Normal
+                    font.pixelSize: 24
+                    Material.roundedScale: Material.MediumScale
+                }
+
+                Button {
+                    text: qsTr("No")
+                    Layout.fillWidth: true
+                    onClicked: {
+                        powerOffPopup.close()
                     }
                     font.family: "Roboto"
                     font.weight: Font.Normal

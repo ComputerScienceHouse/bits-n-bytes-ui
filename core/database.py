@@ -81,7 +81,7 @@ MOCK_ITEMS = {
 
 MOCK_USERS = {
     # 1: User(1, "Tag 1", "258427912599", 20.00, "imagine", "", ""),
-    1: User(1, "User1", "", 10.00, 'imagine', "test@ema.il", "1234567")
+    1: User(1, "User1", "", 10.00, 'test@gmail.com', "5855551212")
 
 }
 
@@ -131,7 +131,7 @@ def get_items() -> List[Item]:
     else:
         # Fetch data only if there is no cache
         if cached_items is None:
-            url = API_ENDPOINT + "/items"
+            url = API_ENDPOINT + "items"
             # Make request
             response = requests.get(url, headers={"Authorization": AUTHORIZATION_KEY})
             # Check response code
@@ -192,10 +192,10 @@ def get_item(item_id: int) -> Item | None:
                     item['name'],
                     item['upc'],
                     item['price'],
-                    item['units'],
-                    item['avg_weight'],
-                    item['std_weight'],
-                    item['thumbnail'],
+                    item['quantity'],
+                    item['weight_avg'],
+                    item['weight_std'],
+                    item['thumb_img'],
                     item['vision_class']
                 )
             else:

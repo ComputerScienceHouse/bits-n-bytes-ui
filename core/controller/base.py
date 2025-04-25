@@ -13,6 +13,9 @@ from core.model import Model, Cart, User, ShelfManager
 from core.database import get_user
 from . import CartController, CheckoutController, AdminController, TareController, DeviceController
 from core import database
+import subprocess
+from pathlib import Path
+from threading import Thread
 
 class Controller(QObject):
     _model: Model
@@ -76,6 +79,18 @@ class Controller(QObject):
     def exit(self):
         self._shelf_manager.stop_loop()
         QApplication.instance().quit()
+
+
+    def _power_off_thread_task(self):
+        subprocess.Popen([Path.cwd() / 'poweroff.sh'])
+
+    @Slot()
+    def power_off_machine(self):
+        self._shelf_manager.stop_loop()
+        power_off_thread = Thread(target=self._power_off_thread_task)
+        power_off_thread.start()
+        QApplication.instance().quit()
+
 
     @Slot()
     def wait_for_nfc(self):
