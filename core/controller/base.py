@@ -70,11 +70,11 @@ class Controller(QObject):
 
     @Slot()
     def start_shelf_manager(self):
-        self._model._shelf_manager.start_loop()
+        self._shelf_manager.start_loop()
 
     @Slot()
     def exit(self):
-        self._model._shelf_manager.stop_loop()
+        self._shelf_manager.stop_loop()
         QApplication.instance().quit()
 
     @Slot()
