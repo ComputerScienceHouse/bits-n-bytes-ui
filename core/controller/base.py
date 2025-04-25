@@ -9,7 +9,7 @@
 from PySide6.QtCore import QObject, Slot, Property, Signal
 from PySide6.QtWidgets import QApplication
 from core.services.nfc import NFCListenerThread
-from core.model import Model, Cart, User
+from core.model import Model, Cart, User, ShelfManager
 from core.database import get_user
 from . import CartController, CheckoutController, AdminController, TareController, DeviceController
 from core import database
@@ -17,6 +17,7 @@ from core import database
 class Controller(QObject):
     _model: Model
     _cart: Cart
+    _shelf_manager: ShelfManager
     _nfc: NFCListenerThread
     _admin_controller: AdminController
     _cart_controller: CartController
@@ -29,9 +30,11 @@ class Controller(QObject):
         self._nfc = NFCListenerThread()
         self._cart = Cart()
         self._model = Model()
+        self._shelf_manager = ShelfManager(add_cart_item_cb=self.add_item_to_cart_cb, remove_cart_item_cb=self.remove_item_from_cart_cb)
+
         self._cart_controller = CartController(self._model._cart)
         self._checkout_controller = CheckoutController(self._model)
-        self._tare_controller = TareController(self._model._shelf_manager)
+        self._tare_controller = TareController(self._shelf_manager)
         self._admin_controller = AdminController()
         self._device_controller = DeviceController()
 
