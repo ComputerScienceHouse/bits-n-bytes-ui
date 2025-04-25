@@ -15,6 +15,12 @@ Rectangle {
     z: 0
     property alias button: button
 
+    Component.onCompleted: {
+        if (controller.cart) {
+            controller.cart.clear()
+        }
+    }
+
     Connections {
         target: controller.device
         function onDoorsClosed() {
