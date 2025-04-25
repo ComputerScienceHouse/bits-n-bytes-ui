@@ -70,7 +70,7 @@ class CartController(QAbstractListModel):
             position = self.cart.get_index(item)
             self.cart.add_item(item)
             top_left = self.index(position, 0)
-            self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole])
+            self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole, Qt.UserRole + 3])
 
     def removeItem(self, item):
         if item in self.cart._items:
@@ -83,7 +83,7 @@ class CartController(QAbstractListModel):
             else:
                 # Just update the quantity
                 top_left = self.index(position, 0)
-                self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole])
+                self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole, Qt.UserRole + 3])
 
     def clear(self):
         self.beginResetModel()
