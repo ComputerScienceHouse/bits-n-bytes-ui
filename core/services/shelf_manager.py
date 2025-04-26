@@ -12,6 +12,7 @@ import threading
 import time
 from json import JSONDecodeError
 from queue import Queue
+from statistics import quantiles
 from threading import Lock
 from typing import List, Dict, Any, Callable
 from scipy.stats import norm
@@ -206,6 +207,22 @@ class Slot:
             return True
 
 
+    def clear_items(self) -> None:
+        """
+        Clear all items from this slot.
+        :return: None.
+        """
+        self._items.clear()
+
+
+    def get_items(self) -> List[Item]:
+        """
+        Get all items from the shelf.
+        :return:
+        """
+        return self._items
+
+
     def get_json(self) -> Dict:
         """
         Get the JSON representation of this slot.
@@ -283,6 +300,15 @@ class Shelf:
         :return: A list of Slot.
         """
         return self._slots
+
+
+    def get_slot(self, slot_id: int) -> Slot:
+        """
+        Get a slot from this shelf.
+        :param slot_id: ID of the slot to get.
+        :return:
+        """
+        return self._slots[slot_id]
 
 
     def tare_slot(self, slot_id: int, calibration_weight_g: float) -> bool:
@@ -367,6 +393,7 @@ class ShelfManager:
         if not (REMOTE_MQTT_BROKER_URL == "None" or REMOTE_MQTT_BROKER_URL == None or REMOTE_MQTT_BROKER_URL == ""):
             self._remote_mqtt_client = MqttClient(REMOTE_MQTT_BROKER_URL, 1883)
             self._remote_mqtt_client.add_topic('shelf/tare', self._shelf_tare_received, qos=1)
+            self._remote_mqtt_client.add_topic('shelf/set/item', self._shelf_update_items_received, qos=1)
             self._remote_mqtt_client.start()
         else:
             self._remote_mqtt_client = None
@@ -572,6 +599,58 @@ class ShelfManager:
             print("Shelf Manager: Error: Invalid tare message received.")
             return
         print("tared shelves")
+
+
+    def _shelf_update_items_received(self, message: str):
+        """
+        Callback for when item update is received from website.
+        :param message:
+        :return:
+        """
+        # Convert message to JSON
+        try:
+            json_data = json.loads(message)
+        except JSONDecodeError:
+            print("Shelf Manager: Error: Unable to decode shelf data message as JSON.")
+            return
+        for shelf_mac in json_data['shelves']:
+            for slot_id in json_data['shelves'][shelf_mac]['slotInfo']:
+                slot_json = json_data['shelves'][shelf_mac]['slotInfo'][slot_id]
+                item_id = slot_json['itemId']
+                quantity = slot_json['quantity']
+
+
+                with self._active_shelves_lock:
+                    # Get the slot to modify
+                    slot_obj = self._active_shelves[shelf_mac].get_slot(slot_id)
+
+                    # If item ID is empty, clear items
+                    if item_id == 'EMPTY':
+                        slot_obj.clear_items()
+                    else:
+                        # Check if this object already exists
+                        obj_found = False
+                        for existing_item in slot_obj.get_items():
+                            if existing_item.item_id == item_id:
+                                # Item exists, updated quantity
+                                existing_item.quantity = quantity
+                                obj_found = True
+                                break
+                        if not obj_found:
+                            slot_obj.add_item(
+                                Item(
+                                    item_id,
+                                    existing_item.name,
+                                    existing_item.upc,
+                                    existing_item.price,
+                                    quantity,
+                                    existing_item.avg_weight,
+                                    existing_item.std_weight,
+                                    existing_item.thumbnail_url,
+                                    existing_item.vision_class
+                                )
+                            )
+
 
 
     def _main_loop(self):
