@@ -125,7 +125,7 @@ def get_items() -> List[Item]:
     """
     global cached_items, cached_items_by_id
 
-    print("GET /items")
+    print("GET /get_items")
     if USE_MOCK_DB_DATA:
         return list(MOCK_ITEMS.values())
     else:
