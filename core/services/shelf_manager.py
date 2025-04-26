@@ -23,6 +23,7 @@ import pandas as pd
 from core.services.mqtt import MqttClient
 from core.data_classes import *
 import core.database as db
+import math
 
 SHELF_DATA_DIR = Path(Path.cwd() / 'tmp')
 SHELF_DISCONNECT_TIMEOUT_MS = 5000
@@ -31,7 +32,7 @@ LOCAL_MQTT_BROKER_URL = os.environ.get('MQTT_LOCAL_BROKER_URL', None)
 REMOTE_MQTT_BROKER_URL = os.environ.get('MQTT_REMOTE_BROKER_URL', None)
 USE_MOCK_DATA = os.environ.get('USE_MOCK_DATA', False) == 'True'
 MAX_ITEM_REMOVALS_TO_CHECK = 3
-THRESHOLD_WEIGHT_PROBABILITY = 0.001
+THRESHOLD_WEIGHT_PROBABILITY = 20
 
 class Slot:
 
@@ -102,9 +103,8 @@ class Slot:
         :return: Tuple: Item, Float; The item that is most likely and the probability of
         it being that item.
         """
-        direction = 1
-        if weight_delta < 0:
-            direction = -1
+        direction = 1 if weight_delta > 0 else -1
+        abs_weight_delta = abs(weight_delta)
 
         # Store probabilities of the various quantities of items being added/removed from the slot
         probabilities = dict()
@@ -116,19 +116,12 @@ class Slot:
             for potential_quantity in range(1, MAX_ITEM_REMOVALS_TO_CHECK + 1):
                 expected_weight = item.avg_weight * potential_quantity
                 scaled_std = item.std_weight * (potential_quantity ** 0.5)
-                # z_score = (abs(weight_delta) - expected_weight) / scaled_std
-                # probability = (1 - abs(0.5 - norm.cdf(z_score)) * 2)
 
-                # Calculate per-item weight at this quantity
-                quantity_weight_delta = abs(weight_delta / potential_quantity)
-                # Calculate probability using probability density function on bell curve
-                probability = norm.pdf(
-                    quantity_weight_delta,
-                    loc=item.avg_weight,
-                    scale=item.std_weight
-                )
+                # Calculate log-likelihood using normal distribution
+                z_score = (abs_weight_delta - expected_weight) / scaled_std if scaled_std > 0 else float('inf')
+                log_likelihood = -0.5 * (z_score ** 2) - math.log(scaled_std)
                 # Store this probability
-                probabilities[item.item_id].append(probability)
+                probabilities[item.item_id].append(log_likelihood)
         # Convert probabilities to pandas dataframe
         df = pd.DataFrame(probabilities, index=range(1, MAX_ITEM_REMOVALS_TO_CHECK + 1)).T
         # Convert to stack to get top n probabilities
@@ -141,7 +134,7 @@ class Slot:
         # Iterate through the top probabilities in decreasing order
         for rank, ((item_id, quantity), probability) in enumerate(top_n_probabilities.items(), start=1):
             print(f'{quantity}x {db.get_item(item_id).name} (p={probability})')
-            if probability < THRESHOLD_WEIGHT_PROBABILITY:
+            if abs(probability) > THRESHOLD_WEIGHT_PROBABILITY:
                 # If this probability is less than the threshold, all others will be too so return early
                 break
             else:
@@ -186,11 +179,14 @@ class Slot:
         :return:
         """
         self._current_raw_weight = raw_value
-        new_weight = raw_value * self._conversion_factor
-        weight_delta = new_weight - self._current_weight
-        item_changes = self.predict_most_likely_item(weight_delta)
-        self._current_weight = new_weight
-        return item_changes
+        normalized_new_weight = raw_value * self._conversion_factor
+        weight_delta = normalized_new_weight - self._current_weight
+        if abs(weight_delta) > (0.1 * self._conversion_factor):
+            item_changes = self.predict_most_likely_item(weight_delta)
+            self._current_weight = normalized_new_weight
+            return item_changes
+        else:
+            return list()
 
 
     def tare(self, calibration_weight_g: float) -> bool:
