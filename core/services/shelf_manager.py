@@ -640,6 +640,7 @@ class ShelfManager:
                                 existing_item.quantity = quantity
                                 obj_found = True
                                 break
+                        existing_item = db.get_item(item_id)
                         if not obj_found:
                             slot_obj.add_item(
                                 Item(
