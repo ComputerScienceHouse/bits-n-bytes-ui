@@ -204,7 +204,7 @@ class Slot:
             return False
         else:
             # Calculate conversion factor
-            self._conversion_factor = abs(calibration_weight_g / (self._current_weight - self._previous_raw_weight))
+            self._conversion_factor = abs(calibration_weight_g / (self._current_raw_weight - self._previous_raw_weight))
             # Update previous weight
             self._previous_raw_weight = self._current_raw_weight
             return True
