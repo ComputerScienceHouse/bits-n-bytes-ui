@@ -131,7 +131,7 @@ def get_items() -> List[Item]:
     else:
         # Fetch data only if there is no cache
         if cached_items is None:
-            url = API_ENDPOINT + "items"
+            url = API_ENDPOINT + "get_items"
             # Make request
             response = requests.get(url, headers={"Authorization": AUTHORIZATION_KEY})
             # Check response code
