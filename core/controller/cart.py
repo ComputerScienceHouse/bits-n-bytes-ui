@@ -1,8 +1,11 @@
 import os
-from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex, Slot
+from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex, Slot, Property
 from core.model import Cart, ShelfManager, Item
 
 class CartController(QAbstractListModel):
+
+    _subtotal: int
+
     def __init__(self, cart: Cart):
         super().__init__()
         self.cart = cart
@@ -65,12 +68,14 @@ class CartController(QAbstractListModel):
             self.beginInsertRows(QModelIndex(), position, position)
             self.cart.add_item(item)
             self.endInsertRows()
+            self._subtotal = self.getSubtotal()
         else:
             # Just update the existing item's quantity
             position = self.cart.get_index(item)
             self.cart.add_item(item)
             top_left = self.index(position, 0)
             self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole, Qt.UserRole + 3])
+            self._subtotal = self.getSubtotal()
 
     def removeItem(self, item):
         if item in self.cart._items:
@@ -80,10 +85,12 @@ class CartController(QAbstractListModel):
                 # Remove the row if quantity reaches 0
                 self.beginRemoveRows(QModelIndex(), position, position)
                 self.endRemoveRows()
+                self._subtotal = self.getSubtotal()
             else:
                 # Just update the quantity
                 top_left = self.index(position, 0)
                 self.dataChanged.emit(top_left, top_left, [Qt.DisplayRole, Qt.UserRole + 3])
+                self._subtotal = self.getSubtotal()
 
     @Slot()
     def clear(self):
@@ -95,8 +102,13 @@ class CartController(QAbstractListModel):
     def getSubtotal(self):
         return self.cart.get_subtotal()
     
+    @Property(int)
+    def subtotal(self):
+        return self._subtotal
+
     def add_item_to_cart_cb(self, item: Item) -> None:
         print("added to cart")
+        self.updateSubtotal()
         self.addItem(item)
 
     def remove_item_from_cart_cb(self, item: Item) -> None:

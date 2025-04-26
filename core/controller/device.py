@@ -64,7 +64,7 @@ class DeviceController(QObject):
     @Slot(result=bool)
     def open_doors(self):
         if self._mqttLocalClient is not None:
-            result = self._mqttLocalClient.post_message(open_doors_topic, open_doors_and_hatch_msg)
+            #result = self._mqttLocalClient.post_message(open_doors_topic, open_doors_and_hatch_msg)
             return result[0] == 0
         else:
             return False

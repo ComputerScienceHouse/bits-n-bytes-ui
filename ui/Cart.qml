@@ -140,7 +140,7 @@ Rectangle {
         width: 193
         height: 29
         color: "#ffffff"
-        text: `Subtotal: $${controller.cart.getSubtotal().toFixed(2)}`
+        text: `Subtotal: $${controller.cart.subtotal}`
         font.pixelSize: 20
         horizontalAlignment: Text.AlignLeft
         font.family: "IBM Plex Mono"
