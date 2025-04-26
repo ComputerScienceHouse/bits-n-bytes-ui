@@ -30,8 +30,8 @@ DEFAULT_NUM_SLOTS_PER_SHELF = 4
 LOCAL_MQTT_BROKER_URL = os.environ.get('MQTT_LOCAL_BROKER_URL', None)
 REMOTE_MQTT_BROKER_URL = os.environ.get('MQTT_REMOTE_BROKER_URL', None)
 USE_MOCK_DATA = os.environ.get('USE_MOCK_DATA', False) == 'True'
-MAX_ITEM_REMOVALS_TO_CHECK = 5
-THRESHOLD_WEIGHT_PROBABILITY = 0.1
+MAX_ITEM_REMOVALS_TO_CHECK = 3
+THRESHOLD_WEIGHT_PROBABILITY = 0.05
 
 class Slot:
 
@@ -628,8 +628,8 @@ class ShelfManager:
                     # Get the slot to modify
                     slot_obj = self._active_shelves[shelf_mac].get_slot(slot_id)
 
-                    # If item ID is empty, clear items
-                    if item_id == 'EMPTY':
+                    # If item ID is -1 (empty), clear items
+                    if item_id == -1:
                         slot_obj.clear_items()
                     else:
                         # Check if this object already exists
