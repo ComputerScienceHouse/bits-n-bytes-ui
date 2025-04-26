@@ -618,6 +618,7 @@ class ShelfManager:
             return
         for shelf_mac in json_data['shelves']:
             for slot_id in json_data['shelves'][shelf_mac]['slotInfo']:
+                slot_id = int(slot_id)
                 slot_json = json_data['shelves'][shelf_mac]['slotInfo'][slot_id]
                 item_id = slot_json['itemId']
                 quantity = slot_json['quantity']
