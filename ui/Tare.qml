@@ -82,6 +82,7 @@ Rectangle {
             delegate: Shelf {
                 // Bind model properties explicitly
                 // Pass the properties to the Shelf component
+                required property int index
                 required property var modelData
                 Layout.row: index
                 Layout.column: index % 2

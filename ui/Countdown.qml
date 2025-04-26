@@ -5,7 +5,7 @@ import QtQuick.Controls.Material 6.8
 Item {
     id: countdownRoot
 
-    property int initialTime: 10
+    property int initialTime: 20
 
     property int remainingTime: initialTime
 

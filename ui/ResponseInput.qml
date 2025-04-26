@@ -54,7 +54,7 @@ Item {
                 color: "white"
                 font.family: "Roboto"
                 font.weight: Font.Normal
-                font.pointSize: 15
+                font.pointSize: 12
                 Material.accent: "#F76902"
                 // text: {
                 //     if (inputType === "email") 
@@ -91,7 +91,7 @@ Item {
                         Qt.inputMethod.hide()
                     }
                 }
-                font.pointSize: 15
+                font.pointSize: 12
                 font.family: "Roboto"
                 font.weight: Font.Normal
                 Material.roundedScale: Material.MediumScale
