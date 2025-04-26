@@ -26,7 +26,7 @@ class Model:
         self._current_user = None
         self._cart = Cart()
 
-        self._current_user = User(-1, 'Bilson McDade', '', 999.99, 'bilsonmcdade@gmail.com', 'ur mom\'s phone number')
+        self._current_user = User(-1, 'Bilson McWade', '', 999.99, 'bilsonmcdade@gmail.com', '5048814528')
         # self._shelf_manager = ShelfManager(add_cart_item_cb=self.add_item_to_cart_cb, remove_cart_item_cb=self.remove_item_from_cart_cb)
 
     def get_all_items_in_cart(self) -> List[Item]:
