@@ -31,7 +31,7 @@ LOCAL_MQTT_BROKER_URL = os.environ.get('MQTT_LOCAL_BROKER_URL', None)
 REMOTE_MQTT_BROKER_URL = os.environ.get('MQTT_REMOTE_BROKER_URL', None)
 USE_MOCK_DATA = os.environ.get('USE_MOCK_DATA', False) == 'True'
 MAX_ITEM_REMOVALS_TO_CHECK = 3
-THRESHOLD_WEIGHT_PROBABILITY = 0.05
+THRESHOLD_WEIGHT_PROBABILITY = 0.001
 
 class Slot:
 
@@ -140,6 +140,7 @@ class Slot:
 
         # Iterate through the top probabilities in decreasing order
         for rank, ((item_id, quantity), probability) in enumerate(top_n_probabilities.items(), start=1):
+            print(f'{quantity}x {db.get_item(item_id).name} (p={probability})')
             if probability < THRESHOLD_WEIGHT_PROBABILITY:
                 # If this probability is less than the threshold, all others will be too so return early
                 break

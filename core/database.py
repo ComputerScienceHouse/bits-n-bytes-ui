@@ -17,7 +17,7 @@ API_ENDPOINT = os.getenv("BNB_API_ENDPOINT", '')
 AUTHORIZATION_KEY = os.getenv("BNB_AUTHORIZATION_KEY", '')
 
 MOCK_ITEMS = {
-    2: Item(2, "Sour Patch Kids", "567890123456", 3.50, 90, 226, 15, "images/item_placeholder.png", ""),
+    2: Item(2, "Sour Patch Kids", "567890123456", 3.50, 90, 200, 20, "images/item_placeholder.png", ""),
     3: Item(3, "Brownie Brittle", "", 3.00, 90, 78, 10, "images/item_placeholder.png", ""),
 }
 
