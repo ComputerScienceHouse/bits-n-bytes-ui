@@ -37,7 +37,8 @@ class Slot:
 
     _items: List[Item]
     _current_weight: float
-    _previous_weight: float
+    _current_raw_weight: float
+    _previous_raw_weight: float
     _conversion_factor: float
 
     def __init__(self, items: List[Item] | None = None, conversion_factor: float = 1):
@@ -50,7 +51,8 @@ class Slot:
         else:
             self._items = items
         self._current_weight = 0
-        self._previous_weight = 0
+        self._current_raw_weight = 0
+        self._previous_raw_weight = 0
         self._conversion_factor = conversion_factor
 
 
@@ -182,6 +184,7 @@ class Slot:
         :param raw_value:
         :return:
         """
+        self._current_raw_weight = raw_value
         new_weight = raw_value * self._conversion_factor
         weight_delta = new_weight - self._current_weight
         item_changes = self.predict_most_likely_item(weight_delta)
@@ -195,15 +198,15 @@ class Slot:
         :param calibration_weight_g: Weight in grams of the calibration weight being used.
         :return:
         """
-        if self._previous_weight == self._current_weight:
+        if self._previous_raw_weight == self._current_raw_weight:
             # Can't divide by zero, print an error
             print("Shelf Manager: Loaded weight and zero weight are the same, can't compute conversion factor.")
             return False
         else:
             # Calculate conversion factor
-            self._conversion_factor = abs(calibration_weight_g / (self._current_weight - self._previous_weight))
+            self._conversion_factor = abs(calibration_weight_g / (self._current_weight - self._previous_raw_weight))
             # Update previous weight
-            self._previous_weight = self._current_weight
+            self._previous_raw_weight = self._current_raw_weight
             return True
 
 
