@@ -9,7 +9,7 @@ ColumnLayout {
 
     RowLayout {
         id: buttonRow
-        spacing: 12
+        spacing: 20
         Layout.alignment: Qt.AlignHCenter
 
         Repeater {
