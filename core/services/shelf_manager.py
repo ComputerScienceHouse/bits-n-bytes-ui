@@ -617,9 +617,9 @@ class ShelfManager:
             print("Shelf Manager: Error: Unable to decode shelf data message as JSON.")
             return
         for shelf_mac in json_data['shelves']:
-            for slot_id in json_data['shelves'][shelf_mac]['slotInfo']:
-                slot_id = int(slot_id)
-                slot_json = json_data['shelves'][shelf_mac]['slotInfo'][slot_id]
+            for slot_id_str in json_data['shelves'][shelf_mac]['slotInfo']:
+                slot_json = json_data['shelves'][shelf_mac]['slotInfo'][slot_id_str]
+                slot_id = int(slot_id_str)
                 item_id = slot_json['itemId']
                 quantity = slot_json['quantity']
 
