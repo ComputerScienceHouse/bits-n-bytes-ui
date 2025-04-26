@@ -116,17 +116,17 @@ class Slot:
             for potential_quantity in range(1, MAX_ITEM_REMOVALS_TO_CHECK + 1):
                 expected_weight = item.avg_weight * potential_quantity
                 scaled_std = item.std_weight * (potential_quantity ** 0.5)
-                z_score = (abs(weight_delta) - expected_weight) / scaled_std
-                probability = (1 - abs(0.5 - norm.cdf(z_score)) * 2)
+                # z_score = (abs(weight_delta) - expected_weight) / scaled_std
+                # probability = (1 - abs(0.5 - norm.cdf(z_score)) * 2)
 
-                # # Calculate per-item weight at this quantity
-                # quantity_weight_delta = abs(weight_delta / potential_quantity)
-                # # Calculate probability using probability density function on bell curve
-                # probability = norm.pdf(
-                #     quantity_weight_delta,
-                #     loc=item.avg_weight,
-                #     scale=item.std_weight
-                # )
+                # Calculate per-item weight at this quantity
+                quantity_weight_delta = abs(weight_delta / potential_quantity)
+                # Calculate probability using probability density function on bell curve
+                probability = norm.pdf(
+                    quantity_weight_delta,
+                    loc=item.avg_weight,
+                    scale=item.std_weight
+                )
                 # Store this probability
                 probabilities[item.item_id].append(probability)
         # Convert probabilities to pandas dataframe
