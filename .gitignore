@@ -1,124 +1,103 @@
-# This file is used to ignore files which are generated
-# ----------------------------------------------------------------------------
-/bnb/email
-
-.venv
-/venv
-/tmp/
-*~
-*.autosave
-*.a
-*.core
-*.moc
+# Misc
+.class
+*.dex
+*.jar
+*.keystore
+*.logs
+*.zip
+*.apk
+*.ap_
+*.aab
+*.iml
 *.o
-*.obj
-*.orig
-*.rej
 *.so
-*.so.*
-*_pch.h.cpp
-*_resource.rc
-*.qm
-.#*
-*.*#
-core
-!core/
-tags
 .DS_Store
-.directory
-*.debug
-Makefile*
-*.prl
-*.app
-moc_*.cpp
-ui_*.h
-qrc_*.cpp
-Thumbs.db
-*.res
-*.rc
-/.qmake.cache
-/.qmake.stash
-venv
+.atom/
+.buildlog/
+.gradle/
+.project/
+.settings/
+.vscode/
+.idea/
+# Dart & Flutter
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+/build/
 
-# qtcreator generated files
-*.pro.user*
-CMakeLists.txt.user*
+#Obfuscation files
+/ios/Flutter/App.framework/flutter_assets/kernel_blob.bin
+/ios/Flutter/App.framework/flutter_assets/isolate_snapshot_data
+/ios/Flutter/App.framework/flutter_assets/vm_snapshot_data
 
-# xemacs temporary files
-*.flc
+#Generated files
+flutter_export_environment.sh
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+*-keys.json
+key.properties
 
-# Vim temporary files
-.*.swp
+#Android specific
+**/android/caches/
+**/android/captures/
+**/android/gradle/
+**/android/gradle-cache/
+**/android/gradle-wrapper.jar
+/android//build/
+**/android/app/build/
+**/android/app/src/main/assets/flutter_assets/
+**/android/app/src/main/assets/NOTICES.Z
+**/android/gradle.properties
+**/android/local.properties
+**/android/key.properties
+**/android/app/google-services.json
+**/android/.cxx/
 
-# Visual Studio generated files
-*.ib_pdb_index
-*.idb
-*.ilk
-*.pdb
-*.sln
-*.suo
-*.vcproj
-*vcproj.*.*.user
-*.ncb
-*.sdf
-*.opensdf
-*.vcxproj
-*vcxproj.*
+#iOS specific
+**/ios/Pods/
+**/ios/Runner/Assets.xcassets/AppIcon.appiconset/
+**/ios/Runner/Assets.xcassets/LaunchImage.launchimage/
+**/ios/Runner.xcworkspace/
+**/ios/Runner.xcodeproj/
+**/ios/Flutter/
+**/ios/Flutter/Debug.xcconfig
+**/ios/Flutter/Release.xcconfig
+**/iosconfig.json
+**/ios/.symlinks/
+**/ios/native_assets.yaml
+**/ios/ServiceDefinitions.json
+**/ios/DerivedData/
+**/ios/build/
+**/ios/stack-symbolicate.sh
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Runner/GoogleService-Info.plist
 
-# MinGW generated files
-*.Debug
-*.Release
+#macOS specific
+**/macos/Flutter/
+**/macos/Pods/
+**/macos/Runner.xcworkspace/
+**/macos/Runner.xcodeproj/
+**/macos/.symlinks/
+**/macos/DerivedData/
+**/macos/build/
+**/macos/native_assets.yaml
 
-# Python byte code
-*.pyc
+#Linux specific
+**/linux/flutter/
+**/linux/build/
+**/linux/.cache/
+**/linux/native_assets.yaml
 
-# Binaries
-# --------
-*.dll
-*.exe
+#Windows specific
+**/windows/flutter/
+**/windows/build/
+**/windows/.vs/
+**/windows/runner/
+**/windows/native_assets.yaml
 
-# IDEs
-.vscode
-.idea
-
-# Personal files
-.qtcreator
-
-# Ignore all .user files and their variations
-*.user
-*.user.*
-**/*pyproject*
-
- Python
-*.pyc
-__pycache__/
-*.pyo
-*.pyd
-
-# Qt
-*.pro.user
-*.moc
-*.obj
-*.o
-*.so
-*.a
-*.dll
-*.dylib
-*.exe
-*.app
-*.framework
-*.qmlc
-*.qmltypes
-*.qm
-*.qmake.cache
-
-# Qt Creator
-build-*
-debug/
-release/
-ui_*.h
-
-# Custom
-config.py
-*.qtds
-*.egg-info
+#Web specific
+**/web/build/
+**/web/.dart_tool/
+**/web/native_assets.yaml
