@@ -12,6 +12,9 @@ import 'pages/welcome.dart';
 import 'pages/cart.dart';
 import 'theme.dart';
 import 'util.dart';
+import 'package:window_manager/window_manager.dart';
+import 'dart:io' show Platform;
+import '../services/uart.dart';
 
 final piScreen = DeviceInfo.genericPhone(
   id: 'pi_screen',
@@ -21,17 +24,25 @@ final piScreen = DeviceInfo.genericPhone(
   pixelRatio: 1.0,
 );
 
-void main() {
+void main() async {
   // runApp(const MyApp());
-  runApp(
-    DevicePreview(
-      devices: [
-        piScreen
-      ],
-      enabled: !bool.fromEnvironment('dart.vm.product'),
-      builder: (context) => const MyApp(),
-    )
-  );
+  WidgetsFlutterBinding.ensureInitialized();  
+
+  if(Platform.isLinux) {
+    SerialService().startListening();
+    await windowManager.ensureInitialized();
+    WindowOptions windowOptions = const WindowOptions(
+      fullScreen: true,
+      center: true
+    );
+
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -42,15 +53,15 @@ class MyApp extends StatelessWidget {
     TextTheme textTheme = createTextTheme(context, "Roboto", "IBM Plex Mono");
 
     MaterialTheme theme = MaterialTheme(textTheme);
-    return MaterialApp(
-      // 5. Hook up DevicePreview
-      locale: DevicePreview.locale(context),
-      builder:  DevicePreview.appBuilder,
-      debugShowCheckedModeBanner: false,
-      theme: theme.light(),
-      darkTheme: theme.dark(),
-      themeMode: ThemeMode.system,
-      home: WelcomePage()
+    return MouseRegion(
+        cursor: SystemMouseCursors.none,
+        child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme.light(),
+        darkTheme: theme.dark(),
+        themeMode: ThemeMode.system,
+        home: WelcomePage()
+      )
     );
   }
 }

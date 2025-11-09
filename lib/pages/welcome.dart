@@ -1,11 +1,12 @@
 import 'dart:developer';
 import 'package:bits_n_bytes_ui/pages/admin.dart';
 import 'package:bits_n_bytes_ui/pages/name.dart';
-import 'package:dart_periphery/dart_periphery.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:virtual_keyboard_multi_language/virtual_keyboard_multi_language.dart';
+import '../services/uart.dart'; // Adjust path if needed
+import 'dart:async';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -15,22 +16,25 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
-     // Check for a sharp upward swipe
-    // primaryVelocity is negative when swiping up.
+
   DragStartDetails? _dragStartDetails;
-  final double _minSwipeDistance = 50.0; // Min pixels to swipe
-
+  final double _minSwipeDistance = 50.0;
   String text = '';
-  // CustomLayoutKeys _customLayoutKeys;
-  // True if shift enabled.
   bool shiftEnabled = false;
-
-  // is true will show the numeric keyboard.
   bool isNumericMode = false;
 
   @override
   void initState() {
     super.initState();
+    if (!mounted) {
+      log("WELCOME PAGE: Received data but widget is unmounted. Ignoring.");
+      return;
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   void _checkPassword(String password) {
@@ -205,11 +209,14 @@ class _WelcomePageState extends State<WelcomePage> {
               ),
               TextButton.icon(
                 onPressed: () => {
+                  SerialService().sendJson({"doors": true}),
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute<void>(
-                        builder: (context) => const NamePage(),
-                    )
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation1, animation2) => const NamePage(),
+                      transitionDuration: Duration.zero,
+                      reverseTransitionDuration: Duration.zero,
+                    ),
                   )
                 },
                 icon: SizedBox.square(

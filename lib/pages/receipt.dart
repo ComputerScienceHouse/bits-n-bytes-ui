@@ -37,7 +37,8 @@ class _ReceiptPageState extends State<ReceiptPage> {
                 
               ],
             )
-          )
+          ),
+          Spacer(flex: 4),
           Container(
             width: MediaQuery.sizeOf(context).width/3,
             alignment: Alignment.centerRight,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/uart.dart';
+import 'dart:developer';
 
 class Shelf extends StatefulWidget {
   final String letter;
@@ -18,16 +20,68 @@ class _ShelfState extends State<Shelf> {
   final List<String> items = List.generate(4, (index) => 'Item ${index + 1}'); // Sample data
   String get letter => widget.letter;
 
+
+void _showTareDialog(int slotIndex) {
+    // List of options for the dropdown
+    final List<String> weightOptions = ['100g', '20g', '10g', '5g', '2g', '1g'];
+    // Variable to hold the selected value in the dialog
+    String? _selectedValue = weightOptions.first; // Default to 100g
+
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text('Tare Slot $letter$slotIndex'),
+              content: DropdownButton<String>(
+                value: _selectedValue,
+                isExpanded: true,
+                items: weightOptions.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setDialogState(() {
+                    _selectedValue = newValue;
+                  });
+                },
+              ),
+              actions: [
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop(); 
+                  },
+                ),
+                ElevatedButton(
+                  child: const Text('Tare'),
+                  onPressed: () {
+                    log('Taring slot $letter$slotIndex with weight $_selectedValue');
+                    SerialService().sendJson({
+                      "calibration": {
+                        "shelf_id": ,
+                        "slot_id": slotIndex,
+                        "weight_g": _selectedValue
+                      }
+                    });
+                    Navigator.of(dialogContext).pop(); 
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
-    
-    // 2. Calculate the available width INSIDE your container
-    //    (Screen Width - 32 for margin - 32 for padding)
     final double availableWidth = screenWidth - 32 - 32;
-
-    // 3. Calculate the width for one button
-    //    (Available width / 4) - 8px for its own right-padding
     final double buttonWidth = (availableWidth / 4) - 8;
 
     return Row(
@@ -77,10 +131,9 @@ class _ShelfState extends State<Shelf> {
                         return Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          spacing: 20,
                           children: [
                             ElevatedButton(
-                              onPressed: () => {},
+                              onPressed: () => {_showTareDialog(index)},
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.all(20),
                                 shape: RoundedRectangleBorder(
@@ -90,6 +143,7 @@ class _ShelfState extends State<Shelf> {
                               ),
                               child: Text("Slot $letter$index"),
                             ),
+                            SizedBox(width: 10)
                           ],
                         );
                       }

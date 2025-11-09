@@ -29,9 +29,11 @@ class _DoorClosedPageState extends State<DoorClosedPage> {
   void handleTimeout() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) => ReceiptPage()
-      )
+      PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2) => const ReceiptPage(),
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
+      ),
     );
   }
 

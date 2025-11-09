@@ -4,6 +4,9 @@ import 'package:bits_n_bytes_ui/pages/welcome.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../services/uart.dart'; // Adjust path if needed
+import 'dart:async';
+import 'dart:developer';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -15,6 +18,35 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   
   String name = "Sahil";
+
+  StreamSubscription? _serialSubscription;
+
+  @override
+  void initState() {
+    _serialSubscription = SerialService().dataStream.listen((data) {
+      log("CART PAGE received data: $data");
+      // Doors are now closed
+      if (data['doors'] == true) {
+        // If we get the event, navigate
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => const DoorClosedPage(),
+              transitionDuration: Duration.zero,
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        }
+      }
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _serialSubscription?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,9 +99,11 @@ class _CartPageState extends State<CartPage> {
                         onPressed: () {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute<void>(
-                                builder: (context) => const WelcomePage(),
-                            )
+                            PageRouteBuilder(
+                              pageBuilder: (context, animation1, animation2) => const WelcomePage(),
+                              transitionDuration: Duration.zero,
+                              reverseTransitionDuration: Duration.zero,
+                            ),
                           );
                         }, 
                         icon: SizedBox.square(
