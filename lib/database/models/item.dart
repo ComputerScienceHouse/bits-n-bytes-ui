@@ -2,7 +2,7 @@ class Item {
   final int id;
   final String name;
   final String imgUrl;
-  final int price;
+  final double price;
   final int quantity;
 
   const Item({
@@ -19,7 +19,7 @@ class Item {
         'id': int id,
         'name': String name,
         'imgUrl': String imgUrl,
-        'price': int price,
+        'price': double price,
         'quantity': int quantity,
       } =>
         Item(

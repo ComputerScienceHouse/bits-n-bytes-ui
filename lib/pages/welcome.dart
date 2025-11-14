@@ -16,7 +16,6 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
-
   DragStartDetails? _dragStartDetails;
   final double _minSwipeDistance = 50.0;
   String text = '';
@@ -43,8 +42,10 @@ class _WelcomePageState extends State<WelcomePage> {
       // Pop the dialog route
       Navigator.of(context).pop();
       // Push the admin page
-      Navigator.of(context, rootNavigator: true)
-          .push(MaterialPageRoute(builder: (c) => const AdminPage()));
+      Navigator.of(
+        context,
+        rootNavigator: true,
+      ).pushReplacement(MaterialPageRoute(builder: (c) => const AdminPage()));
     } else {
       log("Access Denied");
       Navigator.of(context).pop(); // Just pop the dialog
@@ -55,7 +56,7 @@ class _WelcomePageState extends State<WelcomePage> {
     // Create a controller for the dialog's text field
     final TextEditingController passwordController = TextEditingController();
 
-     showGeneralDialog(
+    showGeneralDialog(
       context: context,
       // --- 2. THIS PREVENTS TAPPING OUTSIDE TO CLOSE ---
       barrierDismissible: false,
@@ -69,16 +70,18 @@ class _WelcomePageState extends State<WelcomePage> {
           child: Column(
             children: [
               const Spacer(), // Pushes the dialog to the center
-              
               // This is your dialog widget
               AlertDialog(
                 title: Text(
-                    textAlign: TextAlign.start,
-                    'Enter Admin Password',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontFamily:
-                            Theme.of(context).textTheme.bodyMedium?.fontFamily)),
+                  textAlign: TextAlign.start,
+                  'Enter Admin Password',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.fontFamily,
+                  ),
+                ),
                 content: TextField(
                   controller: passwordController,
                   obscureText: true,
@@ -102,21 +105,19 @@ class _WelcomePageState extends State<WelcomePage> {
                   ),
                 ],
               ),
-              
+
               const Spacer(), // Pushes the keyboard to the bottom
-              
               // --- 4. THE KEYBOARD, OUTSIDE THE DIALOG ---
               //    But inside the new dialog "page"
               Container(
                 color: Theme.of(context).colorScheme.primaryContainer,
                 child: VirtualKeyboard(
                   height: 200,
-                  textColor: Colors.white, 
+                  textColor: Colors.white,
                   textController: passwordController,
                   type: VirtualKeyboardType.Alphanumeric,
                 ),
-              )
-              
+              ),
             ],
           ),
         );
@@ -126,7 +127,7 @@ class _WelcomePageState extends State<WelcomePage> {
       passwordController.dispose();
     });
   }
- 
+
   void _handleDragStart(DragStartDetails details) {
     _dragStartDetails = details;
   }
@@ -177,24 +178,22 @@ class _WelcomePageState extends State<WelcomePage> {
     setState(() {});
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Welcome", style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600)),
-            Icon(
-              CupertinoIcons.info,
-              color: Colors.black,
-              size: 48.0
-            )
-          ]
-        ) 
+            Text(
+              "Welcome",
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+            ),
+            Icon(CupertinoIcons.info, color: Colors.black, size: 48.0),
+          ],
+        ),
       ),
-      body:
-      GestureDetector(
+      body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onVerticalDragStart: _handleDragStart,
         onVerticalDragEnd: _handleDragEnd,
@@ -202,24 +201,18 @@ class _WelcomePageState extends State<WelcomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              SvgPicture.asset(
-                'assets/images/bnb.svg', 
-                width: 400
-              ),
+              SvgPicture.asset('assets/images/bnb.svg', width: 400),
               TextButton.icon(
                 onPressed: () => {
                   SerialService().sendJsonTo('/dev/ttyAMA0', {"doors": true}),
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const NamePage()
-                    )
-                  )
+                    MaterialPageRoute(builder: (context) => const NamePage()),
+                  ),
                 },
                 icon: SizedBox.square(
                   dimension: 20,
-                  child: 
-                  Image.asset(
+                  child: Image.asset(
                     'assets/images/tap.png',
                     width: 100,
                     height: 100,
@@ -228,18 +221,26 @@ class _WelcomePageState extends State<WelcomePage> {
                 style: TextButton.styleFrom(
                   fixedSize: const Size(400, 60),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusGeometry.circular(10)
+                    borderRadius: BorderRadiusGeometry.circular(10),
                   ),
-                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(horizontal: 72, vertical: 16),  
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 72,
+                    vertical: 16,
+                  ),
                 ),
-                label: Text('Tap card to continue', style: TextStyle(fontSize: 20)),
-              )            
-            ]
+                label: Text(
+                  'Tap card to continue',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+            ],
           ),
         ),
-      )
+      ),
     );
   }
 }

@@ -1,10 +1,14 @@
+import 'dart:convert';
+
 import 'package:bits_n_bytes_ui/components/app_bar.dart';
 import 'package:bits_n_bytes_ui/components/cart_item.dart';
 import 'package:bits_n_bytes_ui/database/models/item.dart';
 import 'package:bits_n_bytes_ui/pages/door_closed.dart';
 import 'package:bits_n_bytes_ui/pages/welcome.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/uart.dart'; // Adjust path if needed
 import 'dart:async';
@@ -19,12 +23,23 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   String name = "Sahil";
-  List<Item> cart = [];
+  List<Item> cart = [
+    Item(
+      id: 1,
+      name: 'Jolt',
+      imgUrl: 'http://placehold.jp/150x150.png',
+      price: 3.00,
+      quantity: 2,
+    ),
+  ];
   StreamSubscription<SerialDataPacket>? _serialSubscription;
 
   @override
   void initState() {
     super.initState();
+    const String espPort = '/dev/ttyAMA0';
+    const String jetsonPort = '/dev/ttyUSB0';
+
     _serialSubscription = SerialService().dataStream.listen((packet) {
       log("CART PAGE received data: $packet");
 
@@ -32,17 +47,89 @@ class _CartPageState extends State<CartPage> {
         final Map<String, dynamic> jsonData =
             packet.data as Map<String, dynamic>;
         // Doors are now closed
-        if (jsonData.containsKey('doors')) {
-          if (jsonData['doors'] == true) {
-            // If we get the event, navigate
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const DoorClosedPage()),
-            );
+        if (packet.portName == espPort) {
+          if (jsonData.containsKey('doors')) {
+            if (jsonData['doors'] == true) {
+              // If we get the event, navigate
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const DoorClosedPage()),
+              );
+            }
           }
+        }
+
+        if (packet.portName == jetsonPort &&
+            jsonData.containsKey('id') &&
+            jsonData.containsKey('quantity')) {
+          // Use our new handler method
+          // We don't await this, as the listener is not async
+          _handleCartUpdate(jsonData['id'] as int, jsonData['quantity'] as int);
         }
       }
     });
+  }
+
+  Future<void> _handleCartUpdate(int id, int quantityDelta) async {
+    // Check if the item is already in the cart
+    int existingIndex = cart.indexWhere((item) => item.id == id);
+
+    if (existingIndex != -1) {
+      final existingItem = cart[existingIndex];
+      int newQuantity = existingItem.quantity + quantityDelta;
+      if (newQuantity == 0) {
+        setState(() {
+          cart.removeAt(existingIndex);
+        });
+        log("Item $id removed from cart.");
+      } else {
+        // Quantity has changed, update it
+        cart[existingIndex] = Item(
+          id: existingItem.id,
+          name: existingItem.name,
+          imgUrl: existingItem.imgUrl,
+          price: existingItem.price,
+          quantity: newQuantity,
+        );
+        setState(() {}); // Update UI
+        log("Item $id quantity updated to $newQuantity.");
+      }
+    } else if (quantityDelta > 0) {
+      // --- NEW ITEM TO ADD (and quantity > 0) ---
+      log("New item $id detected. Fetching details...");
+
+      // !!! IMPORTANT !!!
+      // Replace 'https://your-api.com/items/' with your actual API endpoint
+      final url = Uri.parse('${dotenv.env['API_URL']}/items/$id');
+
+      try {
+        final response = await http.get(url);
+
+        if (response.statusCode == 200) {
+          // API call was successful
+          final Map<String, dynamic> itemData = jsonDecode(response.body);
+
+          // Create the new item using API data + packet quantity
+          final newItem = Item(
+            id: itemData['id'], // Assumes API returns 'id'
+            name: itemData['name'], // Assumes API returns 'name'
+            imgUrl: itemData['imgUrl'], // Assumes API returns 'imgUrl'
+            price: (itemData['price'] as num)
+                .toDouble(), // Assumes API returns 'price'
+            quantity: quantityDelta, // Use the quantity from the packet
+          );
+
+          setState(() {
+            cart.add(newItem);
+          });
+          log("Item $id added to cart.");
+        } else {
+          log("Failed to fetch item $id. Status: ${response.statusCode}");
+        }
+      } catch (e) {
+        log("Error fetching item $id: $e");
+      }
+    }
   }
 
   @override

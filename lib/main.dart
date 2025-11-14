@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'util.dart';
 import 'theme.dart';
-// import 'package:device_preview/device_preview.dart';
+import 'package:device_preview/device_preview.dart';
 import 'pages/welcome.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:io' show Platform;
 import '../services/uart.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
-// final piScreen = DeviceInfo.genericPhone(
-//   id: 'pi_screen',
-//   platform: TargetPlatform.linux,
-//   name: 'Pi 10.1" Screen (1024x600)',
-//   screenSize: const Size(1024, 600),
-//   pixelRatio: 1.0,
-// );
+
+final piScreen = DeviceInfo.genericPhone(
+  id: 'pi_screen',
+  platform: TargetPlatform.linux,
+  name: 'Pi 10.1" Screen (1024x600)',
+  screenSize: const Size(1024, 600),
+  pixelRatio: 1.0,
+);
 
 Future main() async {
   // runApp(const MyApp());
@@ -45,8 +46,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = createTextTheme(context, "Roboto", "IBM Plex Mono");
-
     MaterialTheme theme = MaterialTheme(textTheme);
+
+    if (Platform.isMacOS) {
+      return DevicePreview(
+        enabled: true,
+        devices: [piScreen],
+        builder: (context) => MaterialApp(
+          useInheritedMediaQuery: true,
+          debugShowCheckedModeBanner: false,
+          theme: theme.light(),
+          darkTheme: theme.dark(),
+          themeMode: ThemeMode.system,
+          home: WelcomePage(),
+        ),
+      );
+    }
+
     return MouseRegion(
       cursor: SystemMouseCursors.none,
       child: MaterialApp(

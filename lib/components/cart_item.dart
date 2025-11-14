@@ -1,6 +1,5 @@
 import 'package:bits_n_bytes_ui/database/models/item.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer';
 
 class CartItem extends StatefulWidget {
   final Item item;
@@ -15,8 +14,6 @@ class _CartItemState extends State<CartItem> {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = 2 * MediaQuery.sizeOf(context).width / 3;
-    final double availableWidth = screenWidth - 32 - 32;
-
     return Row(
       children: [
         Container(
@@ -37,39 +34,44 @@ class _CartItemState extends State<CartItem> {
           ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.network("http://placehold.jp/150x150.png"),
-                Column(
-                  children: [
-                    Text(
-                      widget.item.name,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
+                Image.network("http://placehold.jp/100x100.png"),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.item.name,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "Item Calories, description",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      Text(
+                        "Item Calories, description",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "\$$widget.item.price",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      Text(
+                        "\$${widget.item.price.toStringAsFixed(2)}",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 Text(
-                  "$widget.item.quantity",
+                  "${widget.item.quantity}",
                   style: TextStyle(
-                    fontSize: 30,
+                    fontSize: 50,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
