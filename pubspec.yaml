@@ -41,6 +41,11 @@ dependencies:
   dotted_border: ^3.1.0
   window_manager: ^0.5.1
   flutter_libserialport: ^0.6.0
+  sqflite: ^2.4.2
+  http: ^1.6.0
+  flutter_dotenv: ^6.0.0
+  keep_screen_on: ^5.0.0
+  redis: ^4.0.0
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +76,7 @@ flutter:
     - assets/images/tap.png
     - assets/images/lockup.svg
     - assets/images/checkmark.svg
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -18,7 +18,6 @@ class BnBAppBar extends StatelessWidget implements PreferredSizeWidget {
         alignment: Alignment.topLeft,
         color: Colors.transparent,
         // we can set width here with conditions
-        width: 2*MediaQuery.widthOf(context)/3,
         height: kToolbarHeight,
         child: Row(
           children: [

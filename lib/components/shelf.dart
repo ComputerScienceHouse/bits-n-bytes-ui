@@ -59,12 +59,14 @@ void _showTareDialog(int slotIndex) {
                 ElevatedButton(
                   child: const Text('Tare'),
                   onPressed: () {
+                    final int weightInt = int.parse(_selectedValue!.replaceAll('g', ''));
+                    log(weightInt.toString());
                     log('Taring slot $letter$slotIndex with weight $_selectedValue');
-                    SerialService().sendJson({
+                    SerialService().sendJsonTo('/dev/ttyAMA0', {
                       "calibration": {
-                        "shelf_id": ,
+                        "shelf_id": widget.macAddr,
                         "slot_id": slotIndex,
-                        "weight_g": _selectedValue
+                        "weight_g": weightInt
                       }
                     });
                     Navigator.of(dialogContext).pop(); 

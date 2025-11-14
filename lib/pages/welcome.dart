@@ -179,7 +179,6 @@ class _WelcomePageState extends State<WelcomePage> {
 
 @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -209,14 +208,12 @@ class _WelcomePageState extends State<WelcomePage> {
               ),
               TextButton.icon(
                 onPressed: () => {
-                  SerialService().sendJson({"doors": true}),
+                  SerialService().sendJsonTo('/dev/ttyAMA0', {"doors": true}),
                   Navigator.pushReplacement(
                     context,
-                    PageRouteBuilder(
-                      pageBuilder: (context, animation1, animation2) => const NamePage(),
-                      transitionDuration: Duration.zero,
-                      reverseTransitionDuration: Duration.zero,
-                    ),
+                    MaterialPageRoute(
+                      builder: (context) => const NamePage()
+                    )
                   )
                 },
                 icon: SizedBox.square(
@@ -238,10 +235,10 @@ class _WelcomePageState extends State<WelcomePage> {
                   padding: const EdgeInsets.symmetric(horizontal: 72, vertical: 16),  
                 ),
                 label: Text('Tap card to continue', style: TextStyle(fontSize: 20)),
-              ),
-            ],
+              )            
+            ]
           ),
-        )
+        ),
       )
     );
   }

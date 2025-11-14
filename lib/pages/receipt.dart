@@ -3,6 +3,7 @@ import 'package:bits_n_bytes_ui/pages/welcome.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'dart:async';
 
 class ReceiptPage extends StatefulWidget {
   const ReceiptPage({super.key});
@@ -12,8 +13,49 @@ class ReceiptPage extends StatefulWidget {
 }
 
 class _ReceiptPageState extends State<ReceiptPage> {
-
   String name = "Sahil";
+  Timer? _timer;
+  int _seconds = 20;
+
+  @override 
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {  
+      if (_seconds > 0) {
+        setState(() {
+          _seconds--;
+        });
+      } else {
+        _timer?.cancel();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const WelcomePage()
+          )
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void handleTimeout() {
+    setState(() {
+      _seconds--;
+    });
+    if(_seconds == 0){
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const WelcomePage()
+        )
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +130,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
                                       )
                                     ),
                                   TextSpan(
-                                    text: "20", 
+                                    text: _seconds.toString(), 
                                     style: TextStyle( 
                                       fontWeight: FontWeight.bold, 
                                       color: Theme.of(context).colorScheme.secondaryContainer

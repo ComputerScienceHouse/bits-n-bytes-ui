@@ -28,13 +28,11 @@ class _NamePageState extends State<NamePage> {
   }
 
   void handleTimeout() {
-    Navigator.pushReplacement(
+     Navigator.pushReplacement(
       context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation1, animation2) => const CartPage(),
-        transitionDuration: Duration.zero,
-        reverseTransitionDuration: Duration.zero,
-      ),
+      MaterialPageRoute(
+        builder: (context) => const CartPage()
+      )
     );
   }
 
