@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/uart.dart';
@@ -67,6 +68,25 @@ class AdminControlsGrid extends StatelessWidget {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const WelcomePage()),
+          );
+        },
+      ),
+      _AdminButton(
+        icon: LucideIcons.recycle,
+        label: "Restart RFID",
+        onPressed: () {
+          SerialService().sendBinaryTo(
+            '/dev/ttyUSB0',
+            Uint8List.fromList([
+              0xFF,
+              0x00,
+              0x00,
+              0x00,
+              0x00,
+              0x00,
+              0x00,
+              0x00,
+            ]),
           );
         },
       ),

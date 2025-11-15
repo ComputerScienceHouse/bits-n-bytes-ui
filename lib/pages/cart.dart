@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bits_n_bytes_ui/components/app_bar.dart';
 import 'package:bits_n_bytes_ui/components/cart_item.dart';
 import 'package:bits_n_bytes_ui/database/models/item.dart';
+import 'package:bits_n_bytes_ui/database/models/user.dart';
 import 'package:bits_n_bytes_ui/pages/door_closed.dart';
 import 'package:bits_n_bytes_ui/pages/welcome.dart';
 import 'package:flutter/material.dart';
@@ -15,59 +16,72 @@ import 'dart:async';
 import 'dart:developer';
 
 class CartPage extends StatefulWidget {
-  const CartPage({super.key});
+  final User user;
+
+  const CartPage({super.key, required this.user});
 
   @override
   State<CartPage> createState() => _CartPageState();
 }
 
 class _CartPageState extends State<CartPage> {
-  String name = "Sahil";
-  List<Item> cart = [
-    Item(
-      id: 1,
-      name: 'Jolt',
-      imgUrl: 'http://placehold.jp/150x150.png',
-      price: 3.00,
-      quantity: 2,
-    ),
-  ];
-  StreamSubscription<SerialDataPacket>? _serialSubscription;
+  List<Item> cart = [];
+  StreamSubscription<SerialDataPacket>? _doorSubscription;
+  StreamSubscription<SerialDataPacket>? _cartSubscription;
+  User get user => widget.user;
 
   @override
   void initState() {
     super.initState();
     const String espPort = '/dev/ttyAMA0';
-    const String jetsonPort = '/dev/ttyUSB0';
+    const String jetsonPort = '/dev/ttyUSB1';
 
-    _serialSubscription = SerialService().dataStream.listen((packet) {
-      log("CART PAGE received data: $packet");
+    _doorSubscription = SerialService().dataStream
+        .where(
+          (packet) =>
+              packet.portName == espPort &&
+              packet.protocol == SerialProtocol.json,
+        )
+        .listen((packet) {
+          log("CART PAGE received data: $packet");
 
-      if (packet.protocol == SerialProtocol.json) {
-        final Map<String, dynamic> jsonData =
-            packet.data as Map<String, dynamic>;
-        // Doors are now closed
-        if (packet.portName == espPort) {
-          if (jsonData.containsKey('doors')) {
-            if (jsonData['doors'] == true) {
-              // If we get the event, navigate
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const DoorClosedPage()),
-              );
+          if (packet.protocol == SerialProtocol.json) {
+            final Map<String, dynamic> jsonData =
+                packet.data as Map<String, dynamic>;
+            // Doors are now closed
+            if (jsonData.containsKey('doors')) {
+              if (jsonData['doors'] == true) {
+                // If we get the event, navigate
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        DoorClosedPage(cart: cart, user: user),
+                  ),
+                );
+              }
             }
           }
-        }
+        });
 
-        if (packet.portName == jetsonPort &&
-            jsonData.containsKey('id') &&
-            jsonData.containsKey('quantity')) {
-          // Use our new handler method
-          // We don't await this, as the listener is not async
-          _handleCartUpdate(jsonData['id'] as int, jsonData['quantity'] as int);
-        }
-      }
-    });
+    _cartSubscription = SerialService().dataStream
+        .where(
+          (packet) =>
+              packet.portName == jetsonPort &&
+              packet.protocol == SerialProtocol.json,
+        )
+        .listen((packet) {
+          log("CART LISTENER received: ${packet.data}");
+          final Map<String, dynamic> jsonData =
+              packet.data as Map<String, dynamic>;
+
+          if (jsonData.containsKey('id') && jsonData.containsKey('quantity')) {
+            _handleCartUpdate(
+              jsonData['id'] as int,
+              jsonData['quantity'] as int,
+            );
+          }
+        });
   }
 
   Future<void> _handleCartUpdate(int id, int quantityDelta) async {
@@ -94,16 +108,19 @@ class _CartPageState extends State<CartPage> {
         setState(() {}); // Update UI
         log("Item $id quantity updated to $newQuantity.");
       }
-    } else if (quantityDelta > 0) {
+    } else if (quantityDelta < 0) {
       // --- NEW ITEM TO ADD (and quantity > 0) ---
       log("New item $id detected. Fetching details...");
 
       // !!! IMPORTANT !!!
       // Replace 'https://your-api.com/items/' with your actual API endpoint
-      final url = Uri.parse('${dotenv.env['API_URL']}/items/$id');
+      final url = Uri.parse('${dotenv.env['API_URL']}items/$id');
 
       try {
-        final response = await http.get(url);
+        final response = await http.get(
+          url,
+          headers: {"Authorization": "${dotenv.env['API_AUTH_KEY']}"},
+        );
 
         if (response.statusCode == 200) {
           // API call was successful
@@ -113,9 +130,8 @@ class _CartPageState extends State<CartPage> {
           final newItem = Item(
             id: itemData['id'], // Assumes API returns 'id'
             name: itemData['name'], // Assumes API returns 'name'
-            imgUrl: itemData['imgUrl'], // Assumes API returns 'imgUrl'
-            price: (itemData['price'] as num)
-                .toDouble(), // Assumes API returns 'price'
+            imgUrl: itemData['thumb_img'], // Assumes API returns 'imgUrl'
+            price: itemData['price'], // Assumes API returns 'price'
             quantity: quantityDelta, // Use the quantity from the packet
           );
 
@@ -134,7 +150,8 @@ class _CartPageState extends State<CartPage> {
 
   @override
   void dispose() {
-    _serialSubscription?.cancel();
+    _cartSubscription?.cancel();
+    _doorSubscription?.cancel();
     super.dispose();
   }
 
@@ -158,7 +175,8 @@ class _CartPageState extends State<CartPage> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute<void>(
-                            builder: (context) => const DoorClosedPage(),
+                            builder: (context) =>
+                                DoorClosedPage(cart: cart, user: user),
                           ),
                         );
                       },
@@ -167,11 +185,11 @@ class _CartPageState extends State<CartPage> {
                 ),
                 Expanded(
                   child: cart.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text(
-                            "Welcome Sahil\nYour cart is empty, please grab your snacks\nfrom the cabinet to start.\nWe'll do the rest",
+                            "Welcome ${user.name}\nYour cart is empty, please grab your snacks\nfrom the cabinet to start.\nWe'll do the rest",
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 20),
+                            style: const TextStyle(fontSize: 20),
                           ),
                         )
                       : ListView.builder(
@@ -254,7 +272,7 @@ class _CartPageState extends State<CartPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              name,
+                              user.name,
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
