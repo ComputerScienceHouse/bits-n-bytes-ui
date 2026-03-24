@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -30,7 +29,6 @@ Future main() async {
   KeepScreenOn.turnOn();
   if (Platform.isLinux) {
     SerialService().startListening('/dev/ttyAMA0', baudRate: 9600);
-    SerialService().startListening('/dev/ttyUSB1', baudRate: 9600);
     // bool esp32Ready = await SerialService().startListening(
     //   '/dev/ttyUSB0', // <-- Port from your JS script
     //   baudRate: 9600, // <-- Baud rate from your JS script

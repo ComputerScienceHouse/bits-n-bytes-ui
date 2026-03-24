@@ -5,7 +5,7 @@ const { Buffer } = require('buffer'); // Ensure Buffer is available
 // Check your system for the correct port path. Common options:
 // - USB Adapter: '/dev/ttyUSB0' or '/dev/ttyACM0'
 // - Onboard Pi GPIO UART: '/dev/serial0' (after enabling)
-const portPath = '/dev/ttyUSB0'; 
+const portPath = '/dev/ttyUSB1'; 
 const baudRate = 9600; 
 const PAYLOAD_SIZE = 7;
 // The 8-byte ACK packet the Pi sends to the ESP32
@@ -53,7 +53,7 @@ port.on('data', (data) => {
     
     // Read the 4-byte message counter from the buffer (starting at offset 4, Big Endian)
     // ESP32 sends DEADBEEF in bytes 0-3, and the counter in bytes 4-7
-    const counter = packet.readUInt32BE(3);
+    const counter = packet.readUInt32BE(0);
     
     console.log(`\n--- Received Packet ---`);
     console.log(`Buffer (Hex): ${packet.toString('hex')}`);

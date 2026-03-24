@@ -1,16 +1,23 @@
 # bits_n_bytes_ui
 
-A new Flutter project.
+Repository for the UI for the Bits 'n Bytes Project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Ensure the [Flutter SDK](https://docs.flutter.dev/install) is installed on your system. Currently, the supported builds are for Linux and MacOS.
 
-A few resources to get you started if this is your first Flutter project:
+## Environment
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Create a `.env` file in the root of the directory, following this template:
+```
+API_URL=
+API_AUTH_KEY=
+ADMIN_PASSWORD=
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Developing over SSH
+
+We recommend developing directly SSH'ed into the system. To do this, ensure you are connected to the same network as the machine.
+- Launch Visual Studio Code (or equivialent software) and choose "Connect to Host".
+- log in with the given credentials.
+- Once you have verified the connection, execute the `run.sh` script to load the application on the pi.

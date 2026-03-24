@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:ffi' hide Size;
 import 'dart:typed_data';
 import 'package:bits_n_bytes_ui/database/models/user.dart';
 import 'package:bits_n_bytes_ui/pages/admin.dart';
@@ -38,7 +37,7 @@ class _WelcomePageState extends State<WelcomePage> {
   }
 
   void _initializeNfcListener() async {
-    const String nfcPort = '/dev/ttyUSB0';
+    const String nfcPort = '/dev/ttyUSB1';
 
     // 1. START the listener (opens the port, creates buffer)
     bool success = await SerialService().startListening(
@@ -66,7 +65,7 @@ class _WelcomePageState extends State<WelcomePage> {
               binaryData.offsetInBytes,
               binaryData.lengthInBytes,
             );
-            final int counter = byteData.getUint32(3, Endian.big);
+            final int counter = byteData.getUint32(0);
             log("\n--- Received Packet (ESP32) ---");
             log("Buffer (Hex): $hexString");
             log("Decoded Counter: $counter");
@@ -177,7 +176,7 @@ class _WelcomePageState extends State<WelcomePage> {
   }
 
   void _checkPassword(String password) {
-    if (password == "1024") {
+    if (password == (dotenv.env['ADMIN_PASSWORD'] ?? "1024")) {
       log("Access Granted");
       // Pop the dialog route
       Navigator.of(context).pop();
@@ -383,10 +382,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 ),
                 label: Text(
                   'Tap card to continue',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(fontSize: 20, color: Colors.white),
                 ),
               ),
             ],

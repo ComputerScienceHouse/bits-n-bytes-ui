@@ -25,7 +25,7 @@ void _showTareDialog(int slotIndex) {
     // List of options for the dropdown
     final List<String> weightOptions = ['100g', '20g', '10g', '5g', '2g', '1g'];
     // Variable to hold the selected value in the dialog
-    String? _selectedValue = weightOptions.first; // Default to 100g
+    String? selectedValue = weightOptions.first; // Default to 100g
 
     showDialog(
       context: context,
@@ -35,7 +35,7 @@ void _showTareDialog(int slotIndex) {
             return AlertDialog(
               title: Text('Tare Slot $letter$slotIndex'),
               content: DropdownButton<String>(
-                value: _selectedValue,
+                value: selectedValue,
                 isExpanded: true,
                 items: weightOptions.map((String value) {
                   return DropdownMenuItem<String>(
@@ -45,7 +45,7 @@ void _showTareDialog(int slotIndex) {
                 }).toList(),
                 onChanged: (String? newValue) {
                   setDialogState(() {
-                    _selectedValue = newValue;
+                    selectedValue = newValue;
                   });
                 },
               ),
@@ -59,9 +59,9 @@ void _showTareDialog(int slotIndex) {
                 ElevatedButton(
                   child: const Text('Tare'),
                   onPressed: () {
-                    final int weightInt = int.parse(_selectedValue!.replaceAll('g', ''));
+                    final int weightInt = int.parse(selectedValue!.replaceAll('g', ''));
                     log(weightInt.toString());
-                    log('Taring slot $letter$slotIndex with weight $_selectedValue');
+                    log('Taring slot $letter$slotIndex with weight $selectedValue');
                     SerialService().sendJsonTo('/dev/ttyAMA0', {
                       "calibration": {
                         "shelf_id": widget.macAddr,

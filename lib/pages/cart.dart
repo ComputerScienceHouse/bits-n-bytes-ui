@@ -29,12 +29,58 @@ class _CartPageState extends State<CartPage> {
   StreamSubscription<SerialDataPacket>? _doorSubscription;
   StreamSubscription<SerialDataPacket>? _cartSubscription;
   User get user => widget.user;
+  final String espPort = '/dev/ttyAMA0';
+  final String jetsonPort = '/dev/ttyUSB0';
 
   @override
   void initState() {
     super.initState();
+    _initPorts();
+  }
+
+  void _initPorts() async {
+    const String jetsonPort = '/dev/ttyUSB0';
+
+    bool success = await SerialService().startListening(
+      jetsonPort,
+      protocol: SerialProtocol.json,
+    );
+
+    if (!success) {
+      log("CartPage: FAILED to start listening on $jetsonPort");
+    }
+
+    _cartSubscription = SerialService().dataStream
+        .where(
+          (packet) =>
+              packet.portName == jetsonPort &&
+              packet.protocol == SerialProtocol.json,
+        )
+        .listen((packet) {
+          log(packet.toString());
+          log("CART LISTENER received: ${packet.data}");
+          final Map<String, dynamic> jsonData =
+              packet.data as Map<String, dynamic>;
+
+          if (jsonData.containsKey('id') && jsonData.containsKey('quantity')) {
+            _handleCartUpdate(
+              jsonData['id'] as int,
+              jsonData['quantity'] as int,
+            );
+          }
+        });
+
     const String espPort = '/dev/ttyAMA0';
-    const String jetsonPort = '/dev/ttyUSB1';
+
+    bool espSuccess = await SerialService().startListening(
+      espPort,
+      protocol: SerialProtocol.json,
+    );
+
+    if (!espSuccess) {
+      log("CartPage: FAILED to start listening on $espPort");
+      return;
+    }
 
     _doorSubscription = SerialService().dataStream
         .where(
@@ -63,25 +109,6 @@ class _CartPageState extends State<CartPage> {
             }
           }
         });
-
-    _cartSubscription = SerialService().dataStream
-        .where(
-          (packet) =>
-              packet.portName == jetsonPort &&
-              packet.protocol == SerialProtocol.json,
-        )
-        .listen((packet) {
-          log("CART LISTENER received: ${packet.data}");
-          final Map<String, dynamic> jsonData =
-              packet.data as Map<String, dynamic>;
-
-          if (jsonData.containsKey('id') && jsonData.containsKey('quantity')) {
-            _handleCartUpdate(
-              jsonData['id'] as int,
-              jsonData['quantity'] as int,
-            );
-          }
-        });
   }
 
   Future<void> _handleCartUpdate(int id, int quantityDelta) async {
@@ -108,7 +135,7 @@ class _CartPageState extends State<CartPage> {
         setState(() {}); // Update UI
         log("Item $id quantity updated to $newQuantity.");
       }
-    } else if (quantityDelta < 0) {
+    } else if (quantityDelta > 0) {
       // --- NEW ITEM TO ADD (and quantity > 0) ---
       log("New item $id detected. Fetching details...");
 
