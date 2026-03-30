@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'util.dart';
@@ -22,34 +21,11 @@ final piScreen = DeviceInfo.genericPhone(
 Future main() async {
   // runApp(const MyApp());
 
-  final ackPayload = Uint8List(7);
-
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   KeepScreenOn.turnOn();
   if (Platform.isLinux) {
     SerialService().startListening('/dev/ttyAMA0', baudRate: 9600);
-    // bool esp32Ready = await SerialService().startListening(
-    //   '/dev/ttyUSB0', // <-- Port from your JS script
-    //   baudRate: 9600, // <-- Baud rate from your JS script
-    //   protocol: SerialProtocol.fixedLengthBinary,
-    //   payloadSize: 11, // <-- PAYLOAD_SIZE from your JS script
-    // );
-
-    // if (esp32Ready) {
-    //   log("Main: ESP32 Port /dev/ttyUSB0 ready. Sending 7-byte ACK...");
-
-    //   // Define the 7-byte ACK [0xFF, 0x00, ..., 0x00]
-    //   // This creates a list of 7 zeros: [0, 0, 0, 0, 0, 0, 0]
-    //   final ackPayload = Uint8List(7);
-    //   // This sets the first byte to 0xFF (255)
-    //   ackPayload[0] = 0xFF;
-
-    //   // Send the binary packet
-    //   SerialService().sendBinaryTo('/dev/ttyUSB0', ackPayload);
-    // } else {
-    //   log("Main: FAILED to open ESP32 Port /dev/ttyUSB1.");
-    // }
 
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(
@@ -79,7 +55,6 @@ class MyApp extends StatelessWidget {
         enabled: true,
         devices: [piScreen],
         builder: (context) => MaterialApp(
-          useInheritedMediaQuery: true,
           debugShowCheckedModeBanner: false,
           theme: theme.light(),
           darkTheme: theme.dark(),

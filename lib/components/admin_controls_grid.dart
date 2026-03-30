@@ -28,6 +28,7 @@ class AdminControlsGrid extends StatelessWidget {
         icon: LucideIcons.doorOpen,
         label: 'Open Doors',
         onPressed: () {
+          log("Sending door command...");
           SerialService().sendJsonTo('/dev/ttyAMA0', {"doors": true});
         },
       ),
@@ -35,6 +36,7 @@ class AdminControlsGrid extends StatelessWidget {
         icon: LucideIcons.lockOpen,
         label: 'Open Hatch',
         onPressed: () {
+          log("Sending hatch command...");
           SerialService().sendJsonTo('/dev/ttyAMA0', {"hatch": true});
         },
       ),

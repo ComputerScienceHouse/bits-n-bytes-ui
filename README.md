@@ -21,3 +21,5 @@ We recommend developing directly SSH'ed into the system. To do this, ensure you 
 - Launch Visual Studio Code (or equivialent software) and choose "Connect to Host".
 - log in with the given credentials.
 - Once you have verified the connection, execute the `run.sh` script to load the application on the pi.
+    - If you do **not** run this script, you will encouter the following warning:
+    ```Error waiting for a debug connection: The log reader stopped unexpectedly, or never started.```
