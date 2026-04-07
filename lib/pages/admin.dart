@@ -17,9 +17,8 @@ class _AdminPageState extends State<AdminPage> {
   StreamSubscription<SerialDataPacket>? _serialSubscription;
   @override
   void initState() {
-    const String espPort = '/dev/ttyAMA0';
     _serialSubscription = SerialService().dataStream
-        .where((packet) => packet.portName == espPort)
+        .where((packet) => packet.portName == SerialService.portESP)
         .listen((packet) {
           if (packet.protocol == SerialProtocol.json) {
             final Map<String, dynamic> jsonData =

@@ -25,7 +25,7 @@ Future main() async {
   await dotenv.load(fileName: ".env");
   KeepScreenOn.turnOn();
   if (Platform.isLinux) {
-    SerialService().startListening('/dev/ttyAMA0', baudRate: 9600);
+    SerialService().startListening(SerialService.portESP, baudRate: 9600);
 
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(

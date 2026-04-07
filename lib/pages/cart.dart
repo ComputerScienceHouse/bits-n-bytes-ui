@@ -11,7 +11,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../services/uart.dart'; // Adjust path if needed
+import '../services/uart.dart';
 import 'dart:async';
 import 'dart:developer';
 
@@ -29,8 +29,6 @@ class _CartPageState extends State<CartPage> {
   StreamSubscription<SerialDataPacket>? _doorSubscription;
   StreamSubscription<SerialDataPacket>? _cartSubscription;
   User get user => widget.user;
-  final String espPort = '/dev/ttyAMA0';
-  final String jetsonPort = '/dev/ttyUSB0';
 
   @override
   void initState() {
@@ -39,21 +37,19 @@ class _CartPageState extends State<CartPage> {
   }
 
   void _initPorts() async {
-    const String jetsonPort = '/dev/ttyUSB0';
-
     bool success = await SerialService().startListening(
-      jetsonPort,
+      SerialService.portJetson,
       protocol: SerialProtocol.json,
     );
 
     if (!success) {
-      log("CartPage: FAILED to start listening on $jetsonPort");
+      log("CartPage: FAILED to start listening on $SerialService.portJetson");
     }
 
     _cartSubscription = SerialService().dataStream
         .where(
           (packet) =>
-              packet.portName == jetsonPort &&
+              packet.portName == SerialService.portJetson &&
               packet.protocol == SerialProtocol.json,
         )
         .listen((packet) {
@@ -70,22 +66,20 @@ class _CartPageState extends State<CartPage> {
           }
         });
 
-    const String espPort = '/dev/ttyAMA0';
-
     bool espSuccess = await SerialService().startListening(
-      espPort,
+      SerialService.portESP,
       protocol: SerialProtocol.json,
     );
 
     if (!espSuccess) {
-      log("CartPage: FAILED to start listening on $espPort");
+      log("CartPage: FAILED to start listening on $SerialService.portESP");
       return;
     }
 
     _doorSubscription = SerialService().dataStream
         .where(
           (packet) =>
-              packet.portName == espPort &&
+              packet.portName == SerialService.portESP &&
               packet.protocol == SerialProtocol.json,
         )
         .listen((packet) {
