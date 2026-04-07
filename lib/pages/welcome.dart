@@ -37,23 +37,21 @@ class _WelcomePageState extends State<WelcomePage> {
   }
 
   void _initializeNfcListener() async {
-    const String nfcPort = '/dev/ttyUSB1';
-
     // 1. START the listener (opens the port, creates buffer)
     bool success = await SerialService().startListening(
-      nfcPort,
+      SerialService.portNFC,
       protocol: SerialProtocol.fixedLengthBinary,
       // Make sure this payloadSize matches your *expected incoming* packet size
       payloadSize: 7,
     );
 
     if (!success) {
-      log("WelcomePage: FAILED to start listening on $nfcPort");
+      log("WelcomePage: FAILED to start listening on $SerialService.portNFC");
       return;
     }
 
     _nfcSubscription = SerialService().dataStream
-        .where((packet) => packet.portName == nfcPort)
+        .where((packet) => packet.portName == SerialService.portNFC)
         .listen((packet) {
           if (packet.protocol == SerialProtocol.fixedLengthBinary) {
             log("NFC LISTENER recieved binary data");
@@ -75,7 +73,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
     log("Sending NFC initialization command..."); // Added log
     SerialService().sendBinaryTo(
-      nfcPort,
+      SerialService.portNFC,
       // --- THIS IS YOUR NEW COMMAND ---
       Uint8List.fromList([0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
     );

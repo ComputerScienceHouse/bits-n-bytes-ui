@@ -37,6 +37,10 @@ class SerialService {
   factory SerialService() => _instance;
   SerialService._internal();
 
+  static final String portESP = String.fromEnvironment("ESP_PORT", defaultValue: "/dev/ttyAMA0");
+  static final String portJetson = String.fromEnvironment("JETSON_PORT", defaultValue: "/dev/ttyUSB0");
+  static final String portNFC = String.fromEnvironment("NFC_PORT", defaultValue: "/dev/ttyUSB1");
+
   // Maps to hold separate resources for each port
   final Map<String, SerialPort> _ports = {};
   final Map<String, StreamSubscription> _subscriptions = {};
