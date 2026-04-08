@@ -52,10 +52,12 @@ class SerialService {
   final Map<String, SerialProtocol> _portProtocols =
       {}; // Stores protocol for each port
 
+  final Map<String, BytesBuilder> _binaryBuilders = {};
+
   // A single stream for all data from ALL ports.
   // You might want to wrap the data to know WHICH port it came from.
-  final _dataStreamController = StreamController<SerialDataPacket>.broadcast();
-  Stream<SerialDataPacket> get dataStream => _dataStreamController.stream;
+  static final _dataStreamController = StreamController<SerialDataPacket>.broadcast();
+  static Stream<SerialDataPacket> get dataStream => _dataStreamController.stream;
 
   Future<bool> startListening(
     String portName, {
@@ -111,6 +113,7 @@ class SerialService {
       final reader = SerialPortReader(port);
       _subscriptions[portName] = reader.stream.listen(
         (data) {
+          // log("DEBUG: Received ${data.length} bytes from $portName: ${String.fromCharCodes(data)}");
           // Route data to the correct parser based on the port's protocol
           if (_portProtocols[portName] == SerialProtocol.fixedLengthBinary) {
             _onBinaryDataReceived(portName, data);
@@ -139,66 +142,85 @@ class SerialService {
   }
 
   /// PARSER 1: Handles JSON data
-  void _onJsonDataReceived(String portName, Uint8List data) {
-    _jsonBuffers[portName] =
-        (_jsonBuffers[portName] ?? "") + String.fromCharCodes(data);
-    String buffer = _jsonBuffers[portName]!;
+String _accumulatedBuffer = "";
 
-    while (true) {
-      int startIndex = buffer.indexOf('{');
-      if (startIndex == -1) break;
-      int endIndex = buffer.indexOf('}', startIndex);
-      if (endIndex == -1) break;
+void _onJsonDataReceived(String portName, Uint8List data) {
+  _accumulatedBuffer += String.fromCharCodes(data);
 
-      final jsonString = buffer.substring(startIndex, endIndex + 1);
-      buffer = buffer.substring(endIndex + 1);
+  // Use a while loop instead of recursion
+  while (_accumulatedBuffer.contains('{')) {
+    int startIdx = _accumulatedBuffer.indexOf('{');
+    
+    // Remove junk before the first '{'
+    if (startIdx > 0) {
+      _accumulatedBuffer = _accumulatedBuffer.substring(startIdx);
+    }
 
-      try {
-        final Map<String, dynamic> jsonData = jsonDecode(jsonString);
-        _dataStreamController.add(
-          SerialDataPacket(
-            portName: portName,
-            protocol: SerialProtocol.json,
-            data: jsonData,
-          ),
-        );
-      } catch (e) {
-        log('SerialService [$portName] JSON PARSE ERROR: $e');
+    int braceCount = 0;
+    int endIdx = -1;
+
+    for (int i = 0; i < _accumulatedBuffer.length; i++) {
+      if (_accumulatedBuffer[i] == '{') {
+        braceCount++;
+      } else if (_accumulatedBuffer[i] == '}') {
+        braceCount--;
+      }
+
+      if (braceCount == 0 && i > 0) {
+        endIdx = i;
+        break;
       }
     }
 
-    if (buffer.length > 4096) buffer = ""; // Safety clear
-    _jsonBuffers[portName] = buffer;
-  }
+    // If we haven't found a full object yet, break the while loop 
+    // and wait for more data from the serial port.
+    if (endIdx == -1) {
+      // log("STILL PARSING");
+      break;
+    } 
 
-  /// PARSER 2: Handles fixed-length binary data
-  void _onBinaryDataReceived(String portName, Uint8List data) {
-    final int payloadSize = _binaryPayloadSizes[portName]!;
-    Uint8List buffer = _binaryBuffers[portName]!;
+    String completeJson = _accumulatedBuffer.substring(0, endIdx + 1);
+    _accumulatedBuffer = _accumulatedBuffer.substring(endIdx + 1);
 
-    // 1. Append new data to the binary buffer
-    buffer = Uint8List.fromList([...buffer, ...data]);
-
-    // 2. Process all complete packets in the buffer
-    while (buffer.length >= payloadSize) {
-      // 3. Extract the packet
-      final Uint8List packet = buffer.sublist(0, payloadSize);
-
-      // 4. Trim the buffer
-      buffer = buffer.sublist(payloadSize);
-
-      // 5. Emit the raw binary packet
+    try {
+      // log("JSON COMPLETE SENDING");
+      final Map<String, dynamic> jsonData = jsonDecode(completeJson);
+      log("Has listeners: ${_dataStreamController.hasListener}");
       _dataStreamController.add(
         SerialDataPacket(
           portName: portName,
-          protocol: SerialProtocol.fixedLengthBinary,
-          data: packet, // Emits the raw Uint8List
+          protocol: SerialProtocol.json,
+          data: jsonData,
         ),
       );
+    } catch (e) {
+      log("Json Parse Error on $portName: $e");
+      // If it failed to decode, the buffer might be corrupted. 
+      // You might want to clear it or handle it here.
     }
+  }
+}
 
-    // 6. Save the remaining incomplete data back to the buffer
-    _binaryBuffers[portName] = buffer;
+  /// PARSER 2: Handles fixed-length binary data
+  // Change your map definition:
+
+
+  void _onBinaryDataReceived(String portName, Uint8List data) {
+    final builder = _binaryBuilders.putIfAbsent(portName, () => BytesBuilder());
+    builder.add(data);
+    
+    final int payloadSize = _binaryPayloadSizes[portName]!;
+    
+    // Create a temporary view to check length without clearing
+    while (builder.length >= payloadSize) {
+      final fullBuffer = builder.takeBytes(); // This clears the builder
+      final packet = fullBuffer.sublist(0, payloadSize);
+      final remainder = fullBuffer.sublist(payloadSize);
+      
+      _dataStreamController.add(SerialDataPacket(portName: portName, protocol: SerialProtocol.json, data: packet));
+      
+      builder.add(remainder);
+    }
   }
 
   // --- Sending Methods ---
@@ -270,5 +292,39 @@ class SerialService {
       _cleanupPort(portName);
     }
     _dataStreamController.close();
+  }
+
+  void openDoors() {
+    log("Sending door command...");
+    SerialService().sendJsonTo(portESP, {"doors": true,"hatch":false});
+  }
+
+  void openHatch() {
+    log("Sending hatch command...");
+    SerialService().sendJsonTo(portESP, {"hatch": true,"doors":false});
+  }
+
+  Future<void> hardResetPort(String portName, {int baudRate = 9600}) async {
+    log("SerialService: Hard resetting $portName...");
+
+    // If we have an existing port object, try to close it explicitly
+    final existingPort = _ports[portName];
+    if (existingPort != null) {
+      try {
+        if (existingPort.isOpen) {
+          existingPort.close();
+        }
+        existingPort.dispose();
+      } catch (e) {
+        log("Error during pre-reset cleanup: $e");
+      }
+      _ports.remove(portName);
+    }
+
+    // Wait for the Linux Kernel to catch up (Crucial for Pi)
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    // Re-attempt start
+    await startListening(portName, baudRate: baudRate);
   }
 }

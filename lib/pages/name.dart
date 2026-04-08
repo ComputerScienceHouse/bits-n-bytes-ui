@@ -1,5 +1,6 @@
 import 'package:bits_n_bytes_ui/database/models/user.dart';
 import 'package:bits_n_bytes_ui/pages/cart.dart';
+import 'package:bits_n_bytes_ui/services/uart.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -19,6 +20,7 @@ class _NamePageState extends State<NamePage> {
   void initState() {
     super.initState();
     _timer = Timer(const Duration(seconds: 1), handleTimeout);
+    SerialService().openDoors();
   }
 
   @override

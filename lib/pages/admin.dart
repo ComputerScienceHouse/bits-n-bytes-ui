@@ -17,7 +17,7 @@ class _AdminPageState extends State<AdminPage> {
   StreamSubscription<SerialDataPacket>? _serialSubscription;
   @override
   void initState() {
-    _serialSubscription = SerialService().dataStream
+    _serialSubscription = SerialService.dataStream
         .where((packet) => packet.portName == SerialService.portESP)
         .listen((packet) {
           if (packet.protocol == SerialProtocol.json) {

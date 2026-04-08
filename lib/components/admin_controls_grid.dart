@@ -28,16 +28,14 @@ class AdminControlsGrid extends StatelessWidget {
         icon: LucideIcons.doorOpen,
         label: 'Open Doors',
         onPressed: () {
-          log("Sending door command...");
-          SerialService().sendJsonTo('/dev/ttyAMA0', {"doors": true});
+          SerialService().openDoors();
         },
       ),
       _AdminButton(
         icon: LucideIcons.lockOpen,
         label: 'Open Hatch',
         onPressed: () {
-          log("Sending hatch command...");
-          SerialService().sendJsonTo('/dev/ttyAMA0', {"hatch": true});
+          SerialService().openHatch();
         },
       ),
       _AdminButton(
@@ -90,6 +88,13 @@ class AdminControlsGrid extends StatelessWidget {
               0x00,
             ]),
           );
+        },
+      ),
+            _AdminButton(
+        icon: LucideIcons.arrowLeft,
+        label: 'Restart UART0',
+        onPressed: () async {
+          await SerialService().hardResetPort(SerialService.portESP);
         },
       ),
     ];

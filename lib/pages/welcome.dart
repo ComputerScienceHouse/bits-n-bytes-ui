@@ -50,7 +50,7 @@ class _WelcomePageState extends State<WelcomePage> {
       return;
     }
 
-    _nfcSubscription = SerialService().dataStream
+    _nfcSubscription = SerialService.dataStream
         .where((packet) => packet.portName == SerialService.portNFC)
         .listen((packet) {
           if (packet.protocol == SerialProtocol.fixedLengthBinary) {
@@ -134,9 +134,6 @@ class _WelcomePageState extends State<WelcomePage> {
             // You might want to add a toString() method to your User model
             // for a cleaner log, but this will work.
             log("User ID: ${user.id}, Name: ${user.name}");
-
-            SerialService().sendJsonTo('/dev/ttyAMA0', {"doors": true});
-            log("--- 7. Sent command to open doors ---");
 
             if (mounted) {
               // Always check 'mounted' in async functions
