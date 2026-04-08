@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data'; // Required for Uint8List
+import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
 enum SerialProtocol {
@@ -54,10 +55,9 @@ class SerialService {
 
   final Map<String, BytesBuilder> _binaryBuilders = {};
 
-  // A single stream for all data from ALL ports.
-  // You might want to wrap the data to know WHICH port it came from.
-  static final _dataStreamController = StreamController<SerialDataPacket>.broadcast();
-  static Stream<SerialDataPacket> get dataStream => _dataStreamController.stream;
+  final ValueNotifier<Map<String, dynamic>?> espState = ValueNotifier(null);
+  final ValueNotifier<Map<String, dynamic>?> jetsonState = ValueNotifier(null);
+  final ValueNotifier<Uint8List?> nfcState = ValueNotifier(null);
 
   Future<bool> startListening(
     String portName, {
@@ -183,16 +183,22 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     _accumulatedBuffer = _accumulatedBuffer.substring(endIdx + 1);
 
     try {
-      // log("JSON COMPLETE SENDING");
+      log("JSON COMPLETE SENDING");
       final Map<String, dynamic> jsonData = jsonDecode(completeJson);
-      log("Has listeners: ${_dataStreamController.hasListener}");
-      _dataStreamController.add(
-        SerialDataPacket(
-          portName: portName,
-          protocol: SerialProtocol.json,
-          data: jsonData,
-        ),
-      );
+
+      if (portName == portESP) {
+        // This updates the value and NOTIFIES all listeners automatically
+        espState.value = jsonData;
+        log("onJsonDataReceived: ESP");
+      } else if (portName == portJetson) {
+        jetsonState.value = jsonData;
+        // log("onJsonDataReceived: JETSON");
+      // } else if (portName == portNFC) { // NFC SHOULDNT BE CALLED HERE
+      //   nfcState.value = jsonData;
+      //   // log("onJsonDataReceived: NFC");
+      } else {
+        log("onJsonDataReceived: Unknown Port or NFC");
+      }
     } catch (e) {
       log("Json Parse Error on $portName: $e");
       // If it failed to decode, the buffer might be corrupted. 
@@ -217,7 +223,13 @@ void _onJsonDataReceived(String portName, Uint8List data) {
       final packet = fullBuffer.sublist(0, payloadSize);
       final remainder = fullBuffer.sublist(payloadSize);
       
-      _dataStreamController.add(SerialDataPacket(portName: portName, protocol: SerialProtocol.json, data: packet));
+      // _dataStreamController.add(SerialDataPacket(portName: portName, protocol: SerialProtocol.json, data: packet));
+      if (portName == portNFC) {
+        nfcState.value = packet;
+        log("onBinaryDataReceived: NFC packet updated");
+      } else {
+        log("onBinaryDataReceived: Not from NFC :skull:");
+      }
       
       builder.add(remainder);
     }
@@ -291,7 +303,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     for (var portName in _ports.keys.toList()) {
       _cleanupPort(portName);
     }
-    _dataStreamController.close();
+    espState.dispose();
   }
 
   void openDoors() {

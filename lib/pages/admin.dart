@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bits_n_bytes_ui/components/admin_controls_grid.dart';
 import 'package:bits_n_bytes_ui/components/debug_option.dart';
 import 'package:bits_n_bytes_ui/components/shelf.dart';
@@ -17,31 +19,30 @@ class _AdminPageState extends State<AdminPage> {
   StreamSubscription<SerialDataPacket>? _serialSubscription;
   @override
   void initState() {
-    _serialSubscription = SerialService.dataStream
-        .where((packet) => packet.portName == SerialService.portESP)
-        .listen((packet) {
-          if (packet.protocol == SerialProtocol.json) {
-            final Map<String, dynamic> jsonData =
-                packet.data as Map<String, dynamic>;
-            if (jsonData.containsKey('shelf_ids')) {
-              final rawList = jsonData['shelf_ids'];
+    SerialService().espState.addListener(() {
+      final Map<String, dynamic>? json = SerialService().espState.value;
+      if (json == null) {
+        log("AdminPage: Serial JSON from ESP Null");
+        return;
+      }
 
-              if (rawList is List) {
-                // Convert dynamic list to List<String> safely
-                List<String> newShelves = rawList
-                    .map((e) => e.toString())
-                    .toList();
+      if (json.containsKey('shelf_ids')) {
+        final rawList = json['shelf_ids'];
+        if (rawList is List) {
+          // Convert dynamic list to List<String> safely
+          List<String> newShelves = rawList
+              .map((e) => e.toString())
+              .toList();
 
-                // Simple check to avoid unnecessary rebuilds if data hasn't actually changed
-                if (!_areListsEqual(_connectedShelves, newShelves)) {
-                  setState(() {
-                    _connectedShelves = newShelves;
-                  });
-                }
-              }
-            }
+          // Simple check to avoid unnecessary rebuilds if data hasn't actually changed
+          if (!_areListsEqual(_connectedShelves, newShelves)) {
+            setState(() {
+              _connectedShelves = newShelves;
+            });
           }
-        });
+        }
+      }
+    });
     super.initState();
   }
 

@@ -50,26 +50,25 @@ class _WelcomePageState extends State<WelcomePage> {
       return;
     }
 
-    _nfcSubscription = SerialService.dataStream
-        .where((packet) => packet.portName == SerialService.portNFC)
-        .listen((packet) {
-          if (packet.protocol == SerialProtocol.fixedLengthBinary) {
-            log("NFC LISTENER recieved binary data");
-            final Uint8List binaryData = packet.data as Uint8List;
-            final String hexString = binaryData
-                .map((byte) => byte.toRadixString(16).padLeft(2, '0'))
-                .join('');
-            final ByteData byteData = binaryData.buffer.asByteData(
-              binaryData.offsetInBytes,
-              binaryData.lengthInBytes,
-            );
-            final int counter = byteData.getUint32(0);
-            log("\n--- Received Packet (ESP32) ---");
-            log("Buffer (Hex): $hexString");
-            log("Decoded Counter: $counter");
-            _handleUserLogin(counter);
-          }
-        });
+    SerialService().nfcState.addListener( () {
+      final Uint8List? data = SerialService().nfcState.value;
+      if (data == null) {
+        log("NFC Reader: null serial data");
+        return;
+      }
+      final String hexString = data
+        .map((byte) => byte.toRadixString(16).padLeft(2, '0'))
+        .join('');
+      final ByteData byteData = data.buffer.asByteData(
+        data.offsetInBytes,
+        data.lengthInBytes,
+      );
+      final int counter = byteData.getUint32(0);
+      log("\n--- Received Packet (ESP32) ---");
+      log("Buffer (Hex): $hexString");
+      log("Decoded Counter: $counter");
+      _handleUserLogin(counter);
+    });
 
     log("Sending NFC initialization command..."); // Added log
     SerialService().sendBinaryTo(

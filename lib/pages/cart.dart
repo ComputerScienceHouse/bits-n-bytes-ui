@@ -48,19 +48,16 @@ class _CartPageState extends State<CartPage> {
       protocol: SerialProtocol.json,
     );
 
-    _cartSubscription = SerialService.dataStream.listen((packet) {
-      if (packet.portName == SerialService.portJetson &&
-          packet.protocol == SerialProtocol.json) {
-        
-        final data = packet.data as Map<String, dynamic>;
-        log("CART LISTENER received: $data");
+    SerialService().jetsonState.addListener(() {
+      Map<String, dynamic>? json = SerialService().jetsonState.value;
+      if (json == null) {
+        log("cart: jetson state null");
+        return;
+      }
 
-        if (data.containsKey('id') && data.containsKey('quantity')) {
-          _handleCartUpdate(
-            data['id'] as int,
-            data['quantity'] as int,
-          );
-        }
+      if (json.containsKey('id') && json.containsKey('quantity')) {
+        log("CART EVENT: Updating...");
+        _handleCartUpdate(json['id'] as int, json['quantity'] as int);
       }
     });
 
@@ -70,19 +67,16 @@ class _CartPageState extends State<CartPage> {
       protocol: SerialProtocol.json,
     );
 
-    _doorSubscription = SerialService.dataStream.listen((packet) {
-      // Use contains to be safe with Pi port aliasing
-      log("subscriped??");
-      if (packet.portName.contains(SerialService.portESP) &&
-          packet.protocol == SerialProtocol.json) {
-        
-        final data = packet.data as Map<String, dynamic>;
-        
-        // Logic: If doors are reported as TRUE (Closed/Locked), navigate.
-        if (data['doors'] == true && !_isNavigating) {
-          log("DOOR EVENT: Closing detected. Transitioning page...");
-          _navigateToDoorClosed();
-        }
+    SerialService().espState.addListener(() {
+      Map<String, dynamic>? json = SerialService().espState.value;
+      if (json == null) {
+        log("cart: esp state null");
+        return;
+      }
+
+      if (json["doors"] == true && !_isNavigating) {
+        log("DOOR EVENT: Closing detected. Transitioning page...");
+        _navigateToDoorClosed();
       }
     });
   }
