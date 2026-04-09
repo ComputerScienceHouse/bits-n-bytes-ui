@@ -21,13 +21,11 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
-  // StreamSubscription<SerialDataPacket>? _nfcSubscription;
   DragStartDetails? _dragStartDetails;
   final double _minSwipeDistance = 50.0;
   String text = '';
   bool shiftEnabled = false;
   bool isNumericMode = false;
-  StreamSubscription<SerialDataPacket>? _nfcSubscription;
   late User user;
 
   @override
@@ -152,7 +150,6 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   void dispose() {
-    _nfcSubscription?.cancel();
     super.dispose();
   }
 
