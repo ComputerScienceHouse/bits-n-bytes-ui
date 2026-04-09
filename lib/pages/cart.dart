@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'dart:developer';
+import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -44,12 +45,12 @@ class _CartPageState extends State<CartPage> {
     SerialService().jetsonState.addListener(() {
       Map<String, dynamic>? json = SerialService().jetsonState.value;
       if (json == null) {
-        log("cart: jetson state null");
+        LogService.logEvent("cart: jetson state null");
         return;
       }
 
       if (json.containsKey('id') && json.containsKey('quantity')) {
-        log("CART EVENT: Updating...");
+        LogService.logEvent("CART EVENT: Updating...");
         _handleCartUpdate(json['id'] as int, json['quantity'] as int);
       }
     });
@@ -58,12 +59,12 @@ class _CartPageState extends State<CartPage> {
     SerialService().espState.addListener(() {
       Map<String, dynamic>? json = SerialService().espState.value;
       if (json == null) {
-        log("cart: esp state null");
+        LogService.logEvent("cart: esp state null");
         return;
       }
 
       if (json["doors"] == true && !_isNavigating) {
-        log("DOOR EVENT: Closing detected. Transitioning page...");
+        LogService.logEvent("DOOR EVENT: Closing detected. Transitioning page...");
         _navigateToDoorClosed();
       }
     });
@@ -94,7 +95,7 @@ class _CartPageState extends State<CartPage> {
       setState(() {
         if (newQuantity <= 0) {
           cart.removeAt(existingIndex);
-          log("Item $id removed from cart.");
+          LogService.logEvent("Item $id removed from cart.");
         } else {
           cart[existingIndex] = Item(
             id: existingItem.id,
@@ -103,11 +104,11 @@ class _CartPageState extends State<CartPage> {
             price: existingItem.price,
             quantity: newQuantity,
           );
-          log("Item $id quantity updated to $newQuantity.");
+          LogService.logEvent("Item $id quantity updated to $newQuantity.");
         }
       });
     } else if (quantityDelta > 0) {
-      log("New item $id detected. Fetching details...");
+      LogService.logEvent("New item $id detected. Fetching details...");
       final url = Uri.parse('${dotenv.env['API_URL']}items/$id');
 
       try {
@@ -131,7 +132,7 @@ class _CartPageState extends State<CartPage> {
           });
         }
       } catch (e) {
-        log("Error fetching item $id: $e");
+        LogService.logEvent("Error fetching item $id: $e");
       }
     }
   }
