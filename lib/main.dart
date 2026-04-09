@@ -28,6 +28,7 @@ Future main() async {
   if (Platform.isLinux) {
     // Initialize all the connections to the PI
     LogService.init();
+    LogService.logEvent("Initialized Logger");
     SerialService().startListeningAll();
 
     await windowManager.ensureInitialized();

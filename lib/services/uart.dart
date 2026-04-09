@@ -354,11 +354,11 @@ void _onJsonDataReceived(String portName, Uint8List data) {
       payloadSize: 7,
     );
 
-    // if (success) {
-    //   LogService.logEvent("NFC Listening: Success");
-    // } else {
-    //   LogService.logEvent("NFC Listening: Failure");
-    // }
+    if (success) {
+      LogService.logEvent("NFC Listening: Success");
+    } else {
+      LogService.logEvent("NFC Listening: Failure");
+    }
 
     return success;
   }
@@ -369,11 +369,11 @@ void _onJsonDataReceived(String portName, Uint8List data) {
       protocol: SerialProtocol.json,
     );
 
-    // if (success) {
-    //   LogService.logEvent("Jetson Listening: Success");
-    // } else {
-    //   LogService.logEvent("Jetson Listening: Failure");
-    // }
+    if (success) {
+      LogService.logEvent("Jetson Listening: Success");
+    } else {
+      LogService.logEvent("Jetson Listening: Failure");
+    }
 
     return success;
   }
@@ -384,19 +384,25 @@ void _onJsonDataReceived(String portName, Uint8List data) {
       protocol: SerialProtocol.json,
     );
 
-    // if (success) {
-    //   LogService.logEvent("ESP Listening: Success");
-    // } else {
-    //   LogService.logEvent("ESP Listening: Failure");
-    // }
+    if (success) {
+      LogService.logEvent("ESP Listening: Success");
+    } else {
+      LogService.logEvent("ESP Listening: Failure");
+    }
 
     return success;
   }
 
   Future<bool> startListeningAll() async {
-    bool nfc = await startListeningNFC();
-    bool esp = await startListeningESP();
-    bool jet = await startListeningJetson();
-    return nfc && esp && jet;
+    LogService.logEvent("UART-Service: StartListeningAll");
+    // Start all of them simultaneously
+    final results = await Future.wait([
+      startListeningNFC(),
+      startListeningESP(),
+      startListeningJetson(),
+    ]);
+
+    // results is a List<bool> [nfcSuccess, espSuccess, jetsonSuccess]
+    return results.every((success) => success);
   }
 }
