@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'dart:developer';
+import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -25,8 +26,6 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   List<Item> cart = [];
-  StreamSubscription<SerialDataPacket>? _doorSubscription;
-  StreamSubscription<SerialDataPacket>? _cartSubscription;
   
   // Guard to prevent multiple navigation triggers
   bool _isNavigating = false;
@@ -42,47 +41,31 @@ class _CartPageState extends State<CartPage> {
   }
 
   void _initPorts() async {
-    // 1. Initialize Jetson Port (Cart Updates)
-    await SerialService().startListening(
-      SerialService.portJetson,
-      protocol: SerialProtocol.json,
-    );
+    // Init Cart Listener
+    SerialService().jetsonState.addListener(() {
+      Map<String, dynamic>? json = SerialService().jetsonState.value;
+      if (json == null) {
+        LogService.logEvent("cart: jetson state null");
+        return;
+      }
 
-    _cartSubscription = SerialService.dataStream.listen((packet) {
-      if (packet.portName == SerialService.portJetson &&
-          packet.protocol == SerialProtocol.json) {
-        
-        final data = packet.data as Map<String, dynamic>;
-        log("CART LISTENER received: $data");
-
-        if (data.containsKey('id') && data.containsKey('quantity')) {
-          _handleCartUpdate(
-            data['id'] as int,
-            data['quantity'] as int,
-          );
-        }
+      if (json.containsKey('id') && json.containsKey('quantity')) {
+        LogService.logEvent("CART EVENT: Updating...");
+        _handleCartUpdate(json['id'] as int, json['quantity'] as int);
       }
     });
 
-    // 2. Initialize ESP32 Port (Door Status)
-    await SerialService().startListening(
-      SerialService.portESP,
-      protocol: SerialProtocol.json,
-    );
+    // Init Door Listener
+    SerialService().espState.addListener(() {
+      Map<String, dynamic>? json = SerialService().espState.value;
+      if (json == null) {
+        LogService.logEvent("cart: esp state null");
+        return;
+      }
 
-    _doorSubscription = SerialService.dataStream.listen((packet) {
-      // Use contains to be safe with Pi port aliasing
-      log("subscriped??");
-      if (packet.portName.contains(SerialService.portESP) &&
-          packet.protocol == SerialProtocol.json) {
-        
-        final data = packet.data as Map<String, dynamic>;
-        
-        // Logic: If doors are reported as TRUE (Closed/Locked), navigate.
-        if (data['doors'] == true && !_isNavigating) {
-          log("DOOR EVENT: Closing detected. Transitioning page...");
-          _navigateToDoorClosed();
-        }
+      if (json["doors"] == true && !_isNavigating) {
+        LogService.logEvent("DOOR EVENT: Closing detected. Transitioning page...");
+        _navigateToDoorClosed();
       }
     });
   }
@@ -112,7 +95,7 @@ class _CartPageState extends State<CartPage> {
       setState(() {
         if (newQuantity <= 0) {
           cart.removeAt(existingIndex);
-          log("Item $id removed from cart.");
+          LogService.logEvent("Item $id removed from cart.");
         } else {
           cart[existingIndex] = Item(
             id: existingItem.id,
@@ -121,11 +104,11 @@ class _CartPageState extends State<CartPage> {
             price: existingItem.price,
             quantity: newQuantity,
           );
-          log("Item $id quantity updated to $newQuantity.");
+          LogService.logEvent("Item $id quantity updated to $newQuantity.");
         }
       });
     } else if (quantityDelta > 0) {
-      log("New item $id detected. Fetching details...");
+      LogService.logEvent("New item $id detected. Fetching details...");
       final url = Uri.parse('${dotenv.env['API_URL']}items/$id');
 
       try {
@@ -149,15 +132,13 @@ class _CartPageState extends State<CartPage> {
           });
         }
       } catch (e) {
-        log("Error fetching item $id: $e");
+        LogService.logEvent("Error fetching item $id: $e");
       }
     }
   }
 
   @override
   void dispose() {
-    _cartSubscription?.cancel();
-    _doorSubscription?.cancel();
     super.dispose();
   }
 

@@ -1,4 +1,5 @@
 
+import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:flutter/material.dart';
 import 'util.dart';
 import 'theme.dart';
@@ -25,7 +26,10 @@ Future main() async {
   await dotenv.load(fileName: ".env");
   KeepScreenOn.turnOn();
   if (Platform.isLinux) {
-    SerialService().startListening(SerialService.portESP, baudRate: 9600);
+    // Initialize all the connections to the PI
+    LogService.init();
+    LogService.logEvent("Initialized Logger");
+    SerialService().startListeningAll();
 
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(
