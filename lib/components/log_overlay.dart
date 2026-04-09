@@ -3,6 +3,107 @@ import 'package:flutter/material.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart'; // Adjust path
 import 'package:bits_n_bytes_ui/services/uart.dart'; // Adjust path
 
+class HardwareStatusView extends StatefulWidget {
+  const HardwareStatusView({super.key});
+
+  @override
+  State<HardwareStatusView> createState() => _HardwareStatusViewState();
+}
+
+class _HardwareStatusViewState extends State<HardwareStatusView> {
+  bool _isReloading = false;
+
+  Future<void> _handleReload() async {
+    setState(() => _isReloading = true);
+    
+    LogService.logEvent("Manual Hardware Reset Triggered");
+    
+    // Call your parallel start function
+    await SerialService().startListeningAll();
+    
+    // Brief delay so the user sees the "Reloading" state
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    if (mounted) {
+      setState(() => _isReloading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        children: [
+          _connectionRow("ESP32 (Main Controller)", SerialService.portESP),
+          _connectionRow("Jetson Nano (Vision)", SerialService.portJetson),
+          _connectionRow("NFC Reader", SerialService.portNFC),
+          const Spacer(),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.greenAccent.withOpacity(0.1),
+                side: const BorderSide(color: Colors.greenAccent, width: 1),
+              ),
+              onPressed: _isReloading ? null : _handleReload,
+              icon: _isReloading 
+                ? const SizedBox(
+                    width: 18, 
+                    height: 18, 
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.greenAccent)
+                  )
+                : const Icon(Icons.refresh, color: Colors.greenAccent),
+              label: Text(
+                _isReloading ? "RESCANNING..." : "RELOAD ALL PORTS", 
+                style: const TextStyle(color: Colors.greenAccent)
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _connectionRow(String label, String port) {
+    final bool isConnected = SerialService().isListening(port);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+              Text(port, style: const TextStyle(color: Colors.white54, fontSize: 12)),
+            ],
+          ),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: isConnected ? Colors.green.withOpacity(0.2) : Colors.red.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: isConnected ? Colors.green : Colors.red),
+            ),
+            child: Text(
+              isConnected ? "CONNECTED" : "DISCONNECTED",
+              style: TextStyle(
+                color: isConnected ? Colors.greenAccent : Colors.redAccent, 
+                fontSize: 10, 
+                fontWeight: FontWeight.bold
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class SystemLogOverlay extends StatelessWidget {
   const SystemLogOverlay({super.key});
 
@@ -56,7 +157,7 @@ class SystemLogOverlay extends StatelessWidget {
                   children: [
                     _buildLogList(LogService.eventLogs), // Event Tab
                     _buildLogList(LogService.dataLogs),  // Data Tab
-                    _buildHardwareTab(context),          // Hardware Tab
+                    const HardwareStatusView(),          // Hardware Tab
                   ],
                 ),
               ),
@@ -96,63 +197,6 @@ class SystemLogOverlay extends StatelessWidget {
           },
         );
       },
-    );
-  }
-
-  // Hardware Connection Tab
-  Widget _buildHardwareTab(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        children: [
-          _connectionRow("ESP32 (Main Controller)", SerialService.portESP),
-          _connectionRow("Jetson Nano (Vision)", SerialService.portJetson),
-          _connectionRow("NFC Reader", SerialService.portNFC),
-          const Spacer(),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.greenAccent.withOpacity(0.1)),
-            onPressed: () {
-              // Implementation for global reload goes here
-              LogService.logEvent("Manual Hardware Reset Triggered");
-            },
-            icon: const Icon(Icons.refresh, color: Colors.greenAccent),
-            label: const Text("Reload All Ports", style: TextStyle(color: Colors.greenAccent)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _connectionRow(String label, String port) {
-    // You can wrap this in a ValueListenableBuilder tracking SerialService status later
-    bool isConnected = true; // Placeholder
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
-              Text(port, style: const TextStyle(color: Colors.white54, fontSize: 12)),
-            ],
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: isConnected ? Colors.green.withOpacity(0.2) : Colors.red.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: isConnected ? Colors.green : Colors.red),
-            ),
-            child: Text(
-              isConnected ? "CONNECTED" : "DISCONNECTED",
-              style: TextStyle(color: isConnected ? Colors.greenAccent : Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
