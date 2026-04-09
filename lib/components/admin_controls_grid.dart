@@ -6,12 +6,12 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/uart.dart';
 import '../pages/welcome.dart';
 
-class _AdminButton {
+class AdminButton {
   final IconData icon;
   final String label;
   final VoidCallback onPressed;
 
-  _AdminButton({
+  AdminButton({
     required this.icon,
     required this.label,
     required this.onPressed,
@@ -23,27 +23,27 @@ class AdminControlsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<_AdminButton> buttons = [
-      _AdminButton(
+    final List<AdminButton> buttons = [
+      AdminButton(
         icon: LucideIcons.doorOpen,
         label: 'Open Doors',
         onPressed: () {
           SerialService().openDoors();
         },
       ),
-      _AdminButton(
+      AdminButton(
         icon: LucideIcons.lockOpen,
         label: 'Open Hatch',
         onPressed: () {
           SerialService().openHatch();
         },
       ),
-      _AdminButton(
+      AdminButton(
         icon: LucideIcons.logOut,
         label: 'Exit App',
         onPressed: () => exit(0),
       ),
-      _AdminButton(
+      AdminButton(
         icon: LucideIcons.power,
         label: 'Power Off',
         onPressed: () async {
@@ -61,7 +61,7 @@ class AdminControlsGrid extends StatelessWidget {
           }
         },
       ),
-      _AdminButton(
+      AdminButton(
         icon: LucideIcons.arrowLeft,
         label: 'Back',
         onPressed: () {
@@ -71,7 +71,7 @@ class AdminControlsGrid extends StatelessWidget {
           );
         },
       ),
-      _AdminButton(
+      AdminButton(
         icon: LucideIcons.recycle,
         label: "Restart RFID",
         onPressed: () {
@@ -90,7 +90,7 @@ class AdminControlsGrid extends StatelessWidget {
           );
         },
       ),
-            _AdminButton(
+            AdminButton(
         icon: LucideIcons.arrowLeft,
         label: 'Restart UART0',
         onPressed: () async {

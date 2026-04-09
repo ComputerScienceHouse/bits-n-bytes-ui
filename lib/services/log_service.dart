@@ -68,6 +68,7 @@ class LogService {
       for (String message in messages) {
         logData(message);
       }
+      previousESPData = currentJson;
     });
     SerialService().jetsonState.addListener(() {
       final Map<String, dynamic>? currentJson = SerialService().jetsonState.value;
@@ -75,6 +76,7 @@ class LogService {
       for (String message in messages) {
         logData(message);
       }
+      previousJetsonData = currentJson;
     });
   }
 }

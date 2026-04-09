@@ -1,10 +1,13 @@
 import 'dart:developer';
 
 import 'package:bits_n_bytes_ui/components/admin_controls_grid.dart';
+import 'package:bits_n_bytes_ui/components/debug_action.dart';
 import 'package:bits_n_bytes_ui/components/debug_option.dart';
+import 'package:bits_n_bytes_ui/components/log_overlay.dart';
 import 'package:bits_n_bytes_ui/components/shelf.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/uart.dart';
 import 'dart:async';
 
@@ -187,14 +190,20 @@ class _AdminPageState extends State<AdminPage> {
                                       'Print detailed logs to the console',
                                 ),
                                 DebugOption(
-                                  title: 'Show Real-time Log Feed',
-                                  description:
-                                      'Display a LogService.logEvent overlay on the screen',
-                                ),
-                                DebugOption(
                                   title: "Show Raw Sensor Data",
                                   description:
                                       "Display raw data from the weight sensors",
+                                ),
+                                DebugAction(
+                                  title: 'Open System Log Feed',
+                                  description: 'View real-time event, data, and hardware logs',
+                                  icon: Icons.terminal, // Optional: customize the icon
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => const SystemLogOverlay(),
+                                    );
+                                  },
                                 ),
                               ],
                             ),
