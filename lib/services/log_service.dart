@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bits_n_bytes_ui/services/uart.dart';
 import 'package:flutter/material.dart';
 
@@ -24,6 +26,9 @@ class LogService {
     if (vn.value.length > logsLength) {
       vn.value.removeAt(0);
     }
+
+    // Flutter Web Log
+    log(message);
   }
 
   /// Logs Message to Event List
