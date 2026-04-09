@@ -394,6 +394,9 @@ void _onJsonDataReceived(String portName, Uint8List data) {
   }
 
   Future<bool> startListeningAll() async {
-    return await startListeningNFC() && await startListeningJetson() && await startListeningESP();
+    bool nfc = await startListeningNFC();
+    bool esp = await startListeningESP();
+    bool jet = await startListeningJetson();
+    return nfc && esp && jet;
   }
 }
