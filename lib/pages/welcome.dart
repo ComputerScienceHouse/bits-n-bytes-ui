@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:typed_data';
 import 'package:bits_n_bytes_ui/database/models/user.dart';
 import 'package:bits_n_bytes_ui/pages/admin.dart';
@@ -11,8 +10,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:virtual_keyboard_multi_language/virtual_keyboard_multi_language.dart';
-import '../services/uart.dart'; // Adjust path if needed
-import 'dart:async';
+import '../services/serial_service.dart'; // Adjust path if needed
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});

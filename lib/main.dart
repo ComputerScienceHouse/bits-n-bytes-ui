@@ -7,7 +7,7 @@ import 'package:device_preview/device_preview.dart';
 import 'pages/welcome.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:io' show Platform;
-import '../services/uart.dart';
+import 'services/serial_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
 
@@ -69,7 +69,7 @@ class MyApp extends StatelessWidget {
     }
 
     return MouseRegion(
-      cursor: SystemMouseCursors.none,
+      cursor: (dotenv.env['HIDE_CURSOR'] == 'true') ? SystemMouseCursors.none : SystemMouseCursors.basic,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: theme.light(),

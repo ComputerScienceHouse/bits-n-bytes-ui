@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bits_n_bytes_ui/components/admin_controls_grid.dart';
 import 'package:bits_n_bytes_ui/components/debug_action.dart';
 import 'package:bits_n_bytes_ui/components/debug_option.dart';
@@ -7,9 +5,8 @@ import 'package:bits_n_bytes_ui/components/log_overlay.dart';
 import 'package:bits_n_bytes_ui/components/shelf.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../services/uart.dart';
-import 'dart:async';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../services/serial_service.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -69,7 +66,7 @@ class _AdminPageState extends State<AdminPage> {
     return DefaultTabController(
       length: 4,
       child: MouseRegion(
-        cursor: SystemMouseCursors.none,
+        cursor: (dotenv.env['HIDE_CURSOR'] == 'true') ? SystemMouseCursors.none : SystemMouseCursors.basic,
         child: Scaffold(
           body: SafeArea(
             child: Column(

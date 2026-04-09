@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart'; // Adjust path
-import 'package:bits_n_bytes_ui/services/uart.dart'; // Adjust path
+import 'package:bits_n_bytes_ui/services/serial_service.dart'; // Adjust path
 
 class HardwareStatusView extends StatefulWidget {
   const HardwareStatusView({super.key});
@@ -35,9 +35,55 @@ class _HardwareStatusViewState extends State<HardwareStatusView> {
       padding: const EdgeInsets.all(20.0),
       child: Column(
         children: [
+          // Port Status Section
+          _sectionHeader("COMMUNICATION PORTS"),
           _connectionRow("ESP32 (Main Controller)", SerialService.portESP),
           _connectionRow("Jetson Nano (Vision)", SerialService.portJetson),
           _connectionRow("NFC Reader", SerialService.portNFC),
+          
+          const SizedBox(height: 20),
+          const Divider(color: Colors.white10),
+          const SizedBox(height: 10),
+
+          // New Shelf Status Section
+          _sectionHeader("ACTIVE SHELVES"),
+          Expanded(
+            child: ValueListenableBuilder<Map<String, dynamic>?>(
+              // Note the nullable type <Map<String, dynamic>?>
+              valueListenable: SerialService().espState, 
+              builder: (context, data, _) {
+                // 1. Handle Null or Empty Data
+                if (data == null || data.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: Text(
+                        "WAITING FOR ESP32 DATA...", 
+                        style: TextStyle(color: Colors.white24, fontSize: 12, fontStyle: FontStyle.italic)
+                      ),
+                    ),
+                  );
+                }
+
+                // 2. Safely extract the list
+                final List<dynamic> shelfIds = data['shelf_ids'] ?? [];
+                
+                if (shelfIds.isEmpty) {
+                  return const Text("No shelves reported by ESP32", 
+                    style: TextStyle(color: Colors.white24, fontSize: 12));
+                }
+
+                // 3. Build the list if data is valid
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: shelfIds.length,
+                  itemBuilder: (context, index) {
+                    return _shelfRow(shelfIds[index].toString());
+                  },
+                );
+              },
+            ),
+          ),
           const Spacer(),
           SizedBox(
             width: double.infinity,
@@ -97,6 +143,37 @@ class _HardwareStatusViewState extends State<HardwareStatusView> {
                 fontWeight: FontWeight.bold
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _sectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Text(title, style: const TextStyle(color: Colors.greenAccent, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+    );
+  }
+
+  Widget _shelfRow(String shelfId) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          const Icon(Icons.shelves, size: 16, color: Colors.white54),
+          const SizedBox(width: 12),
+          Text(shelfId, style: const TextStyle(color: Colors.white, fontSize: 13)),
+          const Spacer(),
+          // Reusing your visual style for consistency
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.blueAccent.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: Colors.blueAccent.withOpacity(0.5)),
+            ),
+            child: const Text("ACTIVE", style: TextStyle(color: Colors.blueAccent, fontSize: 9, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

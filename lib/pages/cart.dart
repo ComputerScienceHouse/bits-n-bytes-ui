@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:async';
-import 'dart:developer';
 import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -14,7 +13,7 @@ import 'package:bits_n_bytes_ui/database/models/item.dart';
 import 'package:bits_n_bytes_ui/database/models/user.dart';
 import 'package:bits_n_bytes_ui/pages/door_closed.dart';
 import 'package:bits_n_bytes_ui/pages/welcome.dart';
-import '../services/uart.dart';
+import '../services/serial_service.dart';
 
 class CartPage extends StatefulWidget {
   final User user;

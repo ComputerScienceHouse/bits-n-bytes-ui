@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:bits_n_bytes_ui/services/uart.dart';
+import 'package:bits_n_bytes_ui/services/serial_service.dart';
 import 'package:flutter/material.dart';
 
 /// Log Service
