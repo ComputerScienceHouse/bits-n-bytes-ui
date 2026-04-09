@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:bits_n_bytes_ui/components/admin_controls_grid.dart';
 import 'package:bits_n_bytes_ui/components/debug_option.dart';
 import 'package:bits_n_bytes_ui/components/shelf.dart';
+import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:flutter/material.dart';
 import '../services/uart.dart';
 import 'dart:async';
@@ -22,7 +23,7 @@ class _AdminPageState extends State<AdminPage> {
     SerialService().espState.addListener(() {
       final Map<String, dynamic>? json = SerialService().espState.value;
       if (json == null) {
-        log("AdminPage: Serial JSON from ESP Null");
+        LogService.logEvent("AdminPage: Serial JSON from ESP Null");
         return;
       }
 
@@ -188,7 +189,7 @@ class _AdminPageState extends State<AdminPage> {
                                 DebugOption(
                                   title: 'Show Real-time Log Feed',
                                   description:
-                                      'Display a log overlay on the screen',
+                                      'Display a LogService.logEvent overlay on the screen',
                                 ),
                                 DebugOption(
                                   title: "Show Raw Sensor Data",

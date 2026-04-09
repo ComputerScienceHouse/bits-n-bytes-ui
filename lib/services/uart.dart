@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data'; // Required for Uint8List
+import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
@@ -27,7 +28,7 @@ class SerialDataPacket {
 
   @override
   String toString() {
-    // This gives you a useful log message when you print the object
+    // This gives you a useful LogService.logEvent message when you print the object
     return 'SerialDataPacket(port: $portName, protocol: $protocol, data: $data)';
   }
 }
@@ -66,25 +67,25 @@ class SerialService {
     int payloadSize = 0, // REQUIRED for fixedLengthBinary
   }) async {
     if (_ports.containsKey(portName)) {
-      log("SerialService: Already listening on $portName");
+      LogService.logEvent("SerialService: Already listening on $portName");
       return true;
     }
 
     if (protocol == SerialProtocol.fixedLengthBinary && payloadSize <= 0) {
-      log(
+      LogService.logEvent(
         "SerialService ERROR [$portName]: fixedLengthBinary protocol requires a positive payloadSize.",
       );
       return false;
     }
 
-    log(
+    LogService.logEvent(
       "SerialService: Attempting to open $portName ($protocol, $baudRate baud)...",
     );
     final port = SerialPort(portName);
 
     try {
       if (!port.open(mode: SerialPortMode.readWrite)) {
-        log(
+        LogService.logEvent(
           "SerialService ERROR [$portName]: Failed to open. Error: ${SerialPort.lastError}",
         );
         return false;
@@ -113,7 +114,7 @@ class SerialService {
       final reader = SerialPortReader(port);
       _subscriptions[portName] = reader.stream.listen(
         (data) {
-          // log("DEBUG: Received ${data.length} bytes from $portName: ${String.fromCharCodes(data)}");
+          // LogService.logEvent("DEBUG: Received ${data.length} bytes from $portName: ${String.fromCharCodes(data)}");
           // Route data to the correct parser based on the port's protocol
           if (_portProtocols[portName] == SerialProtocol.fixedLengthBinary) {
             _onBinaryDataReceived(portName, data);
@@ -122,20 +123,20 @@ class SerialService {
           }
         },
         onError: (e) {
-          log("SerialService ERROR [$portName]: $e");
+          LogService.logEvent("SerialService ERROR [$portName]: $e");
           _cleanupPort(portName);
         },
         onDone: () {
-          log("SerialService: Stream closed for $portName.");
+          LogService.logEvent("SerialService: Stream closed for $portName.");
           _cleanupPort(portName);
         },
       );
 
-      log("SerialService: Successfully listening on $portName");
+      LogService.logEvent("SerialService: Successfully listening on $portName");
       return true;
     } catch (e, s) {
-      log("SerialService EXCEPTION for $portName: $e");
-      log("Stacktrace: $s");
+      LogService.logEvent("SerialService EXCEPTION for $portName: $e");
+      LogService.logEvent("Stacktrace: $s");
       _cleanupPort(portName);
       return false;
     }
@@ -175,7 +176,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     // If we haven't found a full object yet, break the while loop 
     // and wait for more data from the serial port.
     if (endIdx == -1) {
-      // log("STILL PARSING");
+      // LogService.logEvent("STILL PARSING");
       break;
     } 
 
@@ -183,24 +184,24 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     _accumulatedBuffer = _accumulatedBuffer.substring(endIdx + 1);
 
     try {
-      log("JSON COMPLETE SENDING");
+      LogService.logEvent("JSON COMPLETE SENDING");
       final Map<String, dynamic> jsonData = jsonDecode(completeJson);
 
       if (portName == portESP) {
         // This updates the value and NOTIFIES all listeners automatically
         espState.value = jsonData;
-        log("onJsonDataReceived: ESP");
+        LogService.logEvent("onJsonDataReceived: ESP");
       } else if (portName == portJetson) {
         jetsonState.value = jsonData;
-        // log("onJsonDataReceived: JETSON");
+        // LogService.logEvent("onJsonDataReceived: JETSON");
       // } else if (portName == portNFC) { // NFC SHOULDNT BE CALLED HERE
       //   nfcState.value = jsonData;
-      //   // log("onJsonDataReceived: NFC");
+      //   // LogService.logEvent("onJsonDataReceived: NFC");
       } else {
-        log("onJsonDataReceived: Unknown Port or NFC");
+        LogService.logEvent("onJsonDataReceived: Unknown Port or NFC");
       }
     } catch (e) {
-      log("Json Parse Error on $portName: $e");
+      LogService.logEvent("Json Parse Error on $portName: $e");
       // If it failed to decode, the buffer might be corrupted. 
       // You might want to clear it or handle it here.
     }
@@ -226,9 +227,9 @@ void _onJsonDataReceived(String portName, Uint8List data) {
       // _dataStreamController.add(SerialDataPacket(portName: portName, protocol: SerialProtocol.json, data: packet));
       if (portName == portNFC) {
         nfcState.value = packet;
-        log("onBinaryDataReceived: NFC packet updated");
+        LogService.logEvent("onBinaryDataReceived: NFC packet updated");
       } else {
-        log("onBinaryDataReceived: Not from NFC :skull:");
+        LogService.logEvent("onBinaryDataReceived: Not from NFC :skull:");
       }
       
       builder.add(remainder);
@@ -241,14 +242,14 @@ void _onJsonDataReceived(String portName, Uint8List data) {
   void sendJsonTo(String portName, Map<String, dynamic> data) {
     final port = _ports[portName];
     if (port == null || !port.isOpen) {
-      log("SerialService ERROR: Port $portName is not open.");
+      LogService.logEvent("SerialService ERROR: Port $portName is not open.");
       return;
     }
     try {
       final jsonString = jsonEncode(data);
       port.write(Uint8List.fromList(jsonString.codeUnits));
     } catch (e) {
-      log("SerialService [$portName] SEND JSON ERROR: $e");
+      LogService.logEvent("SerialService [$portName] SEND JSON ERROR: $e");
     }
   }
 
@@ -256,14 +257,14 @@ void _onJsonDataReceived(String portName, Uint8List data) {
   void sendBinaryTo(String portName, Uint8List data) {
     final port = _ports[portName];
     if (port == null || !port.isOpen) {
-      log("SerialService ERROR: Port $portName is not open.");
+      LogService.logEvent("SerialService ERROR: Port $portName is not open.");
       return;
     }
     try {
       port.write(data);
-      log('SerialService [$portName] SENT: ${data.length} bytes');
+      LogService.logEvent('SerialService [$portName] SENT: ${data.length} bytes');
     } catch (e) {
-      log("SerialService [$portName] SEND BINARY ERROR: $e");
+      LogService.logEvent("SerialService [$portName] SEND BINARY ERROR: $e");
     }
   }
 
@@ -278,10 +279,10 @@ void _onJsonDataReceived(String portName, Uint8List data) {
 
   void stopListening(String portName) {
     if (_ports.containsKey(portName)) {
-      log("SerialService: Stopping listener and cleaning up $portName...");
+      LogService.logEvent("SerialService: Stopping listener and cleaning up $portName...");
       _cleanupPort(portName);
     } else {
-      log("SerialService: No active listener found for $portName to stop.");
+      LogService.logEvent("SerialService: No active listener found for $portName to stop.");
     }
   }
 
@@ -291,7 +292,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
 
   // --- Cleanup ---
   void _cleanupPort(String portName) {
-    log("Cleaning up $portName...");
+    LogService.logEvent("Cleaning up $portName...");
     _subscriptions[portName]?.cancel();
     _ports[portName]?.close();
     _ports[portName]?.dispose();
@@ -313,17 +314,17 @@ void _onJsonDataReceived(String portName, Uint8List data) {
   }
 
   void openDoors() {
-    log("Sending door command...");
+    LogService.logEvent("Sending door command...");
     sendJsonTo(portESP, {"doors": true,"hatch":false});
   }
 
   void openHatch() {
-    log("Sending hatch command...");
+    LogService.logEvent("Sending hatch command...");
     sendJsonTo(portESP, {"hatch": true,"doors":false});
   }
 
   Future<void> hardResetPort(String portName, {int baudRate = 9600}) async {
-    log("SerialService: Hard resetting $portName...");
+    LogService.logEvent("SerialService: Hard resetting $portName...");
 
     // If we have an existing port object, try to close it explicitly
     final existingPort = _ports[portName];
@@ -334,7 +335,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
         }
         existingPort.dispose();
       } catch (e) {
-        log("Error during pre-reset cleanup: $e");
+        LogService.logEvent("Error during pre-reset cleanup: $e");
       }
       _ports.remove(portName);
     }
@@ -354,9 +355,9 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     );
 
     // if (success) {
-    //   log("NFC Listening: Success");
+    //   LogService.logEvent("NFC Listening: Success");
     // } else {
-    //   log("NFC Listening: Failure");
+    //   LogService.logEvent("NFC Listening: Failure");
     // }
 
     return success;
@@ -369,9 +370,9 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     );
 
     // if (success) {
-    //   log("Jetson Listening: Success");
+    //   LogService.logEvent("Jetson Listening: Success");
     // } else {
-    //   log("Jetson Listening: Failure");
+    //   LogService.logEvent("Jetson Listening: Failure");
     // }
 
     return success;
@@ -384,9 +385,9 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     );
 
     // if (success) {
-    //   log("ESP Listening: Success");
+    //   LogService.logEvent("ESP Listening: Success");
     // } else {
-    //   log("ESP Listening: Failure");
+    //   LogService.logEvent("ESP Listening: Failure");
     // }
 
     return success;

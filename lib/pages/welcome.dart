@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:bits_n_bytes_ui/database/models/user.dart';
 import 'package:bits_n_bytes_ui/pages/admin.dart';
 import 'package:bits_n_bytes_ui/pages/name.dart';
+import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:flutter/cupertino.dart' hide Size;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -38,7 +39,7 @@ class _WelcomePageState extends State<WelcomePage> {
     SerialService().nfcState.addListener( () {
       final Uint8List? data = SerialService().nfcState.value;
       if (data == null) {
-        log("NFC Reader: null serial data");
+        LogService.logEvent("NFC Reader: null serial data");
         return;
       }
       final String hexString = data
@@ -49,13 +50,13 @@ class _WelcomePageState extends State<WelcomePage> {
         data.lengthInBytes,
       );
       final int counter = byteData.getUint32(0);
-      log("\n--- Received Packet (ESP32) ---");
-      log("Buffer (Hex): $hexString");
-      log("Decoded Counter: $counter");
+      LogService.logEvent("\n--- Received Packet (ESP32) ---");
+      LogService.logEvent("Buffer (Hex): $hexString");
+      LogService.logEvent("Decoded Counter: $counter");
       _handleUserLogin(counter);
     });
 
-    log("Sending NFC initialization command..."); // Added log
+    LogService.logEvent("Sending NFC initialization command..."); // Added LogService.logEvent
     SerialService().sendBinaryTo(
       SerialService.portNFC,
       // --- THIS IS YOUR NEW COMMAND ---
@@ -64,9 +65,9 @@ class _WelcomePageState extends State<WelcomePage> {
   }
 
   _handleUserLogin(int uuid) async {
-    log("--- 1. Starting User Login for UUID: $uuid ---");
+    LogService.logEvent("--- 1. Starting User Login for UUID: $uuid ---");
     final getUserIdUrl = Uri.parse('${dotenv.env['API_URL']}nfc/$uuid');
-    log("Fetching Token URL: $getUserIdUrl");
+    LogService.logEvent("Fetching Token URL: $getUserIdUrl");
 
     try {
       final response = await http.get(
@@ -75,20 +76,20 @@ class _WelcomePageState extends State<WelcomePage> {
       );
 
       // --- Detailed Log for First Response ---
-      log("--- 2. Token API Response ---");
-      log("Status Code: ${response.statusCode}");
-      log("Response Body: ${response.body}"); // This shows the actual JSON/text
+      LogService.logEvent("--- 2. Token API Response ---");
+      LogService.logEvent("Status Code: ${response.statusCode}");
+      LogService.logEvent("Response Body: ${response.body}"); // This shows the actual JSON/text
 
       if (response.statusCode == 200) {
         // API call was successful
         final Map<String, dynamic> tokenData = jsonDecode(response.body);
 
         int id = tokenData['assigned_user'];
-        log("--- 3. Extracted User ID: $id ---");
+        LogService.logEvent("--- 3. Extracted User ID: $id ---");
 
         try {
           final getUserUrl = Uri.parse('${dotenv.env['API_URL']}users/$id');
-          log("Fetching User URL: $getUserUrl");
+          LogService.logEvent("Fetching User URL: $getUserUrl");
 
           final response = await http.get(
             getUserUrl,
@@ -96,16 +97,16 @@ class _WelcomePageState extends State<WelcomePage> {
           );
 
           // --- Detailed Log for Second Response ---
-          log("--- 4. User API Response ---");
-          log("Status Code: ${response.statusCode}");
-          log(
+          LogService.logEvent("--- 4. User API Response ---");
+          LogService.logEvent("Status Code: ${response.statusCode}");
+          LogService.logEvent(
             "Response Body: ${response.body}",
           ); // This shows the actual JSON/text
 
           if (response.statusCode == 200) {
             final Map<String, dynamic> userData = jsonDecode(response.body);
-            log("--- 5. User Data Decoded ---");
-            log(userData.toString()); // Log the map
+            LogService.logEvent("--- 5. User Data Decoded ---");
+            LogService.logEvent(userData.toString()); // Log the map
 
             user = User(
               id: userData['id'], // Assumes API returns 'id'
@@ -114,10 +115,10 @@ class _WelcomePageState extends State<WelcomePage> {
               phone: userData['price'], // Assumes API returns 'price'
             );
 
-            log("--- 6. User Object Created ---");
+            LogService.logEvent("--- 6. User Object Created ---");
             // You might want to add a toString() method to your User model
-            // for a cleaner log, but this will work.
-            log("User ID: ${user.id}, Name: ${user.name}");
+            // for a cleaner LogService.logEvent, but this will work.
+            LogService.logEvent("User ID: ${user.id}, Name: ${user.name}");
 
             if (mounted) {
               // Always check 'mounted' in async functions
@@ -128,23 +129,23 @@ class _WelcomePageState extends State<WelcomePage> {
                   builder: (context) => NamePage(user: user),
                 ),
               );
-              log("--- 8. Navigated to NamePage ---");
+              LogService.logEvent("--- 8. Navigated to NamePage ---");
             } else {
-              log("--- 8. ERROR: Widget not mounted, cannot navigate. ---");
+              LogService.logEvent("--- 8. ERROR: Widget not mounted, cannot navigate. ---");
             }
           } else {
-            log("--- 4. ERROR: User API call failed (Status != 200) ---");
+            LogService.logEvent("--- 4. ERROR: User API call failed (Status != 200) ---");
           }
         } catch (e) {
-          log("--- ERROR: Exception fetching user from Database ---");
-          log(e.toString());
+          LogService.logEvent("--- ERROR: Exception fetching user from Database ---");
+          LogService.logEvent(e.toString());
         }
       } else {
-        log("--- 2. ERROR: Token API call failed (Status != 200) ---");
+        LogService.logEvent("--- 2. ERROR: Token API call failed (Status != 200) ---");
       }
     } catch (e) {
-      log("--- ERROR: Exception fetching token ---");
-      log(e.toString());
+      LogService.logEvent("--- ERROR: Exception fetching token ---");
+      LogService.logEvent(e.toString());
     }
   }
 
@@ -155,7 +156,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
   void _checkPassword(String password) {
     if (password == (dotenv.env['ADMIN_PASSWORD'] ?? "1024")) {
-      log("Access Granted");
+      LogService.logEvent("Access Granted");
       // Pop the dialog route
       Navigator.of(context).pop();
       // Push the admin page
@@ -164,7 +165,7 @@ class _WelcomePageState extends State<WelcomePage> {
         rootNavigator: true,
       ).pushReplacement(MaterialPageRoute(builder: (c) => const AdminPage()));
     } else {
-      log("Access Denied");
+      LogService.logEvent("Access Denied");
       Navigator.of(context).pop(); // Just pop the dialog
     }
   }
@@ -262,7 +263,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
     // A positive distance means swiping DOWN
     if (distanceY > _minSwipeDistance) {
-      log("Downward swipe detected! Distance: $distanceY");
+      LogService.logEvent("Downward swipe detected! Distance: $distanceY");
       _showPasswordDialog();
     }
 
