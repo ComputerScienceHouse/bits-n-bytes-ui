@@ -1,4 +1,5 @@
 
+import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:flutter/material.dart';
 import 'util.dart';
 import 'theme.dart';
@@ -26,6 +27,7 @@ Future main() async {
   KeepScreenOn.turnOn();
   if (Platform.isLinux) {
     // Initialize all the connections to the PI
+    LogService.init();
     SerialService().startListeningAll();
 
     await windowManager.ensureInitialized();
