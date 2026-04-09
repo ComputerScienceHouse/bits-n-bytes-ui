@@ -46,6 +46,8 @@ dependencies:
   flutter_dotenv: ^6.0.0
   keep_screen_on: ^5.0.0
   redis: ^4.0.0
+  shelf: ^1.4.2
+  shelf_router: ^1.1.4
 
 dev_dependencies:
   flutter_test:
