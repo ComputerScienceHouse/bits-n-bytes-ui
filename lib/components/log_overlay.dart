@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart'; // Adjust path
-import 'package:bits_n_bytes_ui/services/uart.dart'; // Adjust path
+import 'package:bits_n_bytes_ui/services/serial_service.dart'; // Adjust path
 
 class HardwareStatusView extends StatefulWidget {
   const HardwareStatusView({super.key});

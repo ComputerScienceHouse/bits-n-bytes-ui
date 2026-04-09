@@ -1,70 +1,36 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:typed_data'; // Required for Uint8List
 import 'package:bits_n_bytes_ui/services/log_service.dart';
+import 'package:bits_n_bytes_ui/services/serial_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
-enum SerialProtocol {
-  /// Expects JSON objects wrapped in { ... }
-  json,
-
-  /// Expects fixed-length raw binary packets
-  fixedLengthBinary,
-}
-
-class SerialDataPacket {
-  final String portName;
-  final SerialProtocol protocol;
-  final dynamic
-  data; // Will be Map<String, dynamic> for JSON, Uint8List for binary
-
-  SerialDataPacket({
-    required this.portName,
-    required this.protocol,
-    required this.data,
-  });
-
-  @override
-  String toString() {
-    // This gives you a useful LogService.logEvent message when you print the object
-    return 'SerialDataPacket(port: $portName, protocol: $protocol, data: $data)';
-  }
-}
-
-class SerialService {
-  // Singleton remains to provide a central access point
-  static final SerialService _instance = SerialService._internal();
-  factory SerialService() => _instance;
-  SerialService._internal();
-
-  static final String portESP = String.fromEnvironment("ESP_PORT", defaultValue: "/dev/ttyAMA0");
-  static final String portJetson = String.fromEnvironment("JETSON_PORT", defaultValue: "/dev/ttyUSB0");
-  static final String portNFC = String.fromEnvironment("NFC_PORT", defaultValue: "/dev/ttyUSB1");
-
+class SerialServiceReal implements SerialService {
   // Maps to hold separate resources for each port
   final Map<String, SerialPort> _ports = {};
   final Map<String, StreamSubscription> _subscriptions = {};
 
   final Map<String, String> _jsonBuffers = {}; // For JSON string data
   final Map<String, Uint8List> _binaryBuffers = {}; // For raw binary data
-  final Map<String, int> _binaryPayloadSizes =
-      {}; // Stores PAYLOAD_SIZE for binary ports
-  final Map<String, SerialProtocol> _portProtocols =
-      {}; // Stores protocol for each port
+  final Map<String, int> _binaryPayloadSizes = {}; // Stores PAYLOAD_SIZE for binary ports
+  final Map<String, SerialProtocol> _portProtocols = {}; // Stores protocol for each port
 
   final Map<String, BytesBuilder> _binaryBuilders = {};
 
+  @override
   final ValueNotifier<Map<String, dynamic>?> espState = ValueNotifier(null);
+  @override
   final ValueNotifier<Map<String, dynamic>?> jetsonState = ValueNotifier(null);
+  @override
   final ValueNotifier<Uint8List?> nfcState = ValueNotifier(null);
 
+  @override
   Future<bool> startListening(
     String portName, {
     int baudRate = 9600,
     SerialProtocol protocol = SerialProtocol.json,
-    int payloadSize = 0, // REQUIRED for fixedLengthBinary
+    int payloadSize = 0,
   }) async {
     if (_ports.containsKey(portName)) {
       LogService.logEvent("SerialService: Already listening on $portName");
@@ -187,11 +153,11 @@ void _onJsonDataReceived(String portName, Uint8List data) {
       LogService.logEvent("JSON COMPLETE SENDING");
       final Map<String, dynamic> jsonData = jsonDecode(completeJson);
 
-      if (portName == portESP) {
+      if (portName == SerialService.portESP) {
         // This updates the value and NOTIFIES all listeners automatically
         espState.value = jsonData;
         LogService.logEvent("onJsonDataReceived: ESP");
-      } else if (portName == portJetson) {
+      } else if (portName == SerialService.portJetson) {
         jetsonState.value = jsonData;
         // LogService.logEvent("onJsonDataReceived: JETSON");
       // } else if (portName == portNFC) { // NFC SHOULDNT BE CALLED HERE
@@ -225,7 +191,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
       final remainder = fullBuffer.sublist(payloadSize);
       
       // _dataStreamController.add(SerialDataPacket(portName: portName, protocol: SerialProtocol.json, data: packet));
-      if (portName == portNFC) {
+      if (portName == SerialService.portNFC) {
         nfcState.value = packet;
         LogService.logEvent("onBinaryDataReceived: NFC packet updated");
       } else {
@@ -239,6 +205,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
   // --- Sending Methods ---
 
   /// Send a JSON object to a specific port
+  @override
   void sendJsonTo(String portName, Map<String, dynamic> data) {
     final port = _ports[portName];
     if (port == null || !port.isOpen) {
@@ -254,6 +221,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
   }
 
   /// Send raw binary data (a Uint8List) to a specific port
+  @override
   void sendBinaryTo(String portName, Uint8List data) {
     final port = _ports[portName];
     if (port == null || !port.isOpen) {
@@ -269,6 +237,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
   }
 
   /// Send JSON to ALL known ports
+  @override
   void broadcastJson(Map<String, dynamic> data) {
     for (final portName in _ports.keys) {
       if (_portProtocols[portName] == SerialProtocol.json) {
@@ -277,6 +246,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     }
   }
 
+  @override
   void stopListening(String portName) {
     if (_ports.containsKey(portName)) {
       LogService.logEvent("SerialService: Stopping listener and cleaning up $portName...");
@@ -286,6 +256,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     }
   }
 
+  @override
   bool isListening(String portName) {
     return _ports.containsKey(portName);
   }
@@ -304,6 +275,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     _binaryPayloadSizes.remove(portName);
   }
 
+  @override
   void dispose() {
     for (var portName in _ports.keys.toList()) {
       _cleanupPort(portName);
@@ -313,16 +285,19 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     nfcState.dispose();
   }
 
+  @override
   void openDoors() {
     LogService.logEvent("Sending door command...");
-    sendJsonTo(portESP, {"doors": true,"hatch":false});
+    sendJsonTo(SerialService.portESP, {"doors": true,"hatch":false});
   }
 
+  @override
   void openHatch() {
     LogService.logEvent("Sending hatch command...");
-    sendJsonTo(portESP, {"hatch": true,"doors":false});
+    sendJsonTo(SerialService.portESP, {"hatch": true,"doors":false});
   }
 
+  @override
   Future<void> hardResetPort(String portName, {int baudRate = 9600}) async {
     LogService.logEvent("SerialService: Hard resetting $portName...");
 
@@ -347,6 +322,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     await startListening(portName, baudRate: baudRate);
   }
 
+  @override
   Future<bool> startListeningNFC() async {
     bool success = await startListening(
       SerialService.portNFC,
@@ -363,6 +339,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     return success;
   }
 
+  @override
   Future<bool> startListeningJetson() async {
     bool success = await startListening(
       SerialService.portJetson,
@@ -378,6 +355,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     return success;
   }
 
+  @override
   Future<bool> startListeningESP() async {
     bool success = await startListening(
       SerialService.portESP,
@@ -393,6 +371,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     return success;
   }
 
+  @override
   Future<bool> startListeningAll() async {
     LogService.logEvent("UART-Service: StartListeningAll");
     // Start all of them simultaneously

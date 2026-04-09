@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../services/uart.dart';
+import '../services/serial_service.dart';
 import '../pages/welcome.dart';
 
 class AdminButton {
