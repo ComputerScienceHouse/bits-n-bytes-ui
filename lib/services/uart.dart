@@ -308,6 +308,8 @@ void _onJsonDataReceived(String portName, Uint8List data) {
       _cleanupPort(portName);
     }
     espState.dispose();
+    jetsonState.dispose();
+    nfcState.dispose();
   }
 
   void openDoors() {
