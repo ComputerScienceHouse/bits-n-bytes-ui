@@ -25,7 +25,8 @@ Future main() async {
   await dotenv.load(fileName: ".env");
   KeepScreenOn.turnOn();
   if (Platform.isLinux) {
-    SerialService().startListening(SerialService.portESP, baudRate: 9600);
+    // Initialize all the connections to the PI
+    SerialService().startListeningAll();
 
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(

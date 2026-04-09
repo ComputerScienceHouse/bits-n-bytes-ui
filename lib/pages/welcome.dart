@@ -37,19 +37,6 @@ class _WelcomePageState extends State<WelcomePage> {
   }
 
   void _initializeNfcListener() async {
-    // 1. START the listener (opens the port, creates buffer)
-    bool success = await SerialService().startListening(
-      SerialService.portNFC,
-      protocol: SerialProtocol.fixedLengthBinary,
-      // Make sure this payloadSize matches your *expected incoming* packet size
-      payloadSize: 7,
-    );
-
-    if (!success) {
-      log("WelcomePage: FAILED to start listening on $SerialService.portNFC");
-      return;
-    }
-
     SerialService().nfcState.addListener( () {
       final Uint8List? data = SerialService().nfcState.value;
       if (data == null) {

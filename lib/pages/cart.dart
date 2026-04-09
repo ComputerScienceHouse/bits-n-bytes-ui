@@ -25,8 +25,6 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   List<Item> cart = [];
-  StreamSubscription<SerialDataPacket>? _doorSubscription;
-  StreamSubscription<SerialDataPacket>? _cartSubscription;
   
   // Guard to prevent multiple navigation triggers
   bool _isNavigating = false;
@@ -42,12 +40,7 @@ class _CartPageState extends State<CartPage> {
   }
 
   void _initPorts() async {
-    // 1. Initialize Jetson Port (Cart Updates)
-    await SerialService().startListening(
-      SerialService.portJetson,
-      protocol: SerialProtocol.json,
-    );
-
+    // Init Cart Listener
     SerialService().jetsonState.addListener(() {
       Map<String, dynamic>? json = SerialService().jetsonState.value;
       if (json == null) {
@@ -61,12 +54,7 @@ class _CartPageState extends State<CartPage> {
       }
     });
 
-    // 2. Initialize ESP32 Port (Door Status)
-    await SerialService().startListening(
-      SerialService.portESP,
-      protocol: SerialProtocol.json,
-    );
-
+    // Init Door Listener
     SerialService().espState.addListener(() {
       Map<String, dynamic>? json = SerialService().espState.value;
       if (json == null) {
@@ -150,8 +138,6 @@ class _CartPageState extends State<CartPage> {
 
   @override
   void dispose() {
-    _cartSubscription?.cancel();
-    _doorSubscription?.cancel();
     super.dispose();
   }
 

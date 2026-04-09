@@ -16,7 +16,7 @@ class AdminPage extends StatefulWidget {
 
 class _AdminPageState extends State<AdminPage> {
   List<String> _connectedShelves = [];
-  StreamSubscription<SerialDataPacket>? _serialSubscription;
+
   @override
   void initState() {
     SerialService().espState.addListener(() {
@@ -57,7 +57,6 @@ class _AdminPageState extends State<AdminPage> {
 
   @override
   void dispose() {
-    _serialSubscription?.cancel();
     super.dispose();
   }
 

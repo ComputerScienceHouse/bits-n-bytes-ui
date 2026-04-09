@@ -285,6 +285,10 @@ void _onJsonDataReceived(String portName, Uint8List data) {
     }
   }
 
+  bool isListening(String portName) {
+    return _ports.containsKey(portName);
+  }
+
   // --- Cleanup ---
   void _cleanupPort(String portName) {
     log("Cleaning up $portName...");
@@ -308,12 +312,12 @@ void _onJsonDataReceived(String portName, Uint8List data) {
 
   void openDoors() {
     log("Sending door command...");
-    SerialService().sendJsonTo(portESP, {"doors": true,"hatch":false});
+    sendJsonTo(portESP, {"doors": true,"hatch":false});
   }
 
   void openHatch() {
     log("Sending hatch command...");
-    SerialService().sendJsonTo(portESP, {"hatch": true,"doors":false});
+    sendJsonTo(portESP, {"hatch": true,"doors":false});
   }
 
   Future<void> hardResetPort(String portName, {int baudRate = 9600}) async {
@@ -338,5 +342,55 @@ void _onJsonDataReceived(String portName, Uint8List data) {
 
     // Re-attempt start
     await startListening(portName, baudRate: baudRate);
+  }
+
+  Future<bool> startListeningNFC() async {
+    bool success = await startListening(
+      SerialService.portNFC,
+      protocol: SerialProtocol.fixedLengthBinary,
+      payloadSize: 7,
+    );
+
+    // if (success) {
+    //   log("NFC Listening: Success");
+    // } else {
+    //   log("NFC Listening: Failure");
+    // }
+
+    return success;
+  }
+
+  Future<bool> startListeningJetson() async {
+    bool success = await startListening(
+      SerialService.portJetson,
+      protocol: SerialProtocol.json,
+    );
+
+    // if (success) {
+    //   log("Jetson Listening: Success");
+    // } else {
+    //   log("Jetson Listening: Failure");
+    // }
+
+    return success;
+  }
+
+  Future<bool> startListeningESP() async {
+    bool success = await startListening(
+      SerialService.portESP,
+      protocol: SerialProtocol.json,
+    );
+
+    // if (success) {
+    //   log("ESP Listening: Success");
+    // } else {
+    //   log("ESP Listening: Failure");
+    // }
+
+    return success;
+  }
+
+  Future<bool> startListeningAll() async {
+    return await startListeningNFC() && await startListeningJetson() && await startListeningESP();
   }
 }
