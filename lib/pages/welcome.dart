@@ -111,10 +111,10 @@ class _WelcomePageState extends State<WelcomePage> {
             isValidUser = true;
 
             user = User(
-              id: userData['id'], // Assumes API returns 'id'
-              name: userData['name'], // Assumes API returns 'name'
-              email: userData['thumb_img'], // Assumes API returns 'imgUrl'
-              phone: userData['price'], // Assumes API returns 'price'
+              id: userData['id'],
+              name: userData['name'],
+              email: userData['email'] ?? '',
+              phone: userData['phone'],
             );
 
             LogService.logEvent("--- 6. User Object Created ---");
