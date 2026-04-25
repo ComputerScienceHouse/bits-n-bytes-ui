@@ -87,7 +87,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
         '--------------------\n'
         '$lines\n'
         '--------------------\n'
-        'Subtotal: \$${widget.cartTotal.toStringAsFixed(2)}\n';
+        'Subtotal: \$${widget.cartTotal.toStringAsFixed(2)}\n'
     'Total after Imagine RIT discount: \$0.00';
 
     try {
@@ -526,7 +526,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
                             ),
                           ),
                           Container(
-                            margin: const EdgeInsets.only(top: 199),
+                            margin: const EdgeInsets.only(top: 159),
                             alignment: AlignmentDirectional.center,
                             child: SvgPicture.asset(
                               'assets/images/lockup.svg',
