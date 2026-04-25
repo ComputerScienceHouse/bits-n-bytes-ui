@@ -77,11 +77,13 @@ class _ReceiptPageState extends State<ReceiptPage> {
     ).join('\n');
 
     final body =
-      'Bits N Bytes Receipt\n'
+      'Thank you for using Bits n Bytes at Imagine RIT!\n'
+      'Your receipt is below:\n'
       '--------------------\n'
       '$lines\n'
       '--------------------\n'
-      'Total: \$${widget.cartTotal.toStringAsFixed(2)}';
+      'Subtotal: \$${widget.cartTotal.toStringAsFixed(2)}';
+      'Total after Imagine RIT discount: \$0.00'
 
     try {
       final response = await http.post(
