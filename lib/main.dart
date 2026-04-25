@@ -1,4 +1,5 @@
 
+import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:flutter/material.dart';
 import 'util.dart';
 import 'theme.dart';
@@ -6,7 +7,7 @@ import 'package:device_preview/device_preview.dart';
 import 'pages/welcome.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:io' show Platform;
-import '../services/uart.dart';
+import 'services/serial_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
 
@@ -25,7 +26,10 @@ Future main() async {
   await dotenv.load(fileName: ".env");
   KeepScreenOn.turnOn();
   if (Platform.isLinux) {
-    SerialService().startListening(SerialService.portESP, baudRate: 9600);
+    // Initialize all the connections to the PI
+    LogService.init();
+    LogService.logEvent("Initialized Logger");
+    SerialService().startListeningAll();
 
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(
@@ -65,7 +69,7 @@ class MyApp extends StatelessWidget {
     }
 
     return MouseRegion(
-      cursor: SystemMouseCursors.none,
+      cursor: (dotenv.env['HIDE_CURSOR'] == 'true') ? SystemMouseCursors.none : SystemMouseCursors.basic,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: theme.light(),

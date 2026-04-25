@@ -5,7 +5,7 @@ const { Buffer } = require('buffer'); // Ensure Buffer is available
 // Check your system for the correct port path. Common options:
 // - USB Adapter: '/dev/ttyUSB0' or '/dev/ttyACM0'
 // - Onboard Pi GPIO UART: '/dev/serial0' (after enabling)
-const portPath = '/dev/ttyUSB1'; 
+const portPath = '/dev/ttyAMA3'; 
 const baudRate = 9600; 
 const PAYLOAD_SIZE = 7;
 // The 8-byte ACK packet the Pi sends to the ESP32

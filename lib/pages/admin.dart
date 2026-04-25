@@ -1,9 +1,12 @@
 import 'package:bits_n_bytes_ui/components/admin_controls_grid.dart';
+import 'package:bits_n_bytes_ui/components/debug_action.dart';
 import 'package:bits_n_bytes_ui/components/debug_option.dart';
+import 'package:bits_n_bytes_ui/components/log_overlay.dart';
 import 'package:bits_n_bytes_ui/components/shelf.dart';
+import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:flutter/material.dart';
-import '../services/uart.dart';
-import 'dart:async';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../services/serial_service.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -14,34 +17,33 @@ class AdminPage extends StatefulWidget {
 
 class _AdminPageState extends State<AdminPage> {
   List<String> _connectedShelves = [];
-  StreamSubscription<SerialDataPacket>? _serialSubscription;
+
   @override
   void initState() {
-    _serialSubscription = SerialService().dataStream
-        .where((packet) => packet.portName == SerialService.portESP)
-        .listen((packet) {
-          if (packet.protocol == SerialProtocol.json) {
-            final Map<String, dynamic> jsonData =
-                packet.data as Map<String, dynamic>;
-            if (jsonData.containsKey('shelf_ids')) {
-              final rawList = jsonData['shelf_ids'];
+    SerialService().espState.addListener(() {
+      final Map<String, dynamic>? json = SerialService().espState.value;
+      if (json == null) {
+        LogService.logEvent("AdminPage: Serial JSON from ESP Null");
+        return;
+      }
 
-              if (rawList is List) {
-                // Convert dynamic list to List<String> safely
-                List<String> newShelves = rawList
-                    .map((e) => e.toString())
-                    .toList();
+      if (json.containsKey('shelf_ids')) {
+        final rawList = json['shelf_ids'];
+        if (rawList is List) {
+          // Convert dynamic list to List<String> safely
+          List<String> newShelves = rawList
+              .map((e) => e.toString())
+              .toList();
 
-                // Simple check to avoid unnecessary rebuilds if data hasn't actually changed
-                if (!_areListsEqual(_connectedShelves, newShelves)) {
-                  setState(() {
-                    _connectedShelves = newShelves;
-                  });
-                }
-              }
-            }
+          // Simple check to avoid unnecessary rebuilds if data hasn't actually changed
+          if (!_areListsEqual(_connectedShelves, newShelves)) {
+            setState(() {
+              _connectedShelves = newShelves;
+            });
           }
-        });
+        }
+      }
+    });
     super.initState();
   }
 
@@ -56,7 +58,6 @@ class _AdminPageState extends State<AdminPage> {
 
   @override
   void dispose() {
-    _serialSubscription?.cancel();
     super.dispose();
   }
 
@@ -65,7 +66,7 @@ class _AdminPageState extends State<AdminPage> {
     return DefaultTabController(
       length: 4,
       child: MouseRegion(
-        cursor: SystemMouseCursors.none,
+        cursor: (dotenv.env['HIDE_CURSOR'] == 'true') ? SystemMouseCursors.none : SystemMouseCursors.basic,
         child: Scaffold(
           body: SafeArea(
             child: Column(
@@ -118,84 +119,69 @@ class _AdminPageState extends State<AdminPage> {
                             horizontal: 16.0,
                             vertical: 8.0,
                           ),
-                          scrollDirection: Axis.vertical,
+                          // Removed the nested Columns with 'spacing' to prevent infinite layout loops
                           children: [
-                            Column(
-                              spacing: 10,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Appearance",
-                                  style: TextStyle(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                                    fontSize: 24,
-                                  ),
-                                ),
-                                DebugOption(
-                                  title: 'Dark Mode',
-                                  description:
-                                      'Toggle between light and dark themes',
-                                ),
-                              ],
+                            Text(
+                              "Appearance",
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                fontSize: 24,
+                              ),
                             ),
-                            SizedBox(height: 10),
-                            Column(
-                              spacing: 10,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "UI Overlays",
-                                  style: TextStyle(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                                    fontSize: 24,
-                                  ),
-                                ),
-                                DebugOption(
-                                  title: 'Show Touch Targets',
-                                  description:
-                                      'Display outlines on all clickable elements',
-                                ),
-                                DebugOption(
-                                  title: 'Show Component Boundaries',
-                                  description:
-                                      'Draw borders around screen sections',
-                                ),
-                              ],
+                            const SizedBox(height: 10),
+                            DebugOption(
+                              title: 'Dark Mode',
+                              description: 'Toggle between light and dark themes',
                             ),
-                            SizedBox(height: 10),
-                            Column(
-                              spacing: 10,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Logging & Data",
-                                  style: TextStyle(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                                    fontSize: 24,
-                                  ),
-                                ),
-                                DebugOption(
-                                  title: 'Enable Verbose Logging',
-                                  description:
-                                      'Print detailed logs to the console',
-                                ),
-                                DebugOption(
-                                  title: 'Show Real-time Log Feed',
-                                  description:
-                                      'Display a log overlay on the screen',
-                                ),
-                                DebugOption(
-                                  title: "Show Raw Sensor Data",
-                                  description:
-                                      "Display raw data from the weight sensors",
-                                ),
-                              ],
+                            const SizedBox(height: 20), // Use SizedBox for spacing in ListViews
+                            
+                            Text(
+                              "UI Overlays",
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                fontSize: 24,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            DebugOption(
+                              title: 'Show Touch Targets',
+                              description: 'Display outlines on all clickable elements',
+                            ),
+                            const SizedBox(height: 10),
+                            DebugOption(
+                              title: 'Show Component Boundaries',
+                              description: 'Draw borders around screen sections',
+                            ),
+                            const SizedBox(height: 20),
+
+                            Text(
+                              "Logging & Data",
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                fontSize: 24,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            DebugOption(
+                              title: 'Enable Verbose Logging',
+                              description: 'Print detailed logs to the console',
+                            ),
+                            const SizedBox(height: 10),
+                            DebugOption(
+                              title: "Show Raw Sensor Data",
+                              description: "Display raw data from the weight sensors",
+                            ),
+                            const SizedBox(height: 10),
+                            DebugAction(
+                              title: 'Open System Log Feed',
+                              description: 'View real-time event, data, and hardware logs',
+                              icon: Icons.terminal,
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => const SystemLogOverlay(),
+                                );
+                              },
                             ),
                           ],
                         ),
