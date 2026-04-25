@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data'; // Required for Uint8List
 import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:bits_n_bytes_ui/services/serial_service.dart';
@@ -112,24 +113,28 @@ class SerialServiceReal implements SerialService {
 String _accumulatedBuffer = "";
 
 void _onJsonDataReceived(String portName, Uint8List data) {
-  _accumulatedBuffer += String.fromCharCodes(data);
+  // 1. Get (or initialize) the buffer for THIS specific port
+  String currentBuffer = _jsonBuffers[portName] ?? "";
+  
+  // 2. Append the new data to the port-specific buffer
+  currentBuffer += String.fromCharCodes(data);
 
-  // Use a while loop instead of recursion
-  while (_accumulatedBuffer.contains('{')) {
-    int startIdx = _accumulatedBuffer.indexOf('{');
+  // 3. Process the buffer while it contains a potential JSON object
+  while (currentBuffer.contains('{')) {
+    int startIdx = currentBuffer.indexOf('{');
     
-    // Remove junk before the first '{'
+    // Clean up leading junk
     if (startIdx > 0) {
-      _accumulatedBuffer = _accumulatedBuffer.substring(startIdx);
+      currentBuffer = currentBuffer.substring(startIdx);
     }
 
     int braceCount = 0;
     int endIdx = -1;
 
-    for (int i = 0; i < _accumulatedBuffer.length; i++) {
-      if (_accumulatedBuffer[i] == '{') {
+    for (int i = 0; i < currentBuffer.length; i++) {
+      if (currentBuffer[i] == '{') {
         braceCount++;
-      } else if (_accumulatedBuffer[i] == '}') {
+      } else if (currentBuffer[i] == '}') {
         braceCount--;
       }
 
@@ -139,39 +144,30 @@ void _onJsonDataReceived(String portName, Uint8List data) {
       }
     }
 
-    // If we haven't found a full object yet, break the while loop 
-    // and wait for more data from the serial port.
-    if (endIdx == -1) {
-      // LogService.logEvent("STILL PARSING");
-      break;
-    } 
+    // If we don't have a full object, stop and save the current state
+    if (endIdx == -1) break;
 
-    String completeJson = _accumulatedBuffer.substring(0, endIdx + 1);
-    _accumulatedBuffer = _accumulatedBuffer.substring(endIdx + 1);
+    // We have a full JSON string!
+    String completeJson = currentBuffer.substring(0, endIdx + 1);
+    currentBuffer = currentBuffer.substring(endIdx + 1);
 
     try {
-      LogService.logEvent("JSON COMPLETE SENDING");
       final Map<String, dynamic> jsonData = jsonDecode(completeJson);
 
       if (portName == SerialService.portESP) {
-        // This updates the value and NOTIFIES all listeners automatically
         espState.value = jsonData;
-        LogService.logEvent("onJsonDataReceived: ESP");
       } else if (portName == SerialService.portJetson) {
         jetsonState.value = jsonData;
-        // LogService.logEvent("onJsonDataReceived: JETSON");
-      // } else if (portName == portNFC) { // NFC SHOULDNT BE CALLED HERE
-      //   nfcState.value = jsonData;
-      //   // LogService.logEvent("onJsonDataReceived: NFC");
       } else {
-        LogService.logEvent("onJsonDataReceived: Unknown Port or NFC");
+        LogService.logEvent("Received JSON on unknown port: $portName");
       }
     } catch (e) {
-      LogService.logEvent("Json Parse Error on $portName: $e");
-      // If it failed to decode, the buffer might be corrupted. 
-      // You might want to clear it or handle it here.
+      LogService.logEvent("Json Parse Error on $portName: $e | Raw: $completeJson");
     }
   }
+
+  // 4. CRITICAL: Save the updated buffer back to the map for the next call
+  _jsonBuffers[portName] = currentBuffer;
 }
 
   /// PARSER 2: Handles fixed-length binary data
@@ -193,7 +189,7 @@ void _onJsonDataReceived(String portName, Uint8List data) {
       // _dataStreamController.add(SerialDataPacket(portName: portName, protocol: SerialProtocol.json, data: packet));
       if (portName == SerialService.portNFC) {
         nfcState.value = packet;
-        LogService.logEvent("onBinaryDataReceived: NFC packet updated");
+        LogService.logEvent("onBinaryDataReceived: NFC packet updated [$packet]");
       } else {
         LogService.logEvent("onBinaryDataReceived: Not from NFC :skull:");
       }
@@ -229,8 +225,8 @@ void _onJsonDataReceived(String portName, Uint8List data) {
       return;
     }
     try {
-      port.write(data);
-      LogService.logEvent('SerialService [$portName] SENT: ${data.length} bytes');
+      int bytesWritten = port.write(data);
+      LogService.logEvent('SerialService [$portName] SENT: $bytesWritten bytes');
     } catch (e) {
       LogService.logEvent("SerialService [$portName] SEND BINARY ERROR: $e");
     }

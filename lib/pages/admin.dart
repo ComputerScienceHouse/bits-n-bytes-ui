@@ -119,90 +119,69 @@ class _AdminPageState extends State<AdminPage> {
                             horizontal: 16.0,
                             vertical: 8.0,
                           ),
-                          scrollDirection: Axis.vertical,
+                          // Removed the nested Columns with 'spacing' to prevent infinite layout loops
                           children: [
-                            Column(
-                              spacing: 10,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Appearance",
-                                  style: TextStyle(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                                    fontSize: 24,
-                                  ),
-                                ),
-                                DebugOption(
-                                  title: 'Dark Mode',
-                                  description:
-                                      'Toggle between light and dark themes',
-                                ),
-                              ],
+                            Text(
+                              "Appearance",
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                fontSize: 24,
+                              ),
                             ),
-                            SizedBox(height: 10),
-                            Column(
-                              spacing: 10,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "UI Overlays",
-                                  style: TextStyle(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                                    fontSize: 24,
-                                  ),
-                                ),
-                                DebugOption(
-                                  title: 'Show Touch Targets',
-                                  description:
-                                      'Display outlines on all clickable elements',
-                                ),
-                                DebugOption(
-                                  title: 'Show Component Boundaries',
-                                  description:
-                                      'Draw borders around screen sections',
-                                ),
-                              ],
+                            const SizedBox(height: 10),
+                            DebugOption(
+                              title: 'Dark Mode',
+                              description: 'Toggle between light and dark themes',
                             ),
-                            SizedBox(height: 10),
-                            Column(
-                              spacing: 10,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Logging & Data",
-                                  style: TextStyle(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                                    fontSize: 24,
-                                  ),
-                                ),
-                                DebugOption(
-                                  title: 'Enable Verbose Logging',
-                                  description:
-                                      'Print detailed logs to the console',
-                                ),
-                                DebugOption(
-                                  title: "Show Raw Sensor Data",
-                                  description:
-                                      "Display raw data from the weight sensors",
-                                ),
-                                DebugAction(
-                                  title: 'Open System Log Feed',
-                                  description: 'View real-time event, data, and hardware logs',
-                                  icon: Icons.terminal, // Optional: customize the icon
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => const SystemLogOverlay(),
-                                    );
-                                  },
-                                ),
-                              ],
+                            const SizedBox(height: 20), // Use SizedBox for spacing in ListViews
+                            
+                            Text(
+                              "UI Overlays",
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                fontSize: 24,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            DebugOption(
+                              title: 'Show Touch Targets',
+                              description: 'Display outlines on all clickable elements',
+                            ),
+                            const SizedBox(height: 10),
+                            DebugOption(
+                              title: 'Show Component Boundaries',
+                              description: 'Draw borders around screen sections',
+                            ),
+                            const SizedBox(height: 20),
+
+                            Text(
+                              "Logging & Data",
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                fontSize: 24,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            DebugOption(
+                              title: 'Enable Verbose Logging',
+                              description: 'Print detailed logs to the console',
+                            ),
+                            const SizedBox(height: 10),
+                            DebugOption(
+                              title: "Show Raw Sensor Data",
+                              description: "Display raw data from the weight sensors",
+                            ),
+                            const SizedBox(height: 10),
+                            DebugAction(
+                              title: 'Open System Log Feed',
+                              description: 'View real-time event, data, and hardware logs',
+                              icon: Icons.terminal,
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => const SystemLogOverlay(),
+                                );
+                              },
                             ),
                           ],
                         ),

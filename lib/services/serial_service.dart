@@ -34,7 +34,7 @@ class SerialDataPacket {
 
 abstract class SerialService {
   static final String portESP = getPort("ESP_PORT", "/dev/ttyAMA0");
-  static final String portJetson = getPort("JETSON_PORT", "/dev/ttyUSB0");
+  static final String portJetson = getPort("JETSON_PORT", "/dev/AMA4");
   static final String portNFC = getPort("NFC_PORT", "/dev/ttyUSB1");
 
   // Common Notifiers

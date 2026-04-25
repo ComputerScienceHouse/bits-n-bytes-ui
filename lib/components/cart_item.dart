@@ -37,7 +37,11 @@ class _CartItemState extends State<CartItem> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.network("http://placehold.jp/100x100.png"),
+                Image.network(
+                  widget.item.imgUrl, // <--- Use your dynamic data here
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(

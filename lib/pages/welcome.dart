@@ -57,7 +57,6 @@ class _WelcomePageState extends State<WelcomePage> {
     LogService.logEvent("Sending NFC initialization command..."); // Added LogService.logEvent
     SerialService().sendBinaryTo(
       SerialService.portNFC,
-      // --- THIS IS YOUR NEW COMMAND ---
       Uint8List.fromList([0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
     );
   }
@@ -66,6 +65,8 @@ class _WelcomePageState extends State<WelcomePage> {
     LogService.logEvent("--- 1. Starting User Login for UUID: $uuid ---");
     final getUserIdUrl = Uri.parse('${dotenv.env['API_URL']}nfc/$uuid');
     LogService.logEvent("Fetching Token URL: $getUserIdUrl");
+
+    var isValidUser = false;
 
     try {
       final response = await http.get(
@@ -106,6 +107,9 @@ class _WelcomePageState extends State<WelcomePage> {
             LogService.logEvent("--- 5. User Data Decoded ---");
             LogService.logEvent(userData.toString()); // Log the map
 
+            // change valid user bool to true
+            isValidUser = true;
+
             user = User(
               id: userData['id'], // Assumes API returns 'id'
               name: userData['name'], // Assumes API returns 'name'
@@ -138,13 +142,25 @@ class _WelcomePageState extends State<WelcomePage> {
           LogService.logEvent("--- ERROR: Exception fetching user from Database ---");
           LogService.logEvent(e.toString());
         }
-      } else {
+      } else if (response.statusCode == 404) {
+        LogService.logEvent(("--- ERROR: user not found in system! Sending Invalid Command..."));
+        LogService.logEvent(("--- Re-Initializing NFC Reader..."));
+        _initializeNfcListener();
+      } 
+      else {
         LogService.logEvent("--- 2. ERROR: Token API call failed (Status != 200) ---");
       }
     } catch (e) {
       LogService.logEvent("--- ERROR: Exception fetching token ---");
       LogService.logEvent(e.toString());
     }
+
+    var validUserByte = isValidUser ? 0xF1 : 0xF0;
+    LogService.logEvent("Sending data byte $validUserByte!");
+    SerialService().sendBinaryTo(
+          SerialService.portNFC,
+          Uint8List.fromList([validUserByte, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+    );
   }
 
   @override

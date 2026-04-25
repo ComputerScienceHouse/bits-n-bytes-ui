@@ -71,6 +71,7 @@ class LogService {
       final Map<String, dynamic>? currentJson = SerialService().espState.value;
       final List<String> messages = parseJsonChanges(previousESPData, currentJson);
       for (String message in messages) {
+        if (message.contains("shelves")) continue; // Fix Annoying spam
         logData(message);
       }
       previousESPData = currentJson;
