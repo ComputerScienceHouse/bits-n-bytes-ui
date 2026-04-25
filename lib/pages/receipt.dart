@@ -4,7 +4,7 @@ import 'package:bits_n_bytes_ui/components/app_bar.dart';
 import 'package:bits_n_bytes_ui/database/models/item.dart';
 import 'package:bits_n_bytes_ui/database/models/user.dart';
 import 'package:bits_n_bytes_ui/pages/welcome.dart';
-import 'package:bits_n_bytes_ui/services/serial_service.dart';
+import 'package:bits_n_bytes_ui/services/serial_service_real.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -43,7 +43,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
         });
       } else {
         _timer?.cancel();
-        SerialService().clearCart();
+        SerialServiceReal().clearCart();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const WelcomePage()),
@@ -74,30 +74,32 @@ class _ReceiptPageState extends State<ReceiptPage> {
     final authToken = dotenv.env['TWILIO_AUTH_TOKEN'] ?? '';
     final fromNumber = dotenv.env['TWILIO_FROM_NUMBER'] ?? '';
 
-    final lines = widget.cart.map((item) =>
-      '${item.name} x${item.quantity}  \$${(item.price * item.quantity).toStringAsFixed(2)}'
-    ).join('\n');
+    final lines = widget.cart
+        .map(
+          (item) =>
+              '${item.name} x${item.quantity}  \$${(item.price * item.quantity).toStringAsFixed(2)}',
+        )
+        .join('\n');
 
     final body =
-      'Thank you for using Bits n Bytes at Imagine RIT!\n'
-      'Your receipt is below:\n'
-      '--------------------\n'
-      '$lines\n'
-      '--------------------\n'
-      'Subtotal: \$${widget.cartTotal.toStringAsFixed(2)}';
-      'Total after Imagine RIT discount: \$0.00'
+        'Thank you for using Bits n Bytes at Imagine RIT!\n'
+        'Your receipt is below:\n'
+        '--------------------\n'
+        '$lines\n'
+        '--------------------\n'
+        'Subtotal: \$${widget.cartTotal.toStringAsFixed(2)}\n';
+    'Total after Imagine RIT discount: \$0.00';
 
     try {
       final response = await http.post(
-        Uri.parse('https://api.twilio.com/2010-04-01/Accounts/$accountSid/Messages.json'),
+        Uri.parse(
+          'https://api.twilio.com/2010-04-01/Accounts/$accountSid/Messages.json',
+        ),
         headers: {
-          'Authorization': 'Basic ${base64Encode(utf8.encode('$accountSid:$authToken'))}',
+          'Authorization':
+              'Basic ${base64Encode(utf8.encode('$accountSid:$authToken'))}',
         },
-        body: {
-          'From': fromNumber,
-          'To': phone,
-          'Body': body,
-        },
+        body: {'From': fromNumber, 'To': phone, 'Body': body},
       );
 
       if (response.statusCode == 201) {
@@ -371,15 +373,21 @@ class _ReceiptPageState extends State<ReceiptPage> {
                       ),
                     ),
                     TextButton.icon(
-                      onPressed: (_smsSending || _smsSent) ? null : _sendSmsReceipt,
+                      onPressed: (_smsSending || _smsSent)
+                          ? null
+                          : _sendSmsReceipt,
                       style: TextButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadiusGeometry.circular(10),
                         ),
                         backgroundColor: _smsSent
                             ? Theme.of(context).colorScheme.secondaryFixed
-                            : Theme.of(context).colorScheme.surfaceContainerHighest,
-                        foregroundColor: Theme.of(context).colorScheme.onSurface,
+                            : Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onSurface,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 48,
                           vertical: 16,
@@ -392,7 +400,9 @@ class _ReceiptPageState extends State<ReceiptPage> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : Icon(
-                              _smsSent ? LucideIcons.circleCheck : LucideIcons.messageSquare,
+                              _smsSent
+                                  ? LucideIcons.circleCheck
+                                  : LucideIcons.messageSquare,
                               size: 16,
                             ),
                       label: Text(
@@ -413,7 +423,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
                     const SizedBox(height: 12),
                     TextButton(
                       onPressed: () {
-                        SerialService().clearCart();
+                        SerialServiceReal().clearCart();
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute<void>(

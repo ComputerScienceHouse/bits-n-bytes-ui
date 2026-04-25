@@ -374,9 +374,9 @@ class _WelcomePageState extends State<WelcomePage> {
                       // Pass the 'user' object you just created
                       builder: (context) => NamePage(
                         user: User(
-                          email: "sahil.h.patel@gmail.com",
+                          email: "guest@gmail.com",
                           id: 1,
-                          name: "Sahil",
+                          name: "Guest",
                           phone: "6097219292",
                         ),
                       ),
