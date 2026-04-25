@@ -1,11 +1,14 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:bits_n_bytes_ui/components/app_bar.dart';
+import 'package:bits_n_bytes_ui/database/models/item.dart';
 import 'package:bits_n_bytes_ui/database/models/user.dart';
 import 'package:bits_n_bytes_ui/pages/welcome.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'dart:async';
-import 'package:bits_n_bytes_ui/database/models/item.dart';
 
 class ReceiptPage extends StatefulWidget {
   final User user;
@@ -24,6 +27,9 @@ class ReceiptPage extends StatefulWidget {
 class _ReceiptPageState extends State<ReceiptPage> {
   Timer? _timer;
   int _seconds = 20;
+  bool _smsSending = false;
+  bool _smsSent = false;
+  String? _smsError;
   User get user => widget.user;
 
   @override
@@ -48,6 +54,58 @@ class _ReceiptPageState extends State<ReceiptPage> {
   void dispose() {
     _timer?.cancel();
     super.dispose();
+  }
+
+  Future<void> _sendSmsReceipt() async {
+    final phone = user.phone;
+    if (phone == null || phone.isEmpty) {
+      setState(() => _smsError = 'No phone number on file.');
+      return;
+    }
+
+    setState(() {
+      _smsSending = true;
+      _smsError = null;
+    });
+
+    final accountSid = dotenv.env['TWILIO_ACCOUNT_SID'] ?? '';
+    final authToken = dotenv.env['TWILIO_AUTH_TOKEN'] ?? '';
+    final fromNumber = dotenv.env['TWILIO_FROM_NUMBER'] ?? '';
+
+    final lines = widget.cart.map((item) =>
+      '${item.name} x${item.quantity}  \$${(item.price * item.quantity).toStringAsFixed(2)}'
+    ).join('\n');
+
+    final body =
+      'Bits N Bytes Receipt\n'
+      '--------------------\n'
+      '$lines\n'
+      '--------------------\n'
+      'Total: \$${widget.cartTotal.toStringAsFixed(2)}';
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://api.twilio.com/2010-04-01/Accounts/$accountSid/Messages.json'),
+        headers: {
+          'Authorization': 'Basic ${base64Encode(utf8.encode('$accountSid:$authToken'))}',
+        },
+        body: {
+          'From': fromNumber,
+          'To': phone,
+          'Body': body,
+        },
+      );
+
+      if (response.statusCode == 201) {
+        setState(() => _smsSent = true);
+      } else {
+        setState(() => _smsError = 'Failed to send. Try again.');
+      }
+    } catch (_) {
+      setState(() => _smsError = 'Network error. Try again.');
+    } finally {
+      setState(() => _smsSending = false);
+    }
   }
 
   void handleTimeout() {
@@ -308,6 +366,47 @@ class _ReceiptPageState extends State<ReceiptPage> {
                         ],
                       ),
                     ),
+                    TextButton.icon(
+                      onPressed: (_smsSending || _smsSent) ? null : _sendSmsReceipt,
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(10),
+                        ),
+                        backgroundColor: _smsSent
+                            ? Theme.of(context).colorScheme.secondaryFixed
+                            : Theme.of(context).colorScheme.surfaceContainerHighest,
+                        foregroundColor: Theme.of(context).colorScheme.onSurface,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 48,
+                          vertical: 16,
+                        ),
+                      ),
+                      icon: _smsSending
+                          ? SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Icon(
+                              _smsSent ? LucideIcons.circleCheck : LucideIcons.messageSquare,
+                              size: 16,
+                            ),
+                      label: Text(
+                        _smsSent ? 'Receipt Sent!' : 'Get Text Receipt',
+                      ),
+                    ),
+                    if (_smsError != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          _smsError!,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 12),
                     TextButton(
                       onPressed: () {
                         Navigator.pushReplacement(
