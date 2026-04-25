@@ -4,7 +4,6 @@ import 'package:bits_n_bytes_ui/database/models/user.dart';
 import 'package:bits_n_bytes_ui/pages/admin.dart';
 import 'package:bits_n_bytes_ui/pages/name.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart';
-import 'package:flutter/cupertino.dart' hide Size;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -34,15 +33,15 @@ class _WelcomePageState extends State<WelcomePage> {
   }
 
   void _initializeNfcListener() async {
-    SerialService().nfcState.addListener( () {
+    SerialService().nfcState.addListener(() {
       final Uint8List? data = SerialService().nfcState.value;
       if (data == null) {
         LogService.logEvent("NFC Reader: null serial data");
         return;
       }
       final String hexString = data
-        .map((byte) => byte.toRadixString(16).padLeft(2, '0'))
-        .join('');
+          .map((byte) => byte.toRadixString(16).padLeft(2, '0'))
+          .join('');
       final ByteData byteData = data.buffer.asByteData(
         data.offsetInBytes,
         data.lengthInBytes,
@@ -54,7 +53,9 @@ class _WelcomePageState extends State<WelcomePage> {
       _handleUserLogin(counter);
     });
 
-    LogService.logEvent("Sending NFC initialization command..."); // Added LogService.logEvent
+    LogService.logEvent(
+      "Sending NFC initialization command...",
+    ); // Added LogService.logEvent
     SerialService().sendBinaryTo(
       SerialService.portNFC,
       Uint8List.fromList([0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
@@ -77,7 +78,9 @@ class _WelcomePageState extends State<WelcomePage> {
       // --- Detailed Log for First Response ---
       LogService.logEvent("--- 2. Token API Response ---");
       LogService.logEvent("Status Code: ${response.statusCode}");
-      LogService.logEvent("Response Body: ${response.body}"); // This shows the actual JSON/text
+      LogService.logEvent(
+        "Response Body: ${response.body}",
+      ); // This shows the actual JSON/text
 
       if (response.statusCode == 200) {
         // API call was successful
@@ -133,22 +136,31 @@ class _WelcomePageState extends State<WelcomePage> {
               );
               LogService.logEvent("--- 8. Navigated to NamePage ---");
             } else {
-              LogService.logEvent("--- 8. ERROR: Widget not mounted, cannot navigate. ---");
+              LogService.logEvent(
+                "--- 8. ERROR: Widget not mounted, cannot navigate. ---",
+              );
             }
           } else {
-            LogService.logEvent("--- 4. ERROR: User API call failed (Status != 200) ---");
+            LogService.logEvent(
+              "--- 4. ERROR: User API call failed (Status != 200) ---",
+            );
           }
         } catch (e) {
-          LogService.logEvent("--- ERROR: Exception fetching user from Database ---");
+          LogService.logEvent(
+            "--- ERROR: Exception fetching user from Database ---",
+          );
           LogService.logEvent(e.toString());
         }
       } else if (response.statusCode == 404) {
-        LogService.logEvent(("--- ERROR: user not found in system! Sending Invalid Command..."));
+        LogService.logEvent(
+          ("--- ERROR: user not found in system! Sending Invalid Command..."),
+        );
         LogService.logEvent(("--- Re-Initializing NFC Reader..."));
         _initializeNfcListener();
-      } 
-      else {
-        LogService.logEvent("--- 2. ERROR: Token API call failed (Status != 200) ---");
+      } else {
+        LogService.logEvent(
+          "--- 2. ERROR: Token API call failed (Status != 200) ---",
+        );
       }
     } catch (e) {
       LogService.logEvent("--- ERROR: Exception fetching token ---");
@@ -158,8 +170,17 @@ class _WelcomePageState extends State<WelcomePage> {
     var validUserByte = isValidUser ? 0xF1 : 0xF0;
     LogService.logEvent("Sending data byte $validUserByte!");
     SerialService().sendBinaryTo(
-          SerialService.portNFC,
-          Uint8List.fromList([validUserByte, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+      SerialService.portNFC,
+      Uint8List.fromList([
+        validUserByte,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+      ]),
     );
   }
 
@@ -321,7 +342,18 @@ class _WelcomePageState extends State<WelcomePage> {
               "Welcome",
               style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
             ),
-            Icon(CupertinoIcons.info, color: Colors.black, size: 48.0),
+            GestureDetector(
+              onTap: () {
+                _initializeNfcListener();
+              }, // Image tapped
+              child: Image.asset(
+                'assets/images/refresh.png',
+                fit: BoxFit.fill,
+                color: Theme.of(context).colorScheme.onSurface,
+                width: 50.0,
+                height: 50.0,
+              ),
+            ),
           ],
         ),
       ),

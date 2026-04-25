@@ -164,7 +164,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
                         style: TextStyle(
                           fontSize: 20,
                           color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight(800),
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -188,14 +188,14 @@ class _ReceiptPageState extends State<ReceiptPage> {
                                     "${item.name} (x${item.quantity})",
                                     style: TextStyle(
                                       fontSize: 14,
-                                      fontWeight: FontWeight(600),
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                   Text(
                                     "\$${(item.price * item.quantity).toStringAsFixed(2)}",
                                     style: TextStyle(
                                       fontSize: 14,
-                                      fontWeight: FontWeight(600),
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ],
@@ -219,14 +219,14 @@ class _ReceiptPageState extends State<ReceiptPage> {
                                   "Subtotal:",
                                   style: TextStyle(
                                     fontSize: 16,
-                                    fontWeight: FontWeight(300),
+                                    fontWeight: FontWeight.w300,
                                   ),
                                 ),
                                 Text(
                                   "\$${widget.cartTotal.toStringAsFixed(2)}",
                                   style: TextStyle(
                                     fontSize: 16,
-                                    fontWeight: FontWeight(300),
+                                    fontWeight: FontWeight.w300,
                                   ),
                                 ),
                               ],
@@ -238,14 +238,14 @@ class _ReceiptPageState extends State<ReceiptPage> {
                                   "Tax:",
                                   style: TextStyle(
                                     fontSize: 16,
-                                    fontWeight: FontWeight(300),
+                                    fontWeight: FontWeight.w300,
                                   ),
                                 ),
                                 Text(
                                   "\$0.00",
                                   style: TextStyle(
                                     fontSize: 16,
-                                    fontWeight: FontWeight(300),
+                                    fontWeight: FontWeight.w300,
                                   ),
                                 ),
                               ],
@@ -258,14 +258,14 @@ class _ReceiptPageState extends State<ReceiptPage> {
                                   "Total:",
                                   style: TextStyle(
                                     fontSize: 24,
-                                    fontWeight: FontWeight(600),
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 Text(
                                   "\$${widget.cartTotal.toStringAsFixed(2)}",
                                   style: TextStyle(
                                     fontSize: 24,
-                                    fontWeight: FontWeight(600),
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ],

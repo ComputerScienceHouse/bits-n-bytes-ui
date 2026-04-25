@@ -79,6 +79,7 @@ flutter:
     - assets/images/tap.png
     - assets/images/lockup.svg
     - assets/images/checkmark.svg
+    - assets/images/refresh.png
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
