@@ -56,6 +56,7 @@ abstract class SerialService {
   void stopListening(String portName);
   void openDoors();
   void openHatch();
+  void clearCart();
   Future<void> hardResetPort(String portName, {int baudRate = 9600});
   Future<bool> startListeningNFC();
   Future<bool> startListeningJetson();

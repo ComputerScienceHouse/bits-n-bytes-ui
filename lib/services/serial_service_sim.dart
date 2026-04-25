@@ -115,9 +115,12 @@ class SerialServiceSim implements SerialService {
   // Helper logic for UI buttons
   @override
   void openDoors() => sendJsonTo(SerialService.portESP, {"doors": true, "hatch": false});
-  
+
   @override
   void openHatch() => sendJsonTo(SerialService.portESP, {"hatch": true, "doors": false});
+
+  @override
+  void clearCart() => LogService.logEvent("SIM: clearCart -> [0xDE, 0xAD, 0xBE, 0xEF] to Jetson");
 
   @override
   Future<void> hardResetPort(String portName, {int baudRate = 9600}) async {

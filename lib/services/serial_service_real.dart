@@ -294,6 +294,12 @@ void _onJsonDataReceived(String portName, Uint8List data) {
   }
 
   @override
+  void clearCart() {
+    LogService.logEvent("Sending clear-cart command to Jetson...");
+    sendBinaryTo(SerialService.portJetson, Uint8List.fromList([0xDE, 0xAD, 0xBE, 0xEF]));
+  }
+
+  @override
   Future<void> hardResetPort(String portName, {int baudRate = 9600}) async {
     LogService.logEvent("SerialService: Hard resetting $portName...");
 

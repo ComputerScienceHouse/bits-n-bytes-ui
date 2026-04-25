@@ -4,6 +4,7 @@ import 'package:bits_n_bytes_ui/components/app_bar.dart';
 import 'package:bits_n_bytes_ui/database/models/item.dart';
 import 'package:bits_n_bytes_ui/database/models/user.dart';
 import 'package:bits_n_bytes_ui/pages/welcome.dart';
+import 'package:bits_n_bytes_ui/services/serial_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -42,6 +43,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
         });
       } else {
         _timer?.cancel();
+        SerialService().clearCart();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const WelcomePage()),
@@ -411,6 +413,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
                     const SizedBox(height: 12),
                     TextButton(
                       onPressed: () {
+                        SerialService().clearCart();
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute<void>(
