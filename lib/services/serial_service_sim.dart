@@ -4,7 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
-import 'package:shelf_router/shelf_router.dart';
+import 'package:shelf_router/shelf_router.dart' as shelf_router; // Add alias here
 import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:bits_n_bytes_ui/services/serial_service.dart';
 import 'package:flutter/material.dart' hide Router;
@@ -23,7 +23,7 @@ class SerialServiceSim implements SerialService {
   Future<bool> startListeningAll() async {
     LogService.logEvent("UART-Service: Starting Simulator REST API...");
     
-    final router = Router();
+    final router = shelf_router.Router();
 
     // PUT /esp
     // {
