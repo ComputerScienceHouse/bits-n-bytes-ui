@@ -1,0 +1,22 @@
+# Bits n Bytes kiosk UI — production runtime on the Pi.
+# Runs flutter-pi NATIVELY on the host (not in a container) against the deployed bundle,
+# driving the real display via DRM/KMS and the real serial hardware (real ESP/Jetson/NFC).
+#
+# Install once:
+#   sudo cp deploy/bnb-ui.service /etc/systemd/system/bnb-ui.service
+#   sudo systemctl daemon-reload && sudo systemctl enable --now bnb-ui.service
+[Unit]
+Description=Bits n Bytes Kiosk UI (flutter-pi)
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/local/bin/flutter-pi --release /opt/bnb/bundle
+WorkingDirectory=/opt/bnb/bundle
+Restart=always
+RestartSec=2
+User=pi
+# flutter-pi needs DRM/KMS (display), the GPU render node, and input devices.
+SupplementaryGroups=video render input
+
+[Install]
+WantedBy=multi-user.target
