@@ -45,7 +45,7 @@ class _CartPageState extends State<CartPage> {
     // Start Jetson (Cart Items)
     await SerialService().startListeningJetson();
     SerialService().jetsonState.addListener(_itemChangeListener);
-    
+
     LogService.logEvent("CartPage: Hardware listeners active.");
   }
 
@@ -59,58 +59,62 @@ class _CartPageState extends State<CartPage> {
   }
 
   // --- SERIAL LOGIC (ITEMS) ---
-void _itemChangeListener() {
-  final json = SerialService().jetsonState.value;
-  if (json == null) return; // Exit if null
+  void _itemChangeListener() {
+    final json = SerialService().jetsonState.value;
+    if (json == null) return; // Exit if null
 
-  _handleCartUpdate(
-    (json['id'] as num).toInt(),
-    (json['quantity'] as num).toInt(),
-  );
+    _handleCartUpdate(
+      (json['id'] as num).toInt(),
+      (json['quantity'] as num).toInt(),
+    );
 
-  SerialService().jetsonState.value = null; 
-}
+    SerialService().jetsonState.value = null;
+  }
 
   // --- CART LOGIC ---
-Future<void> _handleCartUpdate(int id, int quantityDelta) async {
-  // 1. Find the item
-  int existingIndex = cart.indexWhere((item) => item.id == id);
-  
-  LogService.logEvent("HandleUpdate: ID $id, Delta $quantityDelta, Found at Index $existingIndex");
+  Future<void> _handleCartUpdate(int id, int quantityDelta) async {
+    // 1. Find the item
+    int existingIndex = cart.indexWhere((item) => item.id == id);
 
-  if (existingIndex != -1) {
-    // ITEM EXISTS - UPDATE OR REMOVE
-    final existingItem = cart[existingIndex];
-    int newQuantity = existingItem.quantity + quantityDelta;
-    
-    LogService.logEvent("Updating Item: ${existingItem.name}. Old Qty: ${existingItem.quantity}, New Qty: $newQuantity");
+    LogService.logEvent(
+      "HandleUpdate: ID $id, Delta $quantityDelta, Found at Index $existingIndex",
+    );
 
-    setState(() {
-      if (newQuantity <= 0) {
-        LogService.logEvent("Removing item ${existingItem.name} from cart.");
-        cart.removeAt(existingIndex);
-      } else {
-        cart[existingIndex] = Item(
-          id: existingItem.id,
-          name: existingItem.name,
-          imgUrl: existingItem.imgUrl,
-          price: existingItem.price,
-          quantity: newQuantity,
-        );
-      }
-      // Re-assign the list to ensure the UI notices the change
-      cart = List.from(cart);
-    });
-  } else {
-    // ITEM NOT IN CART
-    if (quantityDelta > 0) {
-      LogService.logEvent("New item detected. Fetching from API...");
-      _fetchAndAddItem(id, quantityDelta);
+    if (existingIndex != -1) {
+      // ITEM EXISTS - UPDATE OR REMOVE
+      final existingItem = cart[existingIndex];
+      int newQuantity = existingItem.quantity + quantityDelta;
+
+      LogService.logEvent(
+        "Updating Item: ${existingItem.name}. Old Qty: ${existingItem.quantity}, New Qty: $newQuantity",
+      );
+
+      setState(() {
+        if (newQuantity <= 0) {
+          LogService.logEvent("Removing item ${existingItem.name} from cart.");
+          cart.removeAt(existingIndex);
+        } else {
+          cart[existingIndex] = Item(
+            id: existingItem.id,
+            name: existingItem.name,
+            imgUrl: existingItem.imgUrl,
+            price: existingItem.price,
+            quantity: newQuantity,
+          );
+        }
+        // Re-assign the list to ensure the UI notices the change
+        cart = List.from(cart);
+      });
     } else {
-      LogService.logEvent("Removal ignored: Item $id not in cart.");
+      // ITEM NOT IN CART
+      if (quantityDelta > 0) {
+        LogService.logEvent("New item detected. Fetching from API...");
+        _fetchAndAddItem(id, quantityDelta);
+      } else {
+        LogService.logEvent("Removal ignored: Item $id not in cart.");
+      }
     }
   }
-}
 
   Future<void> _fetchAndAddItem(int id, int quantity) async {
     final url = Uri.parse('${dotenv.env['API_URL']}items/$id');
@@ -154,7 +158,7 @@ Future<void> _handleCartUpdate(int id, int quantityDelta) async {
     super.dispose();
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     // UI remains identical to your design
     return Scaffold(
@@ -204,7 +208,12 @@ Future<void> _handleCartUpdate(int id, int quantityDelta) async {
     return Container(
       width: MediaQuery.sizeOf(context).width / 3,
       decoration: BoxDecoration(
-        border: Border(left: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.1)),
+        border: Border(
+          left: BorderSide(
+            color: Theme.of(context).colorScheme.outline,
+            width: 0.1,
+          ),
+        ),
         color: Theme.of(context).colorScheme.surface,
       ),
       child: Column(
@@ -212,8 +221,8 @@ Future<void> _handleCartUpdate(int id, int quantityDelta) async {
           const SizedBox(height: 20),
           TextButton.icon(
             onPressed: () => Navigator.pushReplacement(
-              context, 
-              MaterialPageRoute(builder: (context) => const WelcomePage())
+              context,
+              MaterialPageRoute(builder: (context) => const WelcomePage()),
             ),
             icon: const Icon(LucideIcons.circleX),
             label: const Text('Cancel Transaction'),
@@ -228,9 +237,20 @@ Future<void> _handleCartUpdate(int id, int quantityDelta) async {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text("Logged in as:"),
-                Text(user.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text(
+                  user.name,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 40),
-                Center(child: SvgPicture.asset('assets/images/lockup.svg', width: 275)),
+                Center(
+                  child: SvgPicture.asset(
+                    'assets/images/lockup.svg',
+                    width: 275,
+                  ),
+                ),
               ],
             ),
           ),
