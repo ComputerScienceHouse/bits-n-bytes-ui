@@ -148,14 +148,12 @@ class _ReceiptPageState extends State<ReceiptPage> {
                   padding: const EdgeInsets.only(top: kToolbarHeight),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withAlpha(30),
-                        spreadRadius: 2,
-                        blurRadius: 2,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
+                    // Flat border instead of a blurred BoxShadow (avoids the
+                    // offscreen saveLayer that blur forces on the Pi GPU).
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                      width: 1,
+                    ),
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                   ),
                   alignment: Alignment.center,
@@ -287,20 +285,14 @@ class _ReceiptPageState extends State<ReceiptPage> {
             width: MediaQuery.sizeOf(context).width / 3,
             alignment: Alignment.centerRight,
             decoration: BoxDecoration(
+              // Flat left divider instead of a blurred BoxShadow (avoids the
+              // offscreen saveLayer that blur forces on the Pi GPU).
               border: Border(
                 left: BorderSide(
-                  color: Theme.of(context).colorScheme.outline,
-                  width: 0.1,
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                  width: 1,
                 ),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withAlpha(50),
-                  spreadRadius: 2,
-                  blurRadius: 2,
-                  offset: const Offset(0, 3),
-                ),
-              ],
               color: Theme.of(context).colorScheme.surface,
             ),
             child: Center(

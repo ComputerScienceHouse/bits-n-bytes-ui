@@ -65,24 +65,38 @@ class LogService {
     return changes; 
   }
 
+  static bool _initialized = false;
+
+  static void _onEspState() {
+    final Map<String, dynamic>? currentJson = SerialService().espState.value;
+    final List<String> messages = parseJsonChanges(previousESPData, currentJson);
+    for (String message in messages) {
+      if (message.contains("shelves")) continue; // Fix Annoying spam
+      logData(message);
+    }
+    previousESPData = currentJson;
+  }
+
+  static void _onJetsonState() {
+    final Map<String, dynamic>? currentJson = SerialService().jetsonState.value;
+    final List<String> messages = parseJsonChanges(
+      previousJetsonData,
+      currentJson,
+    );
+    for (String message in messages) {
+      logData(message);
+    }
+    previousJetsonData = currentJson;
+  }
+
   static void init() {
+    // Idempotent: guard against re-registering the listeners (named handlers
+    // mean a duplicate add would otherwise stack and double-log every packet).
+    if (_initialized) return;
+    _initialized = true;
+
     // Setup listeners for data updates from ESP and Jetson
-    SerialService().espState.addListener(() {
-      final Map<String, dynamic>? currentJson = SerialService().espState.value;
-      final List<String> messages = parseJsonChanges(previousESPData, currentJson);
-      for (String message in messages) {
-        if (message.contains("shelves")) continue; // Fix Annoying spam
-        logData(message);
-      }
-      previousESPData = currentJson;
-    });
-    SerialService().jetsonState.addListener(() {
-      final Map<String, dynamic>? currentJson = SerialService().jetsonState.value;
-      final List<String> messages = parseJsonChanges(previousJetsonData, currentJson);
-      for (String message in messages) {
-        logData(message);
-      }
-      previousJetsonData = currentJson;
-    });
+    SerialService().espState.addListener(_onEspState);
+    SerialService().jetsonState.addListener(_onJetsonState);
   }
 }

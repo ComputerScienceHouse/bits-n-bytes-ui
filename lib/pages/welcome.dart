@@ -28,34 +28,39 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   void initState() {
-    _initializeNfcListener();
     super.initState();
+    // Register the NFC listener exactly ONCE for this page's lifetime, then
+    // kick off the first read. Re-arming (refresh button / 404) only re-sends
+    // the init command below — it must NOT add another listener, or each packet
+    // would fire N stacked handlers => N logins / N rebuilds.
+    SerialService().nfcState.addListener(_onNfcData);
+    _sendNfcInit();
   }
 
-  void _initializeNfcListener() async {
-    SerialService().nfcState.addListener(() {
-      final Uint8List? data = SerialService().nfcState.value;
-      if (data == null) {
-        LogService.logEvent("NFC Reader: null serial data");
-        return;
-      }
-      final String hexString = data
-          .map((byte) => byte.toRadixString(16).padLeft(2, '0'))
-          .join('');
-      final ByteData byteData = data.buffer.asByteData(
-        data.offsetInBytes,
-        data.lengthInBytes,
-      );
-      final int counter = byteData.getUint32(0);
-      LogService.logEvent("\n--- Received Packet (ESP32) ---");
-      LogService.logEvent("Buffer (Hex): $hexString");
-      LogService.logEvent("Decoded Counter: $counter");
-      _handleUserLogin(counter);
-    });
+  void _onNfcData() {
+    final Uint8List? data = SerialService().nfcState.value;
+    if (data == null) {
+      LogService.logEvent("NFC Reader: null serial data");
+      return;
+    }
+    final String hexString = data
+        .map((byte) => byte.toRadixString(16).padLeft(2, '0'))
+        .join('');
+    final ByteData byteData = data.buffer.asByteData(
+      data.offsetInBytes,
+      data.lengthInBytes,
+    );
+    final int counter = byteData.getUint32(0);
+    LogService.logEvent("\n--- Received Packet (ESP32) ---");
+    LogService.logEvent("Buffer (Hex): $hexString");
+    LogService.logEvent("Decoded Counter: $counter");
+    _handleUserLogin(counter);
+  }
 
-    LogService.logEvent(
-      "Sending NFC initialization command...",
-    ); // Added LogService.logEvent
+  /// (Re-)arm the NFC reader by sending the init command. Safe to call multiple
+  /// times — it does not touch the listener registration.
+  void _sendNfcInit() {
+    LogService.logEvent("Sending NFC initialization command...");
     SerialService().sendBinaryTo(
       SerialService.portNFC,
       Uint8List.fromList([0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
@@ -156,7 +161,7 @@ class _WelcomePageState extends State<WelcomePage> {
           ("--- ERROR: user not found in system! Sending Invalid Command..."),
         );
         LogService.logEvent(("--- Re-Initializing NFC Reader..."));
-        _initializeNfcListener();
+        _sendNfcInit();
       } else {
         LogService.logEvent(
           "--- 2. ERROR: Token API call failed (Status != 200) ---",
@@ -186,6 +191,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   void dispose() {
+    SerialService().nfcState.removeListener(_onNfcData);
     super.dispose();
   }
 
@@ -344,7 +350,7 @@ class _WelcomePageState extends State<WelcomePage> {
             ),
             GestureDetector(
               onTap: () {
-                _initializeNfcListener();
+                _sendNfcInit();
               }, // Image tapped
               child: Image.asset(
                 'assets/images/refresh.png',

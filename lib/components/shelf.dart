@@ -93,15 +93,12 @@ void _showTareDialog(int slotIndex) {
             margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
-              // border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.1),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withAlpha(30), 
-                  spreadRadius: 2, 
-                  blurRadius: 2,
-                  offset: Offset(0, 3),
-                ),
-              ],
+              // Flat border instead of a blurred BoxShadow (avoids the
+              // offscreen saveLayer that blur forces on the Pi GPU).
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outlineVariant,
+                width: 1,
+              ),
               borderRadius: BorderRadius.all(Radius.circular(10))
             ),
             child: Padding(

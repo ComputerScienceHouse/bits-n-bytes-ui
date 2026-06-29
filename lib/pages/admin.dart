@@ -20,31 +20,31 @@ class _AdminPageState extends State<AdminPage> {
 
   @override
   void initState() {
-    SerialService().espState.addListener(() {
-      final Map<String, dynamic>? json = SerialService().espState.value;
-      if (json == null) {
-        LogService.logEvent("AdminPage: Serial JSON from ESP Null");
-        return;
-      }
+    super.initState();
+    SerialService().espState.addListener(_onEspState);
+  }
 
-      if (json.containsKey('shelf_ids')) {
-        final rawList = json['shelf_ids'];
-        if (rawList is List) {
-          // Convert dynamic list to List<String> safely
-          List<String> newShelves = rawList
-              .map((e) => e.toString())
-              .toList();
+  void _onEspState() {
+    final Map<String, dynamic>? json = SerialService().espState.value;
+    if (json == null) {
+      LogService.logEvent("AdminPage: Serial JSON from ESP Null");
+      return;
+    }
 
-          // Simple check to avoid unnecessary rebuilds if data hasn't actually changed
-          if (!_areListsEqual(_connectedShelves, newShelves)) {
-            setState(() {
-              _connectedShelves = newShelves;
-            });
-          }
+    if (json.containsKey('shelf_ids')) {
+      final rawList = json['shelf_ids'];
+      if (rawList is List) {
+        // Convert dynamic list to List<String> safely
+        List<String> newShelves = rawList.map((e) => e.toString()).toList();
+
+        // Simple check to avoid unnecessary rebuilds if data hasn't actually changed
+        if (!_areListsEqual(_connectedShelves, newShelves)) {
+          setState(() {
+            _connectedShelves = newShelves;
+          });
         }
       }
-    });
-    super.initState();
+    }
   }
 
   // Helper to compare lists quickly
@@ -58,6 +58,7 @@ class _AdminPageState extends State<AdminPage> {
 
   @override
   void dispose() {
+    SerialService().espState.removeListener(_onEspState);
     super.dispose();
   }
 

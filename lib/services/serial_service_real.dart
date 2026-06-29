@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:typed_data'; // Required for Uint8List
 import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:bits_n_bytes_ui/services/serial_service.dart';
@@ -110,47 +109,46 @@ class SerialServiceReal implements SerialService {
   }
 
   /// PARSER 1: Handles JSON data
-String _accumulatedBuffer = "";
-
-void _onJsonDataReceived(String portName, Uint8List data) {
-  // 1. Get (or initialize) the buffer for THIS specific port
-  String currentBuffer = _jsonBuffers[portName] ?? "";
-  
-  // 2. Append the new data to the port-specific buffer
-  currentBuffer += String.fromCharCodes(data);
-
-  // 3. Process the buffer while it contains a potential JSON object
-  while (currentBuffer.contains('{')) {
-    int startIdx = currentBuffer.indexOf('{');
-    
-    // Clean up leading junk
-    if (startIdx > 0) {
-      currentBuffer = currentBuffer.substring(startIdx);
-    }
+  ///
+  /// Single forward scan over the buffer with a brace-depth counter. Complete
+  /// `{...}` objects are decoded as they close; the buffer is sliced exactly
+  /// once at the end to drop everything already consumed. This avoids the old
+  /// O(n²) behaviour where every chunk did `+=` plus repeated `substring`
+  /// rebuilds over a growing buffer on the UI isolate.
+  void _onJsonDataReceived(String portName, Uint8List data) {
+    // Append the new bytes to THIS port's buffer (one allocation per chunk).
+    final String buffer =
+        (_jsonBuffers[portName] ?? "") + String.fromCharCodes(data);
 
     int braceCount = 0;
-    int endIdx = -1;
+    int objStart = -1; // index of the current object's opening brace
+    int consumed = 0; // end (exclusive) of the last fully decoded object
 
-    for (int i = 0; i < currentBuffer.length; i++) {
-      if (currentBuffer[i] == '{') {
+    for (int i = 0; i < buffer.length; i++) {
+      final int c = buffer.codeUnitAt(i);
+      if (c == 0x7B) {
+        // '{'
+        if (braceCount == 0) objStart = i;
         braceCount++;
-      } else if (currentBuffer[i] == '}') {
-        braceCount--;
-      }
-
-      if (braceCount == 0 && i > 0) {
-        endIdx = i;
-        break;
+      } else if (c == 0x7D) {
+        // '}'
+        if (braceCount > 0) {
+          braceCount--;
+          if (braceCount == 0 && objStart != -1) {
+            _dispatchJson(portName, buffer.substring(objStart, i + 1));
+            consumed = i + 1;
+            objStart = -1;
+          }
+        }
       }
     }
 
-    // If we don't have a full object, stop and save the current state
-    if (endIdx == -1) break;
+    // Keep only the unconsumed tail for the next chunk (single slice).
+    _jsonBuffers[portName] = consumed > 0 ? buffer.substring(consumed) : buffer;
+  }
 
-    // We have a full JSON string!
-    String completeJson = currentBuffer.substring(0, endIdx + 1);
-    currentBuffer = currentBuffer.substring(endIdx + 1);
-
+  /// Decode one complete JSON object and route it to the matching state.
+  void _dispatchJson(String portName, String completeJson) {
     try {
       final Map<String, dynamic> jsonData = jsonDecode(completeJson);
 
@@ -162,13 +160,11 @@ void _onJsonDataReceived(String portName, Uint8List data) {
         LogService.logEvent("Received JSON on unknown port: $portName");
       }
     } catch (e) {
-      LogService.logEvent("Json Parse Error on $portName: $e | Raw: $completeJson");
+      LogService.logEvent(
+        "Json Parse Error on $portName: $e | Raw: $completeJson",
+      );
     }
   }
-
-  // 4. CRITICAL: Save the updated buffer back to the map for the next call
-  _jsonBuffers[portName] = currentBuffer;
-}
 
   /// PARSER 2: Handles fixed-length binary data
   // Change your map definition:

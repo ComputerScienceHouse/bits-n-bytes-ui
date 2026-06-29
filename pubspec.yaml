@@ -35,7 +35,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.2.2
-  google_fonts: ^6.3.2
   lucide_icons_flutter: ^3.1.5
   virtual_keyboard_multi_language: ^1.1.2
   dotted_border: ^3.1.0
@@ -81,6 +80,23 @@ flutter:
     - assets/images/checkmark.svg
     - assets/images/refresh.png
     - .env
+
+  # Fonts bundled as assets so they are NOT fetched over HTTP at runtime
+  # (google_fonts did a network download on first launch -> startup stall +
+  # reflow when the font swapped in). Roboto = body, IBM Plex Mono = display.
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Variable.ttf
+    - family: IBM Plex Mono
+      fonts:
+        - asset: assets/fonts/IBMPlexMono-Regular.ttf
+        - asset: assets/fonts/IBMPlexMono-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/IBMPlexMono-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/IBMPlexMono-Bold.ttf
+          weight: 700
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
