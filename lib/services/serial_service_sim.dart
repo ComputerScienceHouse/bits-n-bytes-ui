@@ -9,7 +9,11 @@ import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:bits_n_bytes_ui/services/serial_service.dart';
 import 'package:flutter/material.dart' hide Router;
 
-class SerialServiceSim implements SerialService {
+class SerialServiceSim with SerialStreams implements SerialService {
+  SerialServiceSim() {
+    bindStreams(); // derive typed streams from the notifiers (Phase 4B)
+  }
+
   @override
   final ValueNotifier<Map<String, dynamic>?> espState = ValueNotifier(null);
   @override
@@ -110,6 +114,7 @@ class SerialServiceSim implements SerialService {
     espState.dispose();
     jetsonState.dispose();
     nfcState.dispose();
+    disposeStreams();
   }
 
   // Helper logic for UI buttons

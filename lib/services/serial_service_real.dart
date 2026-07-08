@@ -1,22 +1,25 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data'; // Required for Uint8List
+import 'package:bits_n_bytes_ui/serial/parser/json.dart';
+import 'package:bits_n_bytes_ui/serial/parser/nfc.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:bits_n_bytes_ui/services/serial_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
-class SerialServiceReal implements SerialService {
+class SerialServiceReal with SerialStreams implements SerialService {
+  SerialServiceReal() {
+    bindStreams(); // derive typed streams from the notifiers (Phase 4B)
+  }
+
   // Maps to hold separate resources for each port
   final Map<String, SerialPort> _ports = {};
   final Map<String, StreamSubscription> _subscriptions = {};
 
-  final Map<String, String> _jsonBuffers = {}; // For JSON string data
-  final Map<String, Uint8List> _binaryBuffers = {}; // For raw binary data
-  final Map<String, int> _binaryPayloadSizes = {}; // Stores PAYLOAD_SIZE for binary ports
-  final Map<String, SerialProtocol> _portProtocols = {}; // Stores protocol for each port
-
-  final Map<String, BytesBuilder> _binaryBuilders = {};
+  final Map<String, JsonFrameParser> _jsonParsers = {}; // per-port JSON framing
+  final Map<String, NfcFramer> _nfcFramers = {}; // per-port fixed-length framing
+  final Map<String, SerialProtocol> _portProtocols = {}; // protocol per port
 
   @override
   final ValueNotifier<Map<String, dynamic>?> espState = ValueNotifier(null);
@@ -70,10 +73,9 @@ class SerialServiceReal implements SerialService {
       _portProtocols[portName] = protocol;
 
       if (protocol == SerialProtocol.fixedLengthBinary) {
-        _binaryPayloadSizes[portName] = payloadSize;
-        _binaryBuffers[portName] = Uint8List(0); // Init empty binary buffer
+        _nfcFramers[portName] = NfcFramer(payloadSize);
       } else {
-        _jsonBuffers[portName] = ""; // Init empty string buffer
+        _jsonParsers[portName] = JsonFrameParser();
       }
 
       // --- Start Reader Stream ---
@@ -108,43 +110,13 @@ class SerialServiceReal implements SerialService {
     }
   }
 
-  /// PARSER 1: Handles JSON data
-  ///
-  /// Single forward scan over the buffer with a brace-depth counter. Complete
-  /// `{...}` objects are decoded as they close; the buffer is sliced exactly
-  /// once at the end to drop everything already consumed. This avoids the old
-  /// O(n²) behaviour where every chunk did `+=` plus repeated `substring`
-  /// rebuilds over a growing buffer on the UI isolate.
+  /// PARSER 1: JSON data. Framing lives in [JsonFrameParser]; this just decodes
+  /// and routes each complete object.
   void _onJsonDataReceived(String portName, Uint8List data) {
-    // Append the new bytes to THIS port's buffer (one allocation per chunk).
-    final String buffer =
-        (_jsonBuffers[portName] ?? "") + String.fromCharCodes(data);
-
-    int braceCount = 0;
-    int objStart = -1; // index of the current object's opening brace
-    int consumed = 0; // end (exclusive) of the last fully decoded object
-
-    for (int i = 0; i < buffer.length; i++) {
-      final int c = buffer.codeUnitAt(i);
-      if (c == 0x7B) {
-        // '{'
-        if (braceCount == 0) objStart = i;
-        braceCount++;
-      } else if (c == 0x7D) {
-        // '}'
-        if (braceCount > 0) {
-          braceCount--;
-          if (braceCount == 0 && objStart != -1) {
-            _dispatchJson(portName, buffer.substring(objStart, i + 1));
-            consumed = i + 1;
-            objStart = -1;
-          }
-        }
-      }
+    final parser = _jsonParsers[portName] ??= JsonFrameParser();
+    for (final frame in parser.addChunk(data)) {
+      _dispatchJson(portName, frame);
     }
-
-    // Keep only the unconsumed tail for the next chunk (single slice).
-    _jsonBuffers[portName] = consumed > 0 ? buffer.substring(consumed) : buffer;
   }
 
   /// Decode one complete JSON object and route it to the matching state.
@@ -166,31 +138,18 @@ class SerialServiceReal implements SerialService {
     }
   }
 
-  /// PARSER 2: Handles fixed-length binary data
-  // Change your map definition:
-
-
+  /// PARSER 2: Fixed-length binary data. Framing lives in [NfcFramer]; this just
+  /// routes each complete packet.
   void _onBinaryDataReceived(String portName, Uint8List data) {
-    final builder = _binaryBuilders.putIfAbsent(portName, () => BytesBuilder());
-    builder.add(data);
-    
-    final int payloadSize = _binaryPayloadSizes[portName]!;
-    
-    // Create a temporary view to check length without clearing
-    while (builder.length >= payloadSize) {
-      final fullBuffer = builder.takeBytes(); // This clears the builder
-      final packet = fullBuffer.sublist(0, payloadSize);
-      final remainder = fullBuffer.sublist(payloadSize);
-      
-      // _dataStreamController.add(SerialDataPacket(portName: portName, protocol: SerialProtocol.json, data: packet));
+    final framer = _nfcFramers[portName];
+    if (framer == null) return;
+    for (final packet in framer.addChunk(data)) {
       if (portName == SerialService.portNFC) {
         nfcState.value = packet;
         LogService.logEvent("onBinaryDataReceived: NFC packet updated [$packet]");
       } else {
         LogService.logEvent("onBinaryDataReceived: Not from NFC :skull:");
       }
-      
-      builder.add(remainder);
     }
   }
 
@@ -261,10 +220,9 @@ class SerialServiceReal implements SerialService {
     _ports[portName]?.dispose();
     _subscriptions.remove(portName);
     _ports.remove(portName);
-    _jsonBuffers.remove(portName);
-    _binaryBuffers.remove(portName);
+    _jsonParsers.remove(portName);
+    _nfcFramers.remove(portName);
     _portProtocols.remove(portName);
-    _binaryPayloadSizes.remove(portName);
   }
 
   @override
@@ -275,6 +233,7 @@ class SerialServiceReal implements SerialService {
     espState.dispose();
     jetsonState.dispose();
     nfcState.dispose();
+    disposeStreams();
   }
 
   @override

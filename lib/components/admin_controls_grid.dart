@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/serial_service.dart';
-import '../pages/welcome.dart';
+import '../screens/welcome.dart';
 
 class AdminButton {
   final IconData icon;
@@ -90,7 +90,7 @@ class AdminControlsGrid extends StatelessWidget {
           );
         },
       ),
-            AdminButton(
+      AdminButton(
         icon: LucideIcons.arrowLeft,
         label: 'Restart UART0',
         onPressed: () async {

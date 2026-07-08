@@ -3,67 +3,18 @@ import 'package:bits_n_bytes_ui/components/debug_action.dart';
 import 'package:bits_n_bytes_ui/components/debug_option.dart';
 import 'package:bits_n_bytes_ui/components/log_overlay.dart';
 import 'package:bits_n_bytes_ui/components/shelf.dart';
-import 'package:bits_n_bytes_ui/services/log_service.dart';
+import 'package:bits_n_bytes_ui/viewmodel/admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../services/serial_service.dart';
+import 'package:provider/provider.dart';
 
-class AdminPage extends StatefulWidget {
+/// Thin View. Shelf state lives in [AdminViewModel] (route-scoped provider).
+class AdminPage extends StatelessWidget {
   const AdminPage({super.key});
 
   @override
-  State<AdminPage> createState() => _AdminPageState();
-}
-
-class _AdminPageState extends State<AdminPage> {
-  List<String> _connectedShelves = [];
-
-  @override
-  void initState() {
-    super.initState();
-    SerialService().espState.addListener(_onEspState);
-  }
-
-  void _onEspState() {
-    final Map<String, dynamic>? json = SerialService().espState.value;
-    if (json == null) {
-      LogService.logEvent("AdminPage: Serial JSON from ESP Null");
-      return;
-    }
-
-    if (json.containsKey('shelf_ids')) {
-      final rawList = json['shelf_ids'];
-      if (rawList is List) {
-        // Convert dynamic list to List<String> safely
-        List<String> newShelves = rawList.map((e) => e.toString()).toList();
-
-        // Simple check to avoid unnecessary rebuilds if data hasn't actually changed
-        if (!_areListsEqual(_connectedShelves, newShelves)) {
-          setState(() {
-            _connectedShelves = newShelves;
-          });
-        }
-      }
-    }
-  }
-
-  // Helper to compare lists quickly
-  bool _areListsEqual(List<String> a, List<String> b) {
-    if (a.length != b.length) return false;
-    for (int i = 0; i < a.length; i++) {
-      if (a[i] != b[i]) return false;
-    }
-    return true;
-  }
-
-  @override
-  void dispose() {
-    SerialService().espState.removeListener(_onEspState);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final connectedShelves = context.watch<AdminViewModel>().connectedShelves;
     return DefaultTabController(
       length: 4,
       child: MouseRegion(
@@ -91,12 +42,12 @@ class _AdminPageState extends State<AdminPage> {
                         Center(child: Text('Inventory Content')),
 
                         // "Tare" tab
-                        _connectedShelves.isEmpty
+                        connectedShelves.isEmpty
                             ? const Center(
                                 child: Text("Waiting for shelf data..."),
                               )
                             : ListView.builder(
-                                itemCount: _connectedShelves.length,
+                                itemCount: connectedShelves.length,
                                 itemBuilder: (context, index) {
                                   // Generate a letter: index 0 = A, index 1 = B, etc.
                                   String letter = String.fromCharCode(
@@ -105,9 +56,9 @@ class _AdminPageState extends State<AdminPage> {
 
                                   return Shelf(
                                     // Use UniqueKey to ensure Flutter rebuilds correctly if order changes
-                                    key: ValueKey(_connectedShelves[index]),
+                                    key: ValueKey(connectedShelves[index]),
                                     letter: letter,
-                                    macAddr: _connectedShelves[index],
+                                    macAddr: connectedShelves[index],
                                   );
                                 },
                               ),

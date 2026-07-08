@@ -1,8 +1,8 @@
-import 'package:bits_n_bytes_ui/database/models/item.dart';
-import 'package:bits_n_bytes_ui/database/models/user.dart';
-import 'package:bits_n_bytes_ui/pages/receipt.dart';
+import 'package:bits_n_bytes_ui/models/api/item.dart';
+import 'package:bits_n_bytes_ui/models/api/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'dart:async';
 
 class DoorClosedPage extends StatefulWidget {
@@ -32,12 +32,9 @@ class _DoorClosedPageState extends State<DoorClosedPage> {
   }
 
   void handleTimeout() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ReceiptPage(cart: widget.cart, user: user),
-      ),
-    );
+    if (mounted) {
+      context.go('/receipt', extra: {'cart': widget.cart, 'user': user});
+    }
   }
 
   @override

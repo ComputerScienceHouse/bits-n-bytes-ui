@@ -40,7 +40,6 @@ dependencies:
   dotted_border: ^3.1.0
   window_manager: ^0.5.1
   flutter_libserialport: ^0.6.0
-  sqflite: ^2.4.2
   http: ^1.6.0
   flutter_dotenv: ^6.0.0
   keep_screen_on: ^5.0.0
@@ -48,6 +47,12 @@ dependencies:
   shelf: ^1.4.2
   shelf_router: ^1.1.4
   web_socket_channel: ^3.0.3
+  jinja: ^0.6.6
+  mailer: ^7.1.0
+  path: ^1.9.1
+  enough_mail: ^2.1.7
+  go_router: ^17.2.3
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +65,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
   device_preview: ^1.3.1
+  fake_async: ^1.3.1 # controllable time for ViewModel timer tests
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

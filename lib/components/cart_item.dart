@@ -1,4 +1,4 @@
-import 'package:bits_n_bytes_ui/database/models/item.dart';
+import 'package:bits_n_bytes_ui/models/api/item.dart';
 import 'package:flutter/material.dart';
 
 class CartItem extends StatefulWidget {
@@ -39,7 +39,8 @@ class _CartItemState extends State<CartItem> {
                   widget.item.imgUrl, // <--- Use your dynamic data here
                   width: 100,
                   height: 100,
-                  fit: BoxFit.cover),
+                  fit: BoxFit.cover,
+                ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
