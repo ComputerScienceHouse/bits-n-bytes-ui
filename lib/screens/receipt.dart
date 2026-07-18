@@ -29,9 +29,13 @@ class _ReceiptPageState extends State<ReceiptPage> {
     if (_vm.timedOut) _goHome();
   }
 
+  // TODO: hey, we need to create the transaction here with all the data send from other screens
+  // aka we need to get the receiptSmsTime and receiptEmailTime
+
   void _goHome() {
     if (_leaving) return;
     _leaving = true;
+    _vm.createTransaction();
     _vm.clearCart();
     context.go('/');
   }
@@ -48,14 +52,17 @@ class _ReceiptPageState extends State<ReceiptPage> {
       listenable: _vm,
       builder: (context, _) {
         final user = _vm.user;
-        final cart = _vm.cart;
-        final sending = _vm.smsStatus == SendStatus.sending;
-        final sent = _vm.smsStatus == SendStatus.sent;
+        final cart = _vm.fullTransaction.items;
+        final smsSending = _vm.smsStatus == SendStatus.sending;
+        final smsSent = _vm.smsStatus == SendStatus.sent;
+        final emailSending = _vm.emailStatus == SendStatus.sending;
+        final emailSent = _vm.emailStatus == SendStatus.sent;
 
         return Scaffold(
           extendBodyBehindAppBar: true,
           appBar: BnBAppBar(title: "Total"),
           body: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
                 child: Center(
@@ -205,7 +212,6 @@ class _ReceiptPageState extends State<ReceiptPage> {
               ),
               Container(
                 width: MediaQuery.sizeOf(context).width / 3,
-                alignment: Alignment.centerRight,
                 decoration: BoxDecoration(
                   border: Border(
                     left: BorderSide(
@@ -215,241 +221,323 @@ class _ReceiptPageState extends State<ReceiptPage> {
                   ),
                   color: Theme.of(context).colorScheme.surface,
                 ),
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(
-                            top: 0,
-                            left: 20,
-                            right: 20,
-                            bottom: 20,
-                          ),
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .secondaryContainer
-                                  .withAlpha(40),
-                            ),
-                            color: Theme.of(context).colorScheme.secondaryFixed,
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                LucideIcons.clock,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.secondaryContainer,
-                              ),
-                              const SizedBox(width: 8),
-                              RichText(
-                                text: TextSpan(
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                  children: [
-                                    TextSpan(
-                                      text: "Timing out in ",
-                                      style: TextStyle(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.secondaryContainer,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: _vm.seconds.toString(),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.secondaryContainer,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: "s",
-                                      style: TextStyle(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.secondaryContainer,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        TextButton.icon(
-                          onPressed: (sending || sent)
-                              ? null
-                              : _vm.sendSmsReceipt,
-                          style: TextButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadiusGeometry.circular(10),
-                            ),
-                            backgroundColor: sent
-                                ? Theme.of(context).colorScheme.secondaryFixed
-                                : Theme.of(
-                                    context,
-                                  ).colorScheme.surfaceContainerHighest,
-                            foregroundColor: Theme.of(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Timing badge pinned to the top, outside the scroll area.
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: Theme.of(
                               context,
-                            ).colorScheme.onSurface,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 48,
-                              vertical: 16,
-                            ),
+                            ).colorScheme.secondaryContainer.withAlpha(40),
                           ),
-                          icon: sending
-                              ? SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : Icon(
-                                  sent
-                                      ? LucideIcons.circleCheck
-                                      : LucideIcons.messageSquare,
-                                  size: 16,
-                                ),
-                          label: Text(
-                            sent ? 'Receipt Sent!' : 'Get Text Receipt',
-                          ),
+                          color: Theme.of(context).colorScheme.secondaryFixed,
                         ),
-                        if (_vm.smsError != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Text(
-                              _vm.smsError!,
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.error,
-                                fontSize: 12,
-                              ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              LucideIcons.clock,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.secondaryContainer,
                             ),
-                          ),
-                        const SizedBox(height: 12),
-                        TextButton(
-                          onPressed: _goHome,
-                          style: TextButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadiusGeometry.circular(10),
-                            ),
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.primaryContainer,
-                            foregroundColor: Theme.of(
-                              context,
-                            ).colorScheme.onPrimary,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 96,
-                              vertical: 16,
-                            ),
-                          ),
-                          child: const Text('Finish Transaction'),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text("Logged in as:"),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                            const SizedBox(width: 8),
+                            RichText(
+                              text: TextSpan(
+                                style: Theme.of(context).textTheme.bodySmall,
                                 children: [
-                                  Text(
-                                    user.name,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
+                                  TextSpan(
+                                    text: "Timing out in ",
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.secondary,
                                     ),
                                   ),
-                                  TextButton.icon(
-                                    onPressed: () => {},
-                                    icon: const Icon(
-                                      LucideIcons.squarePen,
-                                      size: 14,
-                                    ),
-                                    style: TextButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimaryContainer
-                                          .withAlpha(60),
-                                      foregroundColor: Theme.of(
+                                  TextSpan(
+                                    text: _vm.seconds.toString(),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(
                                         context,
-                                      ).colorScheme.primaryContainer,
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 0,
-                                        horizontal: 0,
-                                      ),
+                                      ).colorScheme.secondaryContainer,
                                     ),
-                                    label: const Text(
-                                      'Edit',
-                                      style: TextStyle(fontSize: 14),
+                                  ),
+                                  TextSpan(
+                                    text: "s",
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.secondaryContainer,
                                     ),
                                   ),
                                 ],
                               ),
-                              Container(
-                                margin: const EdgeInsets.only(top: 20),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border(
-                                    left: BorderSide(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.outline,
-                                      width: 0.1,
-                                    ),
-                                  ),
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant
-                                      .withAlpha(40),
-                                ),
-                                child: const Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    SizedBox(width: 10),
-                                    Icon(LucideIcons.circleCheck),
-                                    SizedBox(width: 20),
-                                    Flexible(
-                                      child: Text(
-                                        "Press finish or wait for the session to time out.",
-                                        textAlign: TextAlign.left,
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Scroll-safe body so nothing overflows the fixed-height
+                      // kiosk panel; the logo below stays pinned to the bottom.
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextButton.icon(
+                                      onPressed: (smsSending || smsSent)
+                                          ? null
+                                          : _vm.sendSmsReceipt,
+                                      style: TextButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadiusGeometry.circular(10),
+                                        ),
+                                        backgroundColor: smsSent
+                                            ? Theme.of(
+                                                context,
+                                              ).colorScheme.secondaryFixed
+                                            : Theme.of(context)
+                                                  .colorScheme
+                                                  .surfaceContainerHighest,
+                                        foregroundColor: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 20,
+                                          vertical: 16,
+                                        ),
+                                      ),
+                                      icon: smsSending
+                                          ? SizedBox(
+                                              width: 16,
+                                              height: 16,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                              ),
+                                            )
+                                          : Icon(
+                                              smsSent
+                                                  ? LucideIcons.circleCheck
+                                                  : LucideIcons.messageSquare,
+                                              size: 16,
+                                            ),
+                                      label: Text(
+                                        smsSent
+                                            ? 'Receipt Sent!'
+                                            : 'Get Text Receipt',
                                       ),
                                     ),
-                                    SizedBox(width: 10),
-                                  ],
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: TextButton.icon(
+                                      onPressed: (emailSending || emailSent)
+                                          ? null
+                                          : _vm.sendEmailReceipt,
+                                      style: TextButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadiusGeometry.circular(10),
+                                        ),
+                                        backgroundColor: emailSent
+                                            ? Theme.of(
+                                                context,
+                                              ).colorScheme.secondaryFixed
+                                            : Theme.of(context)
+                                                  .colorScheme
+                                                  .surfaceContainerHighest,
+                                        foregroundColor: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 20,
+                                          vertical: 16,
+                                        ),
+                                      ),
+                                      icon: emailSending
+                                          ? SizedBox(
+                                              width: 16,
+                                              height: 16,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                              ),
+                                            )
+                                          : Icon(
+                                              emailSent
+                                                  ? LucideIcons.circleCheck
+                                                  : LucideIcons.mail,
+                                              size: 16,
+                                            ),
+                                      label: Text(
+                                        emailSent
+                                            ? 'Email Sent!'
+                                            : 'Get Email Receipt',
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (_vm.smsError != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Text(
+                                    _vm.smsError!,
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
+                                      fontSize: 12,
+                                    ),
+                                  ),
                                 ),
+                              if (_vm.emailError != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Text(
+                                    _vm.emailError!,
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              const SizedBox(height: 12),
+                              TextButton(
+                                onPressed: _goHome,
+                                style: TextButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadiusGeometry.circular(
+                                      10,
+                                    ),
+                                  ),
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.primaryContainer,
+                                  foregroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 16,
+                                  ),
+                                ),
+                                child: const Text('Finish Transaction'),
                               ),
                               Container(
-                                margin: const EdgeInsets.only(top: 199),
-                                alignment: AlignmentDirectional.center,
-                                child: SvgPicture.asset(
-                                  'assets/images/lockup.svg',
-                                  width: 275,
+                                margin: const EdgeInsets.all(20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text("Logged in as:"),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          user.name,
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        TextButton.icon(
+                                          onPressed: () => {},
+                                          icon: const Icon(
+                                            LucideIcons.squarePen,
+                                            size: 14,
+                                          ),
+                                          style: TextButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            backgroundColor: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryContainer
+                                                .withAlpha(60),
+                                            foregroundColor: Theme.of(
+                                              context,
+                                            ).colorScheme.primaryContainer,
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 0,
+                                              horizontal: 0,
+                                            ),
+                                          ),
+                                          label: const Text(
+                                            'Edit',
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(top: 20),
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border(
+                                          left: BorderSide(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.outline,
+                                            width: 0.1,
+                                          ),
+                                        ),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant
+                                            .withAlpha(40),
+                                      ),
+                                      child: const Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          SizedBox(width: 10),
+                                          Icon(LucideIcons.circleCheck),
+                                          SizedBox(width: 20),
+                                          Flexible(
+                                            child: Text(
+                                              "Press finish or wait for the session to time out.",
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ),
+                                          SizedBox(width: 10),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 12),
+                      Center(
+                        child: SvgPicture.asset(
+                          Theme.of(context).brightness == Brightness.dark
+                              ? 'assets/images/dark-lockup.svg'
+                              : 'assets/images/lockup.svg',
+                          width: 240,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

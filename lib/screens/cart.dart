@@ -29,13 +29,28 @@ class _CartPageState extends State<CartPage> {
   void initState() {
     super.initState();
     // Side-effect subscription: navigate when the VM asks to check out.
+    _vm.fullTransaction.transaction.transactionStart = DateTime.now();
     _vm.addListener(_onCheckoutRequested);
   }
 
   void _onCheckoutRequested() {
     if (_vm.checkoutRequested && !_isNavigating) {
       _isNavigating = true;
-      context.go('/doorClosed', extra: {'cart': _vm.cart, 'user': _vm.user});
+      context.go(
+        '/doorClosed',
+        extra: {'transaction': _vm.fullTransaction, 'user': _vm.user},
+      );
+    }
+  }
+
+  void _onCancelTransaction() {
+    _vm.cancelTransaction();
+    if (!_isNavigating) {
+      _isNavigating = true;
+      context.go(
+        '/cancelled',
+        extra: {'transaction': _vm.fullTransaction, 'user': _vm.user},
+      );
     }
   }
 
@@ -115,12 +130,20 @@ class _CartPageState extends State<CartPage> {
         children: [
           const SizedBox(height: 20),
           TextButton.icon(
-            onPressed: () => context.go('/'),
+            onPressed: _onCancelTransaction,
             icon: const Icon(LucideIcons.circleX),
             label: const Text('Cancel Transaction'),
             style: TextButton.styleFrom(
-              minimumSize: const Size(300, 50),
               backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+              foregroundColor: Theme.of(
+                context,
+              ).colorScheme.onSecondaryContainer,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusGeometry.all(
+                  Radius.elliptical(15, 15),
+                ),
+              ),
+              padding: EdgeInsets.symmetric(vertical: 30, horizontal: 60),
             ),
           ),
           Padding(
@@ -128,18 +151,72 @@ class _CartPageState extends State<CartPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Logged in as:"),
-                Text(
-                  user.name,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text("Logged in as:"),
+                          Text(
+                            user.name,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Pings the staff Slack workflow. Rebuilds with the VM so
+                    // the button reflects the "help requested" state once tapped.
+                    ListenableBuilder(
+                      listenable: _vm,
+                      builder: (context, _) {
+                        final requested = _vm.requestHelpFromUser;
+                        return TextButton.icon(
+                          onPressed: requested
+                              ? null
+                              : () => _vm.requestHelp(user),
+                          style: TextButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadiusGeometry.circular(10),
+                            ),
+                            backgroundColor: requested
+                                ? Theme.of(context).colorScheme.secondaryFixed
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest,
+                            foregroundColor: Theme.of(
+                              context,
+                            ).colorScheme.onSurface,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 16,
+                            ),
+                          ),
+                          icon: Icon(
+                            requested
+                                ? LucideIcons.circleCheck
+                                : Icons.support_agent,
+                            size: 16,
+                          ),
+                          label: Text(
+                            requested ? 'Help is on the way!' : 'Request Help',
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 40),
                 Center(
                   child: SvgPicture.asset(
-                    'assets/images/lockup.svg',
+                    Theme.of(context).brightness == Brightness.dark
+                        ? 'assets/images/dark-lockup.svg'
+                        : 'assets/images/lockup.svg',
                     width: 275,
                   ),
                 ),

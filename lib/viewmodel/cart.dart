@@ -1,9 +1,11 @@
 import 'dart:async';
-
+import 'package:bits_n_bytes_ui/client/api.dart';
+import 'package:bits_n_bytes_ui/repositories/transaction.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:bits_n_bytes_ui/models/api/item.dart';
 import 'package:bits_n_bytes_ui/models/api/user.dart';
+import 'package:bits_n_bytes_ui/models/api/transaction.dart';
 import 'package:bits_n_bytes_ui/models/serial/cart_delta.dart';
 import 'package:bits_n_bytes_ui/models/serial/esp_state.dart';
 import 'package:bits_n_bytes_ui/repositories/item.dart';
@@ -15,24 +17,38 @@ import 'package:bits_n_bytes_ui/services/serial_service.dart';
 /// SerialService and it emits a [checkoutRequested] signal instead of
 /// navigating itself (the View watches that and drives go_router).
 class CartViewModel extends ChangeNotifier {
-  CartViewModel({required this.user, SerialService? serial, ItemRepository? items})
-    : _serial = serial ?? SerialService(),
-      _items = items ?? ItemRepository() {
+  CartViewModel({
+    required this.user,
+    ApiService? api,
+    SerialService? serial,
+    ItemRepository? items,
+    TransactionRepository? transactions,
+  }) : _api = api ?? ApiService(),
+       _serial = serial ?? SerialService(),
+       _items = items ?? ItemRepository(),
+       _transactions = transactions ?? TransactionRepository() {
     _init();
   }
 
   final User user;
   final SerialService _serial;
   final ItemRepository _items;
+  final TransactionRepository _transactions;
+  final ApiService _api;
   StreamSubscription<EspState>? _espSub;
   StreamSubscription<CartDelta>? _cartSub;
 
-  final List<Item> _cart = [];
-  List<Item> get cart => List.unmodifiable(_cart);
-  double get total => _cart.fold(0, (sum, i) => sum + i.price * i.quantity);
+  final FullTransaction fullTransaction = FullTransaction.empty();
+  List<Item> get cart => fullTransaction.items;
+  double get total => cart.fold(0, (sum, i) => sum + i.price * i.quantity);
 
   bool _checkoutRequested = false;
   bool get checkoutRequested => _checkoutRequested;
+
+  bool _requestHelp = false;
+  bool get requestHelpFromUser => _requestHelp;
+
+  final Stopwatch transactionTime = Stopwatch();
 
   Future<void> _init() async {
     await _serial.startListeningESP();
@@ -50,13 +66,15 @@ class CartViewModel extends ChangeNotifier {
   void _onCart(CartDelta delta) => _applyDelta(delta);
 
   Future<void> _applyDelta(CartDelta cd) async {
-    final i = _cart.indexWhere((item) => item.id == cd.id);
+    final i = fullTransaction.items.indexWhere((item) => item.id == cd.id);
     if (i != -1) {
-      final newQty = _cart[i].quantity + cd.quantity;
+      final newQty = fullTransaction.items[i].quantity + cd.quantity;
       if (newQty <= 0) {
-        _cart.removeAt(i);
+        fullTransaction.items.removeAt(i);
       } else {
-        _cart[i] = _cart[i].copyWith(quantity: newQty);
+        fullTransaction.items[i] = fullTransaction.items[i].copyWith(
+          quantity: newQty,
+        );
       }
       notifyListeners();
     } else if (cd.quantity > 0) {
@@ -71,7 +89,7 @@ class CartViewModel extends ChangeNotifier {
       final item = await _items.getItem(id);
       // The catalog item's own quantity is meaningless here — override it with
       // the delta the Jetson reported.
-      _cart.add(item.copyWith(quantity: quantity));
+      fullTransaction.items.add(item.copyWith(quantity: quantity));
       notifyListeners();
     } catch (e) {
       LogService.logEvent('Error fetching item $id: $e');
@@ -83,6 +101,31 @@ class CartViewModel extends ChangeNotifier {
     if (_checkoutRequested) return;
     _checkoutRequested = true;
     notifyListeners();
+  }
+
+  void cancelTransaction() async {
+    // if (cart.isNotEmpty) {
+    //   cart.clear();
+    // }
+    fullTransaction.transaction.canceled = true;
+    await _transactions.create(fullTransaction);
+    notifyListeners();
+  }
+
+  /// Pings the staff Slack workflow so an attendant can come help. Guarded so a
+  /// double-tap can't fan out multiple messages; on failure the guard resets so
+  /// the shopper can try again.
+  void requestHelp(User user) async {
+    if (_requestHelp) return;
+    _requestHelp = true;
+    notifyListeners();
+    try {
+      await _api.requestHelp(user);
+    } catch (e) {
+      _requestHelp = false;
+      LogService.logEvent('requestHelp failed: $e');
+      notifyListeners();
+    }
   }
 
   @override

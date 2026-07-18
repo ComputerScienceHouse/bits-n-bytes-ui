@@ -19,7 +19,7 @@ class UserRepository {
   /// (email may be absent) to match the kiosk's existing login behavior.
   Future<User?> findByNfcUuid(int uuid) async {
     final nfcResponse = await http.get(
-      Uri.parse('${dotenv.env['API_URL']}nfc/$uuid'),
+      Uri.parse('${dotenv.env['API_URL']}/nfc/$uuid'),
       headers: {"Authorization": "${dotenv.env['API_AUTH_KEY']}"},
     );
     if (nfcResponse.statusCode == 404) return null;
@@ -29,7 +29,7 @@ class UserRepository {
     final int id = jsonDecode(nfcResponse.body)['assigned_user'];
 
     final userResponse = await http.get(
-      Uri.parse('${dotenv.env['API_URL']}users/$id'),
+      Uri.parse('${dotenv.env['API_URL']}/users/$id'),
       headers: {"Authorization": "${dotenv.env['API_AUTH_KEY']}"},
     );
     if (userResponse.statusCode != 200) {
@@ -40,7 +40,8 @@ class UserRepository {
       id: data['id'],
       name: data['name'],
       email: data['email'] ?? '',
-      phone: data['phone'],
+      phone: data['phone'] ?? '',
+      recordingEnabled: data['recordingEnabled'] ?? false,
     );
   }
 }

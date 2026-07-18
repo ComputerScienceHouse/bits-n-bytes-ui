@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:bits_n_bytes_ui/services/serial_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 /// Log Service
 /// Handles the logging of the current state of the Machine from the point of the PI.
@@ -21,10 +22,32 @@ class LogService {
 
   static void logToNotifier(ValueNotifier<List<String>> vn, String message) {
     final timestamp = DateTime.now().toString().split(' ').last.substring(0, 8);
-    vn.value = [...vn.value, "[$timestamp] $message"];
 
-    if (vn.value.length > logsLength) {
-      vn.value.removeAt(0);
+    void apply() {
+      final next = [...vn.value, "[$timestamp] $message"];
+      if (next.length > logsLength) next.removeAt(0);
+      vn.value = next;
+    }
+
+    // Logging often happens synchronously during a build (e.g. a ViewModel
+    // constructor / initState side effect that sends serial + logs). Mutating
+    // the notifier then wakes a listening ValueListenableBuilder (the debug
+    // overlay) mid-build, causing setState-during-build and re-entrant rebuilds
+    // (which surface as unrelated cast errors). Defer to after the frame.
+    // In a pure-Dart context (e.g. unit tests) there is no binding, so
+    // SchedulerBinding.instance throws. Treat "no binding" as "not mid-build"
+    // and apply synchronously.
+    SchedulerBinding? binding;
+    try {
+      binding = SchedulerBinding.instance;
+    } catch (_) {
+      binding = null;
+    }
+    if (binding != null &&
+        binding.schedulerPhase == SchedulerPhase.persistentCallbacks) {
+      binding.addPostFrameCallback((_) => apply());
+    } else {
+      apply();
     }
 
     // Flutter Web Log
@@ -55,9 +78,11 @@ class LogService {
     current.forEach((key, newValue) {
       final oldValue = prev[key];
 
-      // Only log if the value has actually changed
-      if (oldValue != newValue) {
-        // We use string interpolation to handle nulls and different types (bool/int)
+      // Compare by value, not identity: Lists/Maps from jsonDecode are new
+      // instances every packet, so `oldValue != newValue` reports "[] -> []"
+      // on every frame. Comparing their string form treats equal contents as
+      // unchanged and kills the spam.
+      if ('$oldValue' != '$newValue') {
         changes.add('"$key": "$oldValue" -> "$newValue"');
       }
     });
@@ -72,7 +97,7 @@ class LogService {
     final List<String> messages = parseJsonChanges(previousESPData, currentJson);
     for (String message in messages) {
       if (message.contains("shelves")) continue; // Fix Annoying spam
-      logData(message);
+      logData("ESP change: $message");
     }
     previousESPData = currentJson;
   }
@@ -84,7 +109,7 @@ class LogService {
       currentJson,
     );
     for (String message in messages) {
-      logData(message);
+      logData("JETSON change: $message");
     }
     previousJetsonData = currentJson;
   }

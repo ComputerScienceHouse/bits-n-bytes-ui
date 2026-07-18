@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data'; // Required for Uint8List
+import 'package:bits_n_bytes_ui/models/api/user.dart';
 import 'package:bits_n_bytes_ui/models/serial/cart_delta.dart';
 import 'package:bits_n_bytes_ui/models/serial/esp_state.dart';
 import 'package:bits_n_bytes_ui/models/serial/nfc_scan.dart';
@@ -38,7 +39,7 @@ class SerialDataPacket {
 abstract class SerialService {
   static final String portESP = getPort("ESP_PORT", "/dev/ttyAMA0");
   static final String portJetson = getPort("JETSON_PORT", "/dev/AMA4");
-  static final String portNFC = getPort("NFC_PORT", "/dev/ttyUSB1");
+  static final String portNFC = getPort("NFC_PORT", "/dev/ttyAMA3");
 
   // Common Notifiers
   ValueNotifier<Map<String, dynamic>?> get espState;
@@ -55,7 +56,8 @@ abstract class SerialService {
   CartDelta? get latestCart;
   NfcScan? get latestNfc;
 
-  Future<bool> startListening(String portName, {
+  Future<bool> startListening(
+    String portName, {
     int baudRate,
     int payloadSize,
     SerialProtocol protocol,
@@ -70,17 +72,21 @@ abstract class SerialService {
   void openDoors();
   void openHatch();
   void clearCart();
+  void requestVideoCapture(User user);
+  void changeShelfPosition(ShelfData shelf);
   Future<void> hardResetPort(String portName, {int baudRate = 9600});
   Future<bool> startListeningNFC();
   Future<bool> startListeningJetson();
   Future<bool> startListeningESP();
-  
+
   // Singleton accessor that handles the switch logic
   static final SerialService _instance = _buildService();
   factory SerialService() => _instance;
 
   static SerialService _buildService() {
-    return (dotenv.env['SIM_CONNECTIONS'] == 'true') ? SerialServiceSim() : SerialServiceReal();
+    return (dotenv.env['SIM_CONNECTIONS'] == 'true')
+        ? SerialServiceSim()
+        : SerialServiceReal();
   }
 
   /// True when the in-process simulator backend is active (desktop dev).

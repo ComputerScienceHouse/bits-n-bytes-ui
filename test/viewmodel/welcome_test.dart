@@ -28,8 +28,7 @@ class FakeSerial implements SerialService {
       sentFirstBytes.add(data.first);
 
   @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      super.noSuchMethod(invocation);
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class FakeUserRepository implements UserRepository {
@@ -53,28 +52,39 @@ void main() {
   // be loaded — but no server is needed now that the repo is faked.
   setUp(() => dotenv.loadFromString(envString: 'NFC_PORT=/dev/fake'));
 
-  test('one NFC event → exactly one login (single stream subscription)', () async {
-    final serial = FakeSerial();
-    final repo = FakeUserRepository()
-      ..result = const User(id: 42, name: 'Ada', email: 'a@b.com', phone: null);
-    final vm = WelcomeViewModel(serial: serial, users: repo);
+  test(
+    'one NFC event → exactly one login (single stream subscription)',
+    () async {
+      final serial = FakeSerial();
+      final repo = FakeUserRepository()
+        ..result = const User(
+          id: 42,
+          name: 'Ada',
+          email: 'a@b.com',
+          phone: null,
+          recordingEnabled: false,
+        );
+      final vm = WelcomeViewModel(serial: serial, users: repo);
 
-    // Constructor arms the reader once.
-    expect(serial.sentFirstBytes, [0xFF]);
+      // Constructor arms the reader once.
+      expect(serial.sentFirstBytes, [0xFF]);
 
-    // Stream events are async, so let each one land before asserting.
-    serial.emitNfc(111);
-    await Future.delayed(Duration.zero);
-    expect(vm.loginAttempts, 1);
+      // Stream events are async, so let each one land before asserting.
+      serial.emitNfc(111);
+      await Future.delayed(Duration.zero);
+      expect(vm.loginAttempts, 1);
 
-    vm.rearm(); // must NOT re-subscribe
-    serial.emitNfc(222);
-    await Future.delayed(Duration.zero);
-    expect(vm.loginAttempts, 2); // one login per event, not stacked
+      vm.rearm(); // must NOT re-subscribe
+      serial.emitNfc(222);
+      await Future.delayed(Duration.zero);
+      expect(vm.loginAttempts, 2); // one login per event, not stacked
 
-    await Future.delayed(const Duration(milliseconds: 20)); // drain the logins
-    expect(repo.calls, 2);
-  });
+      await Future.delayed(
+        const Duration(milliseconds: 20),
+      ); // drain the logins
+      expect(repo.calls, 2);
+    },
+  );
 
   test('login success sets the user and sends the valid-user byte', () async {
     final serial = FakeSerial();
@@ -89,16 +99,18 @@ void main() {
     expect(serial.sentFirstBytes.last, 0xF1);
   });
 
-  test('unknown card (repo returns null) → notFound + re-arm + invalid byte',
-      () async {
-    final serial = FakeSerial();
-    final repo = FakeUserRepository()..result = null;
-    final vm = WelcomeViewModel(serial: serial, users: repo);
+  test(
+    'unknown card (repo returns null) → notFound + re-arm + invalid byte',
+    () async {
+      final serial = FakeSerial();
+      final repo = FakeUserRepository()..result = null;
+      final vm = WelcomeViewModel(serial: serial, users: repo);
 
-    await vm.login(999);
+      await vm.login(999);
 
-    expect(vm.status, LoginStatus.notFound);
-    // Re-armed (0xFF) then reported invalid (0xF0).
-    expect(serial.sentFirstBytes, containsAllInOrder([0xFF, 0xFF, 0xF0]));
-  });
+      expect(vm.status, LoginStatus.notFound);
+      // Re-armed (0xFF) then reported invalid (0xF0).
+      expect(serial.sentFirstBytes, containsAllInOrder([0xFF, 0xFF, 0xF0]));
+    },
+  );
 }

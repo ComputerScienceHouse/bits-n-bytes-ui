@@ -34,24 +34,54 @@ class WelcomeViewModel extends ChangeNotifier {
   User? _user;
   User? get user => _user;
 
+  /// Last uuid we acted on — de-dupes a held card and the not-found re-arm loop
+  /// so the same card can't fire login over and over.
+  int? _lastUuid;
+
   /// Incremented on every login attempt — lets a test prove that one NFC packet
   /// triggers exactly one login (i.e. the listener isn't stacked).
   @visibleForTesting
   int loginAttempts = 0;
 
   void _onNfc(NfcScan scan) {
+    // Guard the bad-read -> 404 -> rearm -> bad-read storm: skip while a login
+    // is already running, and ignore the same card repeating. Only a DIFFERENT
+    // card (or the refresh button via refresh()) re-triggers login.
+    if (_status == LoginStatus.loading || scan.uuid == _lastUuid) return;
+    _lastUuid = scan.uuid;
     LogService.logEvent('NFC decoded uuid: ${scan.uuid}');
     login(scan.uuid);
   }
 
-  /// (Re-)arm the NFC reader by sending the init command. Safe to call
-  /// repeatedly — it does not touch the listener registration.
+  /// Manual re-arm (refresh button): clears the de-dupe so the same card can be
+  /// retried, then re-arms the reader.
+  void refresh() {
+    _lastUuid = null;
+    rearm();
+  }
+
+  /// Gap before the re-arm so the FF doesn't collide with the ACK.
+  static const Duration _replyGap = Duration(seconds: 1);
+
+  static final Uint8List _armPacket = Uint8List.fromList([
+    0xFF,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+  ]);
+  Uint8List _ackPacket(bool valid) =>
+      Uint8List.fromList([valid ? 0xF1 : 0xF0, 0, 0, 0, 0, 0, 0, 0]);
+
+  /// (Re-)arm the NFC reader by sending the sync command. Fires immediately so
+  /// the reader is armed as soon as the screen mounts / refresh is tapped. The
+  /// post-scan reply is scheduled in [login] so the ACK + re-arm stay in sync.
   void rearm() {
-    LogService.logEvent('Sending NFC initialization command...');
-    _serial.sendBinaryTo(
-      SerialService.portNFC,
-      Uint8List.fromList([0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
-    );
+    LogService.logEvent('Sending NFC sync command...');
+    _serial.sendBinaryTo(SerialService.portNFC, _armPacket);
   }
 
   Future<void> login(int uuid) async {
@@ -68,21 +98,23 @@ class WelcomeViewModel extends ChangeNotifier {
         _status = LoginStatus.success;
         LogService.logEvent('Logged in: ${user.name} (${user.id})');
       } else {
-        // Card not in the system — tell the reader to try again.
-        LogService.logEvent('User not found — re-arming NFC reader.');
+        LogService.logEvent('User not found.');
         _status = LoginStatus.notFound;
-        rearm();
       }
     } catch (e) {
       LogService.logEvent('Login error: $e');
       _status = LoginStatus.error;
     }
+    // ACK immediately (F1 valid / F0 invalid): the MCU samples its RX right
+    // after sending the UID, so the result byte has to land in that window.
+    _serial.sendBinaryTo(SerialService.portNFC, _ackPacket(isValidUser));
 
-    // Tell the ESP whether the tap resolved to a valid user (0xF1) or not (0xF0).
-    _serial.sendBinaryTo(
-      SerialService.portNFC,
-      Uint8List.fromList([isValidUser ? 0xF1 : 0xF0, 0, 0, 0, 0, 0, 0, 0]),
-    );
+    // Re-arm only for a not-found card, after replyGap so the FF doesn't
+    // collide with the ACK. Tune replyGap to match the MCU's read window.
+    if (_status == LoginStatus.notFound) {
+      Future.delayed(_replyGap, rearm);
+    }
+
     notifyListeners();
   }
 

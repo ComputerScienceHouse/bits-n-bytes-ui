@@ -17,8 +17,7 @@ class FakeTwilio implements TwilioService {
   }
 
   @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      super.noSuchMethod(invocation);
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class FakeSerial implements SerialService {
@@ -28,15 +27,24 @@ class FakeSerial implements SerialService {
   void clearCart() => clearCartCalls++;
 
   @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      super.noSuchMethod(invocation);
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-const _user = User(id: 1, name: 'Ada', email: 'a@b.com', phone: '609');
-const _noPhone = User(id: 2, name: 'Bob', email: 'b@b.com', phone: null);
-const _cart = [
-  Item(id: 1, name: 'Chips', imgUrl: '', price: 2.0, quantity: 3),
-];
+const _user = User(
+  id: 1,
+  name: 'Ada',
+  email: 'a@b.com',
+  phone: '609',
+  recordingEnabled: true,
+);
+const _noPhone = User(
+  id: 2,
+  name: 'Bob',
+  email: 'b@b.com',
+  phone: null,
+  recordingEnabled: true,
+);
+const _cart = [Item(id: 1, name: 'Chips', imgUrl: '', price: 2.0, quantity: 3)];
 
 ReceiptViewModel makeVm({
   User user = _user,

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data'; // Required for Uint8List
+import 'package:bits_n_bytes_ui/models/api/user.dart';
+import 'package:bits_n_bytes_ui/models/serial/esp_state.dart';
 import 'package:bits_n_bytes_ui/serial/parser/json.dart';
 import 'package:bits_n_bytes_ui/serial/parser/nfc.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart';
@@ -18,7 +20,8 @@ class SerialServiceReal with SerialStreams implements SerialService {
   final Map<String, StreamSubscription> _subscriptions = {};
 
   final Map<String, JsonFrameParser> _jsonParsers = {}; // per-port JSON framing
-  final Map<String, NfcFramer> _nfcFramers = {}; // per-port fixed-length framing
+  final Map<String, NfcFramer> _nfcFramers =
+      {}; // per-port fixed-length framing
   final Map<String, SerialProtocol> _portProtocols = {}; // protocol per port
 
   @override
@@ -27,6 +30,21 @@ class SerialServiceReal with SerialStreams implements SerialService {
   final ValueNotifier<Map<String, dynamic>?> jetsonState = ValueNotifier(null);
   @override
   final ValueNotifier<Uint8List?> nfcState = ValueNotifier(null);
+
+  // --- Logging helpers: friendly role tag + byte rendering for the debug log. ---
+  static String _role(String port) {
+    if (port == SerialService.portNFC) return 'NFC';
+    if (port == SerialService.portESP) return 'ESP';
+    if (port == SerialService.portJetson) return 'JETSON';
+    return port;
+  }
+
+  static String _tag(String port) => '${_role(port)} [$port]';
+  static String _hex(List<int> b) =>
+      b.map((x) => x.toRadixString(16).padLeft(2, '0')).join(' ');
+  static String _ascii(List<int> b) => b
+      .map((x) => (x >= 0x20 && x < 0x7f) ? String.fromCharCode(x) : '.')
+      .join();
 
   @override
   Future<bool> startListening(
@@ -67,13 +85,21 @@ class SerialServiceReal with SerialStreams implements SerialService {
       config.parity = SerialPortParity.none;
       config.stopBits = 1;
       port.config = config;
+      LogService.logEvent(
+        "${_tag(portName)} opened @ ${config.baudRate} baud (${protocol.name})",
+      );
 
       // --- Store Protocol Info & Initialize Buffers ---
       _ports[portName] = port;
       _portProtocols[portName] = protocol;
 
       if (protocol == SerialProtocol.fixedLengthBinary) {
-        _nfcFramers[portName] = NfcFramer(payloadSize);
+        // NXP UIDs start with 0x04 — use it as the frame-start marker so an
+        // echoed arm command / noise byte can't permanently misalign the frame.
+        _nfcFramers[portName] = NfcFramer(
+          payloadSize,
+          syncByte: portName == SerialService.portNFC ? 0x04 : null,
+        );
       } else {
         _jsonParsers[portName] = JsonFrameParser();
       }
@@ -82,7 +108,11 @@ class SerialServiceReal with SerialStreams implements SerialService {
       final reader = SerialPortReader(port);
       _subscriptions[portName] = reader.stream.listen(
         (data) {
-          // LogService.logEvent("DEBUG: Received ${data.length} bytes from $portName: ${String.fromCharCodes(data)}");
+          // Raw inbound bytes before framing/parsing — ground truth for every
+          // port (JSON text on ESP/Jetson, PN532 frames on NFC).
+          LogService.logData(
+            "RX ${_tag(portName)} ${data.length}B  hex: ${_hex(data)}  ascii: ${_ascii(data)}",
+          );
           // Route data to the correct parser based on the port's protocol
           if (_portProtocols[portName] == SerialProtocol.fixedLengthBinary) {
             _onBinaryDataReceived(portName, data);
@@ -125,8 +155,10 @@ class SerialServiceReal with SerialStreams implements SerialService {
       final Map<String, dynamic> jsonData = jsonDecode(completeJson);
 
       if (portName == SerialService.portESP) {
+        LogService.logData("RX ${_tag(portName)} packet: $jsonData");
         espState.value = jsonData;
       } else if (portName == SerialService.portJetson) {
+        LogService.logData("RX ${_tag(portName)} packet: $jsonData");
         jetsonState.value = jsonData;
       } else {
         LogService.logEvent("Received JSON on unknown port: $portName");
@@ -146,9 +178,13 @@ class SerialServiceReal with SerialStreams implements SerialService {
     for (final packet in framer.addChunk(data)) {
       if (portName == SerialService.portNFC) {
         nfcState.value = packet;
-        LogService.logEvent("onBinaryDataReceived: NFC packet updated [$packet]");
+        LogService.logData(
+          "RX ${_tag(portName)} packet (${packet.length}B) hex: ${_hex(packet)}  ascii: ${_ascii(packet)}",
+        );
       } else {
-        LogService.logEvent("onBinaryDataReceived: Not from NFC :skull:");
+        LogService.logData(
+          "RX binary on non-NFC ${_tag(portName)}: hex ${_hex(packet)}",
+        );
       }
     }
   }
@@ -165,7 +201,8 @@ class SerialServiceReal with SerialStreams implements SerialService {
     }
     try {
       final jsonString = jsonEncode(data);
-      port.write(Uint8List.fromList(jsonString.codeUnits));
+      final n = port.write(Uint8List.fromList(jsonString.codeUnits));
+      LogService.logData("TX ${_tag(portName)} ${n}B  packet: $jsonString");
     } catch (e) {
       LogService.logEvent("SerialService [$portName] SEND JSON ERROR: $e");
     }
@@ -179,9 +216,16 @@ class SerialServiceReal with SerialStreams implements SerialService {
       LogService.logEvent("SerialService ERROR: Port $portName is not open.");
       return;
     }
+    // Commanding a fixed-length reader (e.g. arming NFC): resync by clearing any
+    // half-assembled/noise bytes so the reader's response frames from a clean,
+    // aligned buffer. This is the resync-on-command the welcome mount / debug
+    // panel / tap flows all trigger via sendBinaryTo.
+    _nfcFramers[portName]?.reset();
     try {
       int bytesWritten = port.write(data);
-      LogService.logEvent('SerialService [$portName] SENT: $bytesWritten bytes');
+      LogService.logData(
+        "TX ${_tag(portName)} ${bytesWritten}B  hex: ${_hex(data)}",
+      );
     } catch (e) {
       LogService.logEvent("SerialService [$portName] SEND BINARY ERROR: $e");
     }
@@ -200,10 +244,14 @@ class SerialServiceReal with SerialStreams implements SerialService {
   @override
   void stopListening(String portName) {
     if (_ports.containsKey(portName)) {
-      LogService.logEvent("SerialService: Stopping listener and cleaning up $portName...");
+      LogService.logEvent(
+        "SerialService: Stopping listener and cleaning up $portName...",
+      );
       _cleanupPort(portName);
     } else {
-      LogService.logEvent("SerialService: No active listener found for $portName to stop.");
+      LogService.logEvent(
+        "SerialService: No active listener found for $portName to stop.",
+      );
     }
   }
 
@@ -239,19 +287,48 @@ class SerialServiceReal with SerialStreams implements SerialService {
   @override
   void openDoors() {
     LogService.logEvent("Sending door command...");
-    sendJsonTo(SerialService.portESP, {"doors": true,"hatch":false});
+    sendJsonTo(SerialService.portESP, {"doors": true, "hatch": false});
   }
 
   @override
   void openHatch() {
     LogService.logEvent("Sending hatch command...");
-    sendJsonTo(SerialService.portESP, {"hatch": true,"doors":false});
+    sendJsonTo(SerialService.portESP, {"hatch": true, "doors": false});
   }
 
   @override
   void clearCart() {
     LogService.logEvent("Sending clear-cart command to Jetson...");
-    sendBinaryTo(SerialService.portJetson, Uint8List.fromList([0xDE, 0xAD, 0xBE, 0xEF]));
+    sendBinaryTo(
+      SerialService.portJetson,
+      Uint8List.fromList([0xDE, 0xAD, 0xBE, 0xEF]),
+    );
+  }
+
+  @override
+  void requestVideoCapture(User user) {
+    if (user.recordingEnabled == true) {
+      LogService.logEvent("Sending request to capture video for user...");
+      sendJsonTo(SerialService.portJetson, {"enable_recording": true});
+    }
+  }
+
+  @override
+  void changeShelfPosition(ShelfData currentShelf) {
+    // The caller (AdminViewModel.moveShelf) already flipped the position, so
+    // `currentShelf.position` is the desired target — just send it, for both
+    // directions.
+    LogService.logEvent(
+      "Changing shelf ${currentShelf.macAddress} position to "
+      "${currentShelf.position}",
+    );
+    sendJsonTo(SerialService.portESP, {
+      "calibration": {
+        currentShelf.macAddress: [
+          {"position": currentShelf.position}, // PARAMS
+        ],
+      },
+    });
   }
 
   @override

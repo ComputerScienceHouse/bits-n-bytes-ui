@@ -1,4 +1,5 @@
 import 'package:bits_n_bytes_ui/models/api/item.dart';
+import 'package:bits_n_bytes_ui/models/api/transaction.dart';
 import 'package:bits_n_bytes_ui/models/api/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -7,9 +8,13 @@ import 'dart:async';
 
 class DoorClosedPage extends StatefulWidget {
   final User user;
-  final List<Item> cart;
+  final FullTransaction fullTransaction;
 
-  const DoorClosedPage({super.key, required this.cart, required this.user});
+  const DoorClosedPage({
+    super.key,
+    required this.fullTransaction,
+    required this.user,
+  });
 
   @override
   State<DoorClosedPage> createState() => _DoorClosedPageState();
@@ -22,6 +27,7 @@ class _DoorClosedPageState extends State<DoorClosedPage> {
   @override
   void initState() {
     super.initState();
+    widget.fullTransaction.transaction.transactionEnd = DateTime.now();
     _timer = Timer(const Duration(seconds: 1), handleTimeout);
   }
 
@@ -33,7 +39,10 @@ class _DoorClosedPageState extends State<DoorClosedPage> {
 
   void handleTimeout() {
     if (mounted) {
-      context.go('/receipt', extra: {'cart': widget.cart, 'user': user});
+      context.go(
+        '/receipt',
+        extra: {'transaction': widget.fullTransaction, 'user': user},
+      );
     }
   }
 

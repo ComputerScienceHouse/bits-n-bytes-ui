@@ -23,7 +23,7 @@ void main() {
     // Mirror the real .env convention: API_URL includes scheme + trailing slash.
     dotenv.loadFromString(
       envString:
-          'API_URL=http://${server.address.host}:${server.port}/\nAPI_AUTH_KEY=UI test-key-123',
+          'API_URL=http://${server.address.host}:${server.port}\nAPI_AUTH_KEY=UI test-key-123',
     );
   });
 
@@ -52,7 +52,7 @@ void main() {
     });
     dotenv.loadFromString(
       envString:
-          'API_URL=http://${server.address.host}:${server.port}/\nAPI_AUTH_KEY=UI test-key-123',
+          'API_URL=http://${server.address.host}:${server.port}\nAPI_AUTH_KEY=UI test-key-123',
     );
 
     final item = await ApiService.getItemById(7);

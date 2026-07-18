@@ -2,9 +2,9 @@ import 'dart:io';
 import 'dart:developer';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../services/serial_service.dart';
-import '../screens/welcome.dart';
 
 class AdminButton {
   final IconData icon;
@@ -65,10 +65,7 @@ class AdminControlsGrid extends StatelessWidget {
         icon: LucideIcons.arrowLeft,
         label: 'Back',
         onPressed: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const WelcomePage()),
-          );
+          context.go('/');
         },
       ),
       AdminButton(
@@ -121,7 +118,6 @@ class AdminControlsGrid extends StatelessWidget {
               ),
               backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              minimumSize: const Size(220, 0),
             ),
           ),
         );

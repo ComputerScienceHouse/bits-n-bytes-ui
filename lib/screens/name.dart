@@ -16,11 +16,13 @@ class NamePage extends StatefulWidget {
 class _NamePageState extends State<NamePage> {
   Timer? _timer;
   User get user => widget.user;
+
   @override
   void initState() {
     super.initState();
     _timer = Timer(const Duration(seconds: 1), handleTimeout);
     SerialService().openDoors();
+    SerialService().requestVideoCapture(user);
   }
 
   @override

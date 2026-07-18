@@ -26,8 +26,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('Sim tab and controls render when the simulator is active',
-      (tester) async {
+  testWidgets('Sim tab and controls render when the simulator is active', (
+    tester,
+  ) async {
     if (!sim) return;
     await openPanel(tester);
 
@@ -35,8 +36,9 @@ void main() {
     expect(find.text('Send ESP State'), findsOneWidget);
   });
 
-  testWidgets('Close → Checkout pushes doors:true onto espState',
-      (tester) async {
+  testWidgets('Close → Checkout pushes doors:true onto espState', (
+    tester,
+  ) async {
     if (!sim) return;
     await openPanel(tester);
 
@@ -46,8 +48,9 @@ void main() {
     expect(SerialService().espState.value?['doors'], true);
   });
 
-  testWidgets('Scan Card writes a decodable UUID packet to nfcState',
-      (tester) async {
+  testWidgets('Scan Card writes a decodable UUID packet to nfcState', (
+    tester,
+  ) async {
     if (!sim) return;
     await openPanel(tester);
 

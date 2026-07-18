@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:bits_n_bytes_ui/models/api/user.dart';
+import 'package:bits_n_bytes_ui/models/serial/esp_state.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
@@ -26,7 +28,7 @@ class SerialServiceSim with SerialStreams implements SerialService {
   @override
   Future<bool> startListeningAll() async {
     LogService.logEvent("UART-Service: Starting Simulator REST API...");
-    
+
     final router = Router();
 
     // PUT /esp
@@ -71,7 +73,9 @@ class SerialServiceSim with SerialStreams implements SerialService {
     try {
       // Binding to 0.0.0.0 allows access from other devices on the network
       _server = await io.serve(router, '0.0.0.0', 8080);
-      LogService.logEvent("🚀 Sim Server running at http://${_server!.address.host}:${_server!.port}");
+      LogService.logEvent(
+        "🚀 Sim Server running at http://${_server!.address.host}:${_server!.port}",
+      );
       return true;
     } catch (e) {
       LogService.logEvent("Sim Server failed to start: $e");
@@ -94,7 +98,9 @@ class SerialServiceSim with SerialStreams implements SerialService {
 
   @override
   void sendBinaryTo(String portName, Uint8List data) {
-    LogService.logEvent("SIM OUTBOUND BINARY [$portName]: ${data.length} bytes");
+    LogService.logEvent(
+      "SIM OUTBOUND BINARY [$portName]: ${data.length} bytes",
+    );
   }
 
   @override
@@ -106,7 +112,8 @@ class SerialServiceSim with SerialStreams implements SerialService {
   bool isListening(String portName) => _server != null;
 
   @override
-  void stopListening(String portName) => LogService.logEvent("Sim: Stop listening $portName");
+  void stopListening(String portName) =>
+      LogService.logEvent("Sim: Stop listening $portName");
 
   @override
   void dispose() {
@@ -119,13 +126,40 @@ class SerialServiceSim with SerialStreams implements SerialService {
 
   // Helper logic for UI buttons
   @override
-  void openDoors() => sendJsonTo(SerialService.portESP, {"doors": true, "hatch": false});
+  void openDoors() =>
+      sendJsonTo(SerialService.portESP, {"doors": true, "hatch": false});
 
   @override
-  void openHatch() => sendJsonTo(SerialService.portESP, {"hatch": true, "doors": false});
+  void openHatch() =>
+      sendJsonTo(SerialService.portESP, {"hatch": true, "doors": false});
 
   @override
-  void clearCart() => LogService.logEvent("SIM: clearCart -> [0xDE, 0xAD, 0xBE, 0xEF] to Jetson");
+  void clearCart() => LogService.logEvent(
+    "SIM: clearCart -> [0xDE, 0xAD, 0xBE, 0xEF] to Jetson",
+  );
+
+  @override
+  void requestVideoCapture(User user) {
+    if (user.recordingEnabled == true) {
+      LogService.logEvent("Sending request to capture video for user...");
+      sendJsonTo(SerialService.portJetson, {"enable_recording": true});
+    }
+  }
+
+  @override
+  void changeShelfPosition(ShelfData currentShelf) {
+    // The caller (AdminViewModel.moveShelf) already flipped the position, so
+    // `currentShelf.position` is the desired target — just send it, for both
+    // directions.
+    LogService.logEvent(
+      "Changing shelf ${currentShelf.macAddress} position to "
+      "${currentShelf.position}",
+    );
+    sendJsonTo(SerialService.portESP, {
+      "mac_address": currentShelf.macAddress,
+      "position": currentShelf.position,
+    });
+  }
 
   @override
   Future<void> hardResetPort(String portName, {int baudRate = 9600}) async {

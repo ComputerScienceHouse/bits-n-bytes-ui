@@ -7,7 +7,11 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class TwilioService {
-  static final client = http.Client();
+  /// [client] is injectable so tests can supply a `MockClient`; production
+  /// defaults to a real HTTP client.
+  TwilioService({http.Client? client}) : _client = client ?? http.Client();
+
+  final http.Client _client;
 
   final accountSid = dotenv.env['TWILIO_ACCOUNT_SID'] ?? '';
   final authToken = dotenv.env['TWILIO_AUTH_TOKEN'] ?? '';
@@ -33,7 +37,7 @@ class TwilioService {
     );
 
     final body =
-        'Thank you for using Bits n Bytes at Imagine RIT!\n'
+        'Thank you for using Bits \'n Bytes at Opensauce!\n'
         'Your receipt is below:\n'
         '--------------------\n'
         '$lines\n'
@@ -41,7 +45,7 @@ class TwilioService {
         'Subtotal: \$${total.toStringAsFixed(2)}\n'
         'Total after Open Sauce discount: \$0.00';
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse(
           'https://api.twilio.com/2010-04-01/Accounts/$accountSid/Messages.json',
         ),

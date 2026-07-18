@@ -5,11 +5,19 @@ class DebugOption extends StatefulWidget {
   final String description;
   final bool enabled;
 
+  /// When provided, the switch is "controlled": [value] drives its position and
+  /// [onChanged] is called on toggle instead of mutating internal state. Leave
+  /// both null for the original self-contained stub behavior.
+  final bool? value;
+  final ValueChanged<bool>? onChanged;
+
   const DebugOption({
     super.key,
     required this.title,
     required this.description,
-    this.enabled = false
+    this.enabled = false,
+    this.value,
+    this.onChanged,
   });
 
   @override
@@ -70,12 +78,16 @@ class _DebugOptionState extends State<DebugOption> {
                     ],
                   ),
                   Switch(
-                    value: _isEnabled,
+                    value: widget.value ?? _isEnabled,
                     activeThumbColor: Colors.green,
                     onChanged: (bool value) {
-                      setState(() {
-                        _isEnabled = value;
-                      });
+                      if (widget.onChanged != null) {
+                        widget.onChanged!(value);
+                      } else {
+                        setState(() {
+                          _isEnabled = value;
+                        });
+                      }
                     },
                   )
                 ],

@@ -81,10 +81,13 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/bnb.svg
-    - assets/images/tap.png
     - assets/images/lockup.svg
+    - assets/images/dark-lockup.svg
     - assets/images/checkmark.svg
-    - assets/images/refresh.png
+    - assets/images/putback.svg
+    - assets/images/putback_done.svg
+    - assets/images/tap.svg
+    - assets/templates/
     - .env
 
   # Fonts bundled as assets so they are NOT fetched over HTTP at runtime

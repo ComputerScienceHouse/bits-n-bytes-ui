@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bits_n_bytes_ui/services/serial_service_sim.dart';
+import 'package:bits_n_bytes_ui/services/serialServiceSim.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Phase 4B dual-API parity: the typed streams must carry the same information
@@ -24,21 +24,24 @@ void main() {
     await sub.cancel();
   });
 
-  test('cartStream emits the CartDelta equivalent of jetsonState.value', () async {
-    final sim = SerialServiceSim();
-    final emitted = <int>[];
-    final sub = sim.cartStream.listen((d) => emitted.add(d.quantity));
+  test(
+    'cartStream emits the CartDelta equivalent of jetsonState.value',
+    () async {
+      final sim = SerialServiceSim();
+      final emitted = <int>[];
+      final sub = sim.cartStream.listen((d) => emitted.add(d.quantity));
 
-    sim.jetsonState.value = {'id': 7, 'quantity': 3};
-    await Future.delayed(Duration.zero);
+      sim.jetsonState.value = {'id': 7, 'quantity': 3};
+      await Future.delayed(Duration.zero);
 
-    expect(sim.jetsonState.value, {'id': 7, 'quantity': 3});
-    expect(emitted, [3]);
-    expect(sim.latestCart?.id, 7);
-    expect(sim.latestCart?.quantity, 3);
+      expect(sim.jetsonState.value, {'id': 7, 'quantity': 3});
+      expect(emitted, [3]);
+      expect(sim.latestCart?.id, 7);
+      expect(sim.latestCart?.quantity, 3);
 
-    await sub.cancel();
-  });
+      await sub.cancel();
+    },
+  );
 
   test('nfcStream emits the NfcScan equivalent of nfcState.value', () async {
     final sim = SerialServiceSim();
@@ -56,19 +59,23 @@ void main() {
     await sub.cancel();
   });
 
-  test('a malformed cart map updates the notifier but emits no typed event',
-      () async {
-    final sim = SerialServiceSim();
-    final emitted = <int>[];
-    final sub = sim.cartStream.listen((d) => emitted.add(d.quantity));
+  test(
+    'a malformed cart map updates the notifier but emits no typed event',
+    () async {
+      final sim = SerialServiceSim();
+      final emitted = <int>[];
+      final sub = sim.cartStream.listen((d) => emitted.add(d.quantity));
 
-    sim.jetsonState.value = {'unexpected': 'shape'}; // not a CartDelta
-    await Future.delayed(Duration.zero);
+      sim.jetsonState.value = {'unexpected': 'shape'}; // not a CartDelta
+      await Future.delayed(Duration.zero);
 
-    expect(sim.jetsonState.value, {'unexpected': 'shape'}); // notifier still set
-    expect(emitted, isEmpty); // no typed event
-    expect(sim.latestCart, isNull);
+      expect(sim.jetsonState.value, {
+        'unexpected': 'shape',
+      }); // notifier still set
+      expect(emitted, isEmpty); // no typed event
+      expect(sim.latestCart, isNull);
 
-    await sub.cancel();
-  });
+      await sub.cancel();
+    },
+  );
 }

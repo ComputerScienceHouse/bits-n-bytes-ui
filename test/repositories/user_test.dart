@@ -23,7 +23,7 @@ void main() {
     });
     dotenv.loadFromString(
       envString:
-          'API_URL=http://${server.address.host}:${server.port}/\nAPI_AUTH_KEY=k',
+          'API_URL=http://${server.address.host}:${server.port}\nAPI_AUTH_KEY=k',
     );
   });
 

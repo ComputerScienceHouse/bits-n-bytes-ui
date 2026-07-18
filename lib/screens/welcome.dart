@@ -3,6 +3,7 @@ import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:bits_n_bytes_ui/viewmodel/welcome.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -56,70 +57,19 @@ class _WelcomePageState extends State<WelcomePage> {
   }
 
   void _showPasswordDialog() {
-    final TextEditingController passwordController = TextEditingController();
-
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
       barrierColor: Colors.black.withAlpha(128),
       transitionDuration: const Duration(milliseconds: 200),
       pageBuilder: (context, anim1, anim2) {
-        return Material(
-          color: Colors.transparent,
-          child: Column(
-            children: [
-              const Spacer(),
-              AlertDialog(
-                title: Text(
-                  textAlign: TextAlign.start,
-                  'Enter Admin Password',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.fontFamily,
-                  ),
-                ),
-                content: TextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  autofocus: true,
-                  decoration: const InputDecoration(hintText: "Password"),
-                  readOnly: true, // Prevent OS keyboard
-                  showCursor: true,
-                ),
-                actions: [
-                  TextButton(
-                    child: const Text('Cancel'),
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close the dialog
-                    },
-                  ),
-                  TextButton(
-                    child: const Text('Submit'),
-                    onPressed: () {
-                      _checkPassword(passwordController.text);
-                    },
-                  ),
-                ],
-              ),
-              const Spacer(),
-              Container(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                child: VirtualKeyboard(
-                  height: 200,
-                  textColor: Colors.white,
-                  textController: passwordController,
-                  type: VirtualKeyboardType.Alphanumeric,
-                ),
-              ),
-            ],
-          ),
-        );
+        // The dialog owns its own controller and disposes it in its own
+        // dispose() — which runs only after the exit transition completes — so
+        // the animating TextField/VirtualKeyboard never touch a disposed
+        // controller while we pop-and-navigate to /admin.
+        return _AdminPasswordDialog(onSubmit: _checkPassword);
       },
-    ).then((_) {
-      passwordController.dispose();
-    });
+    );
   }
 
   void _handleDragStart(DragStartDetails details) {
@@ -154,13 +104,14 @@ class _WelcomePageState extends State<WelcomePage> {
               style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
             ),
             GestureDetector(
-              onTap: _vm.rearm, // Re-arm the NFC reader.
-              child: Image.asset(
-                'assets/images/refresh.png',
-                fit: BoxFit.fill,
+              onTap: () => {
+                _vm.refresh,
+                // TODO: Add a animation to show refresh of NFC
+              }, // Re-arm the NFC reader (and allow retrying the same card).
+              child: Icon(
+                LucideIcons.refreshCcw,
                 color: Theme.of(context).colorScheme.onSurface,
-                width: 50.0,
-                height: 50.0,
+                size: 35,
               ),
             ),
           ],
@@ -185,13 +136,14 @@ class _WelcomePageState extends State<WelcomePage> {
                       id: 1,
                       name: "Guest",
                       phone: "6097219292",
+                      recordingEnabled: false,
                     ),
                   );
                 },
                 icon: SizedBox.square(
                   dimension: 20,
-                  child: Image.asset(
-                    'assets/images/tap.png',
+                  child: SvgPicture.asset(
+                    'assets/images/tap.svg',
                     width: 100,
                     height: 100,
                   ),
@@ -218,6 +170,84 @@ class _WelcomePageState extends State<WelcomePage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Admin password entry dialog. Owns its [TextEditingController] so the
+/// controller is disposed exactly when this widget unmounts (after the dialog's
+/// exit transition), never mid-animation.
+class _AdminPasswordDialog extends StatefulWidget {
+  const _AdminPasswordDialog({required this.onSubmit});
+
+  /// Called with the entered text when Submit is pressed. The parent decides
+  /// whether to pop the dialog and where to navigate.
+  final void Function(String password) onSubmit;
+
+  @override
+  State<_AdminPasswordDialog> createState() => _AdminPasswordDialogState();
+}
+
+class _AdminPasswordDialogState extends State<_AdminPasswordDialog> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: Column(
+        children: [
+          const Spacer(),
+          AlertDialog(
+            title: Text(
+              textAlign: TextAlign.start,
+              'Enter Admin Password',
+              style: TextStyle(
+                fontSize: 16,
+                fontFamily: Theme.of(context).textTheme.bodyMedium?.fontFamily,
+              ),
+            ),
+            content: TextField(
+              controller: _controller,
+              obscureText: true,
+              autofocus: true,
+              decoration: const InputDecoration(hintText: "Password"),
+              readOnly: true, // Prevent OS keyboard
+              showCursor: true,
+            ),
+            actions: [
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+              TextButton(
+                child: const Text('Submit'),
+                onPressed: () {
+                  widget.onSubmit(_controller.text);
+                },
+              ),
+            ],
+          ),
+          const Spacer(),
+          Container(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            child: VirtualKeyboard(
+              height: 200,
+              textColor: Colors.white,
+              textController: _controller,
+              type: VirtualKeyboardType.Alphanumeric,
+            ),
+          ),
+        ],
       ),
     );
   }
