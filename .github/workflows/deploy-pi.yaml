@@ -1,0 +1,36 @@
+name: deploy-pi
+
+# Builds the flutter-pi release bundle and deploys it to the production Pi.
+# Runs on a SELF-HOSTED runner registered on the Pi (it dials out to GitHub —
+# GitHub never needs the Pi's IP). Register it once with labels: self-hosted, ARM64.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-pi
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: [self-hosted, ARM64]
+    steps:
+      - uses: actions/checkout@v4
+
+      # Build the bundle inside the same image dev uses, so CI == dev.
+      - name: Build flutter-pi bundle
+        run: |
+          docker build -t bnb-kiosk -f docker/Dockerfile .
+          docker run --rm -v "$PWD":/app -w /app bnb-kiosk bash -c \
+            'flutter pub get && flutterpi_tool build --arch=arm64 --cpu=pi4 --release'
+
+      # Deploy on the Pi host (native flutter-pi runtime serves the bundle).
+      - name: Deploy to /opt/bnb/bundle and restart kiosk
+        run: |
+          sudo install -d -o "$USER" /opt/bnb/bundle
+          sudo rsync -a --delete ./build/flutter_assets/ /opt/bnb/bundle/
+          sudo systemctl restart bnb-ui.service
+
+      - name: Report status
+        run: systemctl --no-pager status bnb-ui.service | head -n 5

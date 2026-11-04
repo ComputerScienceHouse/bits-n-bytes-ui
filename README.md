@@ -1,63 +1,25 @@
-# Local Setup:
+# bits_n_bytes_ui
 
-```shell
-python3 -m venv .venv # Create virtual environment
-source ./venv/bin/activate # Activate virtual environment
-pip install -r requirements.txt # Install requirements
+Repository for the UI for the Bits 'n Bytes Project.
+
+## Getting Started
+
+Ensure the [Flutter SDK](https://docs.flutter.dev/install) is installed on your system. Currently, the supported builds are for Linux and MacOS.
+
+## Environment
+
+Create a `.env` file in the root of the directory, following this template:
+```
+API_URL=
+API_AUTH_KEY=
+ADMIN_PASSWORD=
 ```
 
-## Enviroment variables
-Create a `config.py` file in the `bnb` directory. This is where you will place your environment variables.
-You can copy/paste the following as a starting point:
-```python
-import os
-# UI Settings
-os.environ["QT_VIRTUALKEYBOARD_STYLE"] = "default"  # Options: "light", "dark", etc.
-os.environ["QT_VIRTUALKEYBOARD_COLOR_SCHEME"] = "dark"  # Options: "light", "dark"
-os.environ["BNB_ADMIN_PATTERN"] = "[1, 2, 3, 4]"
+## Developing over SSH
 
-# Backend connection
-os.environ["BNB_API_ENDPOINT"] = ''
-os.environ["BNB_AUTHORIZATION_KEY"] = ''
-
-# Email info for receipts
-os.environ["BNB_EMAIL_ADDRESS"] = ''
-os.environ["BNB_EMAIL_USER"] = ''
-os.environ["BNB_EMAIL_PASSWORD"] = ""
-
-# SMS (Twilio) info for receipts
-os.environ["TWILIO_ACCOUNT_SID"]=""
-os.environ["TWILIO_AUTH_TOKEN"]=""
-os.environ["TWILIO_FROM_NUMBER"]=""
-
-# MQTT Setup
-os.environ["MQTT_LOCAL_BROKER_URL"] = "localhost"
-os.environ["MQTT_REMOTE_BROKER_URL"] = ""
-os.environ["MQTT_PORT"] = "1883"
-
-# OPTIONAL Variables (Mainly for debugging)
-os.environ["USE_MOCK_DATA"] = "False" # Set to "True" to use mock data instead of DB.
-
-```
-
-Please ask existing team members of Bits 'n Bytes to get any of the environment variables you don't have. Note that the app will still function without these variables, but the functionality they each provide will be disabled.
-
-## Commands:
-
-- #### run ####
-    ```shell 
-    bnb run [ARGS]
-    ```  
-    - args:
-        - screen: the screen to be displayed first; default is `main`
-### Adding Commands:
-
-WIP
-
-### Using the `bnb` package:
-
-```shell
-pip install -e .
-```
-
-This will install the package in an 'editable' form so that you can make chnages if you are adding more commands to the package in the future
+We recommend developing directly SSH'ed into the system. To do this, ensure you are connected to the same network as the machine.
+- Launch Visual Studio Code (or equivialent software) and choose "Connect to Host".
+- log in with the given credentials.
+- Once you have verified the connection, execute the `run.sh` script to load the application on the pi.
+    - If you do **not** run this script, you will encouter the following warning:
+    ```Error waiting for a debug connection: The log reader stopped unexpectedly, or never started.```

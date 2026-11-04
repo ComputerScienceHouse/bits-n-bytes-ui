@@ -1,0 +1,12 @@
+# Lightweight sim image — runs on ANY host (no arm64 pin, no Flutter, no GPU).
+# Validates the virtual-serial plumbing: socat PTYs + the Python emulator + a frame checker.
+# Use via `bnb run sim`. This is the Mac-friendly loop; the heavy flutter-pi image is Pi-only.
+FROM python:3.12-alpine
+
+# Alpine uses apk; add socat (virtual serial) and bash (for the `bash -c` block in run.sh).
+RUN apk add --no-cache socat bash
+
+COPY emulator.py /usr/local/bin/bnb-emulator.py
+COPY sim_check.py /usr/local/bin/bnb-sim-check.py
+
+WORKDIR /app

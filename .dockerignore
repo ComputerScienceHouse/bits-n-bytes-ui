@@ -1,0 +1,6 @@
+.git
+.dart_tool
+build
+node_modules
+.idea
+.vscode
