@@ -1,13 +1,13 @@
 import 'package:bits_n_bytes_ui/models/api/user.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:bits_n_bytes_ui/viewmodel/welcome.dart';
+import 'package:bits_n_bytes_ui/widgets/admin_password_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:virtual_keyboard_multi_language/virtual_keyboard_multi_language.dart';
 
 /// Thin View. The NFC-tap → login flow lives in [WelcomeViewModel] (supplied by
 /// the route-scoped ChangeNotifierProvider); this widget only renders and turns
@@ -67,7 +67,7 @@ class _WelcomePageState extends State<WelcomePage> {
         // dispose() — which runs only after the exit transition completes — so
         // the animating TextField/VirtualKeyboard never touch a disposed
         // controller while we pop-and-navigate to /admin.
-        return _AdminPasswordDialog(onSubmit: _checkPassword);
+        return AdminPasswordDialog(onSubmit: _checkPassword);
       },
     );
   }
@@ -92,36 +92,39 @@ class _WelcomePageState extends State<WelcomePage> {
     _dragStartDetails = null;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Welcome",
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
-            ),
-            GestureDetector(
-              onTap: () => {
-                _vm.refresh,
-                // TODO: Add a animation to show refresh of NFC
-              }, // Re-arm the NFC reader (and allow retrying the same card).
-              child: Icon(
-                LucideIcons.refreshCcw,
-                color: Theme.of(context).colorScheme.onSurface,
-                size: 35,
-              ),
-            ),
-          ],
-        ),
-      ),
-      body: GestureDetector(
+  /*
+
+body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onVerticalDragStart: _handleDragStart,
         onVerticalDragEnd: _handleDragEnd,
-        child: Center(
+        
+      ), */
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onVerticalDragStart: _handleDragStart,
+      onVerticalDragEnd: _handleDragEnd,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Welcome",
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+              ),
+              GestureDetector(
+                onTap: () {
+                  _vm.refresh(); // Actually invoke the function
+                },
+                child: Icon(LucideIcons.refreshCcw, size: 35),
+              ),
+            ],
+          ),
+        ),
+        body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -170,84 +173,6 @@ class _WelcomePageState extends State<WelcomePage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// Admin password entry dialog. Owns its [TextEditingController] so the
-/// controller is disposed exactly when this widget unmounts (after the dialog's
-/// exit transition), never mid-animation.
-class _AdminPasswordDialog extends StatefulWidget {
-  const _AdminPasswordDialog({required this.onSubmit});
-
-  /// Called with the entered text when Submit is pressed. The parent decides
-  /// whether to pop the dialog and where to navigate.
-  final void Function(String password) onSubmit;
-
-  @override
-  State<_AdminPasswordDialog> createState() => _AdminPasswordDialogState();
-}
-
-class _AdminPasswordDialogState extends State<_AdminPasswordDialog> {
-  final TextEditingController _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: Column(
-        children: [
-          const Spacer(),
-          AlertDialog(
-            title: Text(
-              textAlign: TextAlign.start,
-              'Enter Admin Password',
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: Theme.of(context).textTheme.bodyMedium?.fontFamily,
-              ),
-            ),
-            content: TextField(
-              controller: _controller,
-              obscureText: true,
-              autofocus: true,
-              decoration: const InputDecoration(hintText: "Password"),
-              readOnly: true, // Prevent OS keyboard
-              showCursor: true,
-            ),
-            actions: [
-              TextButton(
-                child: const Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                },
-              ),
-              TextButton(
-                child: const Text('Submit'),
-                onPressed: () {
-                  widget.onSubmit(_controller.text);
-                },
-              ),
-            ],
-          ),
-          const Spacer(),
-          Container(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            child: VirtualKeyboard(
-              height: 200,
-              textColor: Colors.white,
-              textController: _controller,
-              type: VirtualKeyboardType.Alphanumeric,
-            ),
-          ),
-        ],
       ),
     );
   }

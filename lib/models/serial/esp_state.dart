@@ -10,6 +10,7 @@
 ///   "intake_rpm": 1000, "exhaust_rmp": 1000,
 ///   "shelf_ids": ["MAC_1", "MAC_2", "MAC_3"] }
 /// ```
+library;
 
 class ShelfData {
   final String macAddress;

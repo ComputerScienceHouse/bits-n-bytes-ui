@@ -1,8 +1,8 @@
 import 'package:bits_n_bytes_ui/components/app_bar.dart';
 import 'package:bits_n_bytes_ui/viewmodel/receipt.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
@@ -452,34 +452,6 @@ class _ReceiptPageState extends State<ReceiptPage> {
                                           style: const TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        TextButton.icon(
-                                          onPressed: () => {},
-                                          icon: const Icon(
-                                            LucideIcons.squarePen,
-                                            size: 14,
-                                          ),
-                                          style: TextButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            backgroundColor: Theme.of(context)
-                                                .colorScheme
-                                                .onPrimaryContainer
-                                                .withAlpha(60),
-                                            foregroundColor: Theme.of(
-                                              context,
-                                            ).colorScheme.primaryContainer,
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 0,
-                                              horizontal: 0,
-                                            ),
-                                          ),
-                                          label: const Text(
-                                            'Edit',
-                                            style: TextStyle(fontSize: 14),
                                           ),
                                         ),
                                       ],

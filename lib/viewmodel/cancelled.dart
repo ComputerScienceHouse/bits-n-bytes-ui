@@ -9,6 +9,7 @@ import 'package:bits_n_bytes_ui/repositories/transaction.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:bits_n_bytes_ui/services/serial_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class CancelledViewModel extends ChangeNotifier {
   CancelledViewModel({
@@ -100,6 +101,7 @@ class CancelledViewModel extends ChangeNotifier {
     _transactions.create(transaction);
     await Future.delayed(const Duration(seconds: 2));
     if (_disposed) return;
+    // Empty Cart
     await Future.delayed(const Duration(seconds: 1));
     if (_disposed) return;
     _navigateWelcome = true;
@@ -109,7 +111,9 @@ class CancelledViewModel extends ChangeNotifier {
   /// Staff assistance: ping the Slack workflow and hand back to the welcome
   /// screen so the kiosk is freed up.
   void callForHelp() {
-    _api.requestHelp(user);
+    if (dotenv.env["DEV_MODE"] == "True") {
+      _api.requestHelp(user);
+    }
     _navigateWelcome = true;
     notifyListeners();
   }

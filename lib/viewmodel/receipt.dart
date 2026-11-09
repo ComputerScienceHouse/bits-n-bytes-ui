@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:bits_n_bytes_ui/client/email.dart';
-import 'package:bits_n_bytes_ui/models/api/transaction.dart';
-import 'package:bits_n_bytes_ui/repositories/transaction.dart';
-import 'package:flutter/foundation.dart';
-
 import 'package:bits_n_bytes_ui/client/twilio.dart';
+import 'package:bits_n_bytes_ui/models/api/transaction.dart';
 import 'package:bits_n_bytes_ui/models/api/user.dart';
+import 'package:bits_n_bytes_ui/repositories/transaction.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:bits_n_bytes_ui/services/serial_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 enum SendStatus { idle, sending, sent, error }
 
@@ -79,6 +79,11 @@ class ReceiptViewModel extends ChangeNotifier {
   }
 
   Future<void> sendEmailReceipt() async {
+    if (dotenv.env["DEV_MODE"] == "True") {
+      _smsStatus = SendStatus.error;
+      _smsError = 'Email does not work in Dev Mode!';
+      return;
+    }
     if (user.email.isEmpty) {
       _emailStatus = SendStatus.error;
       _emailError = "No email on file";
@@ -105,6 +110,11 @@ class ReceiptViewModel extends ChangeNotifier {
   }
 
   Future<void> sendSmsReceipt() async {
+    if (dotenv.env["DEV_MODE"] == "True") {
+      _smsStatus = SendStatus.error;
+      _smsError = 'SMS does not work in Dev Mode!';
+      return;
+    }
     if (user.phone == null || user.phone!.isEmpty) {
       _smsStatus = SendStatus.error;
       _smsError = 'No phone number on file.';
