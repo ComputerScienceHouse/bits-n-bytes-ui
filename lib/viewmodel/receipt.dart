@@ -1,14 +1,15 @@
 import 'dart:async';
 
+import 'package:bits_n_bytes_ui/client/api.dart';
 import 'package:bits_n_bytes_ui/client/email.dart';
-import 'package:bits_n_bytes_ui/models/api/transaction.dart';
-import 'package:bits_n_bytes_ui/repositories/transaction.dart';
-import 'package:flutter/foundation.dart';
-
 import 'package:bits_n_bytes_ui/client/twilio.dart';
+import 'package:bits_n_bytes_ui/models/api/transaction.dart';
 import 'package:bits_n_bytes_ui/models/api/user.dart';
+import 'package:bits_n_bytes_ui/repositories/transaction.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:bits_n_bytes_ui/services/serial_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 enum SendStatus { idle, sending, sent, error }
 
@@ -23,9 +24,12 @@ class ReceiptViewModel extends ChangeNotifier {
     TwilioService? twilio,
     SerialService? serial,
     EmailService? email,
+    ApiService? api,
+
     TransactionRepository? transactions,
     int timeoutSeconds = 20,
-  }) : _twilio = twilio ?? TwilioService(),
+  }) : _api = api ?? ApiService(),
+       _twilio = twilio ?? TwilioService(),
        _serial = serial ?? SerialService(),
        _email = email ?? EmailService(),
        _transactions = transactions ?? TransactionRepository(),
@@ -39,6 +43,7 @@ class ReceiptViewModel extends ChangeNotifier {
   final EmailService _email;
   final SerialService _serial;
   final TransactionRepository _transactions;
+  final ApiService _api;
 
   Timer? _timer;
   int _seconds;
@@ -46,6 +51,9 @@ class ReceiptViewModel extends ChangeNotifier {
 
   bool _timedOut = false;
   bool get timedOut => _timedOut;
+
+  bool _requestHelp = false;
+  bool get requestHelpFromUser => _requestHelp;
 
   SendStatus _emailStatus = SendStatus.idle;
   SendStatus get emailStatus => _emailStatus;
@@ -79,6 +87,11 @@ class ReceiptViewModel extends ChangeNotifier {
   }
 
   Future<void> sendEmailReceipt() async {
+    if (dotenv.env["DEV_MODE"] == "True") {
+      _smsStatus = SendStatus.error;
+      _smsError = 'Email does not work in Dev Mode!';
+      return;
+    }
     if (user.email.isEmpty) {
       _emailStatus = SendStatus.error;
       _emailError = "No email on file";
@@ -105,6 +118,11 @@ class ReceiptViewModel extends ChangeNotifier {
   }
 
   Future<void> sendSmsReceipt() async {
+    if (dotenv.env["DEV_MODE"] == "True") {
+      _smsStatus = SendStatus.error;
+      _smsError = 'SMS does not work in Dev Mode!';
+      return;
+    }
     if (user.phone == null || user.phone!.isEmpty) {
       _smsStatus = SendStatus.error;
       _smsError = 'No phone number on file.';
@@ -147,6 +165,19 @@ class ReceiptViewModel extends ChangeNotifier {
 
   /// Clear the cart hardware — call when finishing or on timeout.
   void clearCart() => _serial.clearCart();
+
+  void requestHelp(User user) async {
+    if (_requestHelp) return;
+    _requestHelp = true;
+    notifyListeners();
+    try {
+      await _api.requestHelp(user);
+    } catch (e) {
+      _requestHelp = false;
+      LogService.logEvent('requestHelp failed: $e');
+      notifyListeners();
+    }
+  }
 
   @override
   void dispose() {

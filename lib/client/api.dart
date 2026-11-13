@@ -1,13 +1,14 @@
 // service interacting with our backend API so we can make calls to authenticate users
 
 import 'dart:convert';
+
 import 'package:bits_n_bytes_ui/models/api/item.dart';
 import 'package:bits_n_bytes_ui/models/api/nfc.dart';
-import 'package:bits_n_bytes_ui/models/api/user.dart';
 import 'package:bits_n_bytes_ui/models/api/transaction.dart' as bnb;
+import 'package:bits_n_bytes_ui/models/api/user.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 
 //NOTE: Changed .env API_URL to remove backslash, this may or may not cause bugs, noting this down for safekeep
 
@@ -107,16 +108,17 @@ class ApiService {
   }
 
   Future<void> requestHelp(User user) async {
+    if (dotenv.env["DEV_MODE"] == "True") {
+      LogService.logEvent("DEV MODE: Help is on the way");
+      return;
+    }
     try {
       LogService.logEvent("Requesting help for ${user.name}");
       var response = await client.post(
         Uri.parse(
-          'https://hooks.slack.com/triggers/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',
+          'https://hooks.slack.com/triggers/${dotenv.env["SLACK_TRIGGER"]}',
         ),
-        headers: {
-          "Authorization": dotenv.env["API_AUTH_KEY"] ?? '',
-          "Content-Type": "application/json",
-        },
+        headers: {"Content-Type": "application/json"},
         body: jsonEncode({"name": user.name}),
       );
       if (response.statusCode == 200) {
