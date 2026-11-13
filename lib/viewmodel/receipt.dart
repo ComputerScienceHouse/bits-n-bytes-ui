@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bits_n_bytes_ui/client/api.dart';
 import 'package:bits_n_bytes_ui/client/email.dart';
 import 'package:bits_n_bytes_ui/client/twilio.dart';
 import 'package:bits_n_bytes_ui/models/api/transaction.dart';
@@ -23,9 +24,12 @@ class ReceiptViewModel extends ChangeNotifier {
     TwilioService? twilio,
     SerialService? serial,
     EmailService? email,
+    ApiService? api,
+
     TransactionRepository? transactions,
     int timeoutSeconds = 20,
-  }) : _twilio = twilio ?? TwilioService(),
+  }) : _api = api ?? ApiService(),
+       _twilio = twilio ?? TwilioService(),
        _serial = serial ?? SerialService(),
        _email = email ?? EmailService(),
        _transactions = transactions ?? TransactionRepository(),
@@ -39,6 +43,7 @@ class ReceiptViewModel extends ChangeNotifier {
   final EmailService _email;
   final SerialService _serial;
   final TransactionRepository _transactions;
+  final ApiService _api;
 
   Timer? _timer;
   int _seconds;
@@ -46,6 +51,9 @@ class ReceiptViewModel extends ChangeNotifier {
 
   bool _timedOut = false;
   bool get timedOut => _timedOut;
+
+  bool _requestHelp = false;
+  bool get requestHelpFromUser => _requestHelp;
 
   SendStatus _emailStatus = SendStatus.idle;
   SendStatus get emailStatus => _emailStatus;
@@ -157,6 +165,19 @@ class ReceiptViewModel extends ChangeNotifier {
 
   /// Clear the cart hardware — call when finishing or on timeout.
   void clearCart() => _serial.clearCart();
+
+  void requestHelp(User user) async {
+    if (_requestHelp) return;
+    _requestHelp = true;
+    notifyListeners();
+    try {
+      await _api.requestHelp(user);
+    } catch (e) {
+      _requestHelp = false;
+      LogService.logEvent('requestHelp failed: $e');
+      notifyListeners();
+    }
+  }
 
   @override
   void dispose() {

@@ -24,7 +24,7 @@ class _WelcomePageState extends State<WelcomePage> {
   DragStartDetails? _dragStartDetails;
   final double _minSwipeDistance = 50.0;
   bool _navigated = false;
-
+  bool _isRefreshing = false;
   @override
   void initState() {
     super.initState();
@@ -92,14 +92,20 @@ class _WelcomePageState extends State<WelcomePage> {
     _dragStartDetails = null;
   }
 
-  /*
+  Future<void> _handleRefresh() async {
+    if (_isRefreshing) return;
 
-body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onVerticalDragStart: _handleDragStart,
-        onVerticalDragEnd: _handleDragEnd,
-        
-      ), */
+    setState(() => _isRefreshing = true);
+
+    try {
+      _vm.refresh();
+    } finally {
+      if (mounted) {
+        setState(() => _isRefreshing = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -115,11 +121,16 @@ body: GestureDetector(
                 "Welcome",
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
               ),
-              GestureDetector(
-                onTap: () {
-                  _vm.refresh(); // Actually invoke the function
-                },
-                child: Icon(LucideIcons.refreshCcw, size: 35),
+
+              IconButton(
+                onPressed: _isRefreshing ? null : _handleRefresh,
+                icon: _isRefreshing
+                    ? const SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: CircularProgressIndicator(strokeWidth: 3),
+                      )
+                    : const Icon(LucideIcons.refreshCcw, size: 35),
               ),
             ],
           ),

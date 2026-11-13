@@ -91,7 +91,7 @@ class CancelledViewModel extends ChangeNotifier {
     }
   }
 
-  /// Every item is back on the shelves: hold the success state for 2s so the
+  /// Every item is back on the shelves: hold the success state for 1s so the
   /// shopper sees the confirmation, then a final 1s beat before handing back to
   /// the welcome screen. Guarded so it only ever runs once.
   Future<void> _scheduleWelcome() async {
@@ -99,7 +99,7 @@ class CancelledViewModel extends ChangeNotifier {
     _welcomeScheduled = true;
     transaction.transaction.transactionEnd = DateTime.now();
     _transactions.create(transaction);
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     if (_disposed) return;
     // Empty Cart
     await Future.delayed(const Duration(seconds: 1));

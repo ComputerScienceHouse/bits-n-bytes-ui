@@ -1,32 +1,33 @@
+import 'dart:io' show Platform;
+
 import 'package:bits_n_bytes_ui/models/api/transaction.dart';
 import 'package:bits_n_bytes_ui/screens/cancelled.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show MissingPluginException;
-import 'package:device_preview/device_preview.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
+import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:keep_screen_on/keep_screen_on.dart';
-import 'dart:io' show Platform;
 
-import 'util.dart';
-import 'theme.dart';
 import 'components/debug_log_overlay.dart';
-import 'services/serial_service.dart';
 import 'models/api/user.dart';
-import 'viewmodel/cart.dart';
-import 'viewmodel/welcome.dart';
-import 'viewmodel/receipt.dart';
-import 'viewmodel/admin.dart';
-import 'viewmodel/cancelled.dart';
-import 'screens/welcome.dart';
-import 'screens/name.dart';
+import 'screens/admin.dart';
 import 'screens/cart.dart';
 import 'screens/door_closed.dart';
+import 'screens/name.dart';
 import 'screens/receipt.dart';
-import 'screens/admin.dart';
+import 'screens/welcome.dart';
+import 'services/serial_service.dart';
+import 'theme.dart';
+import 'util.dart';
+import 'viewmodel/admin.dart';
+import 'viewmodel/cancelled.dart';
+import 'viewmodel/cart.dart';
+import 'viewmodel/receipt.dart';
+import 'viewmodel/welcome.dart';
 
 /// Pulls `{'transaction': ..., 'user': ...}` back out of a go_router `extra`
 /// payload. The key must match what the navigating screens write (see
