@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-
 import 'package:bits_n_bytes_ui/components/app_bar.dart';
 import 'package:bits_n_bytes_ui/components/cart_item.dart';
 import 'package:bits_n_bytes_ui/models/api/user.dart';
 import 'package:bits_n_bytes_ui/viewmodel/cart.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:provider/provider.dart';
 
 /// Thin View. All cart/serial logic lives in [CartViewModel], which is supplied
 /// by a route-scoped `ChangeNotifierProvider` (see the `/cart` route). This
@@ -129,23 +128,7 @@ class _CartPageState extends State<CartPage> {
       child: Column(
         children: [
           const SizedBox(height: 20),
-          TextButton.icon(
-            onPressed: _onCancelTransaction,
-            icon: const Icon(LucideIcons.circleX),
-            label: const Text('Cancel Transaction'),
-            style: TextButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-              foregroundColor: Theme.of(
-                context,
-              ).colorScheme.onSecondaryContainer,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.all(
-                  Radius.elliptical(15, 15),
-                ),
-              ),
-              padding: EdgeInsets.symmetric(vertical: 30, horizontal: 60),
-            ),
-          ),
+
           Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -212,6 +195,7 @@ class _CartPageState extends State<CartPage> {
                   ],
                 ),
                 const SizedBox(height: 40),
+
                 Center(
                   child: SvgPicture.asset(
                     Theme.of(context).brightness == Brightness.dark
@@ -222,6 +206,64 @@ class _CartPageState extends State<CartPage> {
                 ),
               ],
             ),
+          ),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Align(
+              alignment: Alignment.center,
+              child: TextButton.icon(
+                onPressed: _onCancelTransaction,
+                icon: const Icon(LucideIcons.circleX, size: 18),
+                label: const Text(
+                  'Cancel Transaction',
+                  style: TextStyle(fontSize: 14),
+                ),
+                style: TextButton.styleFrom(
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.secondaryContainer,
+                  foregroundColor: Theme.of(
+                    context,
+                  ).colorScheme.onSecondaryContainer,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 24,
+                    horizontal: 40,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          ListenableBuilder(
+            listenable: _vm,
+            builder: (context, _) {
+              return Padding(
+                padding: const EdgeInsets.all(24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Total:",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      '\$${_vm.total.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),

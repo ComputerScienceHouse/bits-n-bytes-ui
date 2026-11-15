@@ -2,14 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:bits_n_bytes_ui/models/api/user.dart';
 import 'package:bits_n_bytes_ui/models/serial/esp_state.dart';
-import 'package:shelf/shelf.dart';
-import 'package:shelf/shelf_io.dart' as io;
-import 'package:shelf_router/shelf_router.dart';
 import 'package:bits_n_bytes_ui/services/log_service.dart';
 import 'package:bits_n_bytes_ui/services/serial_service.dart';
 import 'package:flutter/material.dart' hide Router;
+import 'package:shelf/shelf.dart';
+import 'package:shelf/shelf_io.dart' as io;
+import 'package:shelf_router/shelf_router.dart';
 
 class SerialServiceSim with SerialStreams implements SerialService {
   SerialServiceSim() {
@@ -72,7 +73,7 @@ class SerialServiceSim with SerialStreams implements SerialService {
 
     try {
       // Binding to 0.0.0.0 allows access from other devices on the network
-      _server = await io.serve(router, '0.0.0.0', 8080);
+      _server = await io.serve(router.call, '0.0.0.0', 8080);
       LogService.logEvent(
         "🚀 Sim Server running at http://${_server!.address.host}:${_server!.port}",
       );

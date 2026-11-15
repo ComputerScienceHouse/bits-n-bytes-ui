@@ -1,10 +1,10 @@
-import 'package:bits_n_bytes_ui/models/api/item.dart';
+import 'dart:async';
+
 import 'package:bits_n_bytes_ui/models/api/transaction.dart';
 import 'package:bits_n_bytes_ui/models/api/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:async';
 
 class DoorClosedPage extends StatefulWidget {
   final User user;
